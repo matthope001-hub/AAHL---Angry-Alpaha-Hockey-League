@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AAHL — Angry Alpaca Hockey League</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080c12;
+  --surface: #0e1520;
+  --surface2: #141d2b;
+  --surface3: #1a2538;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.12);
+  --accent: #00d4ff;
+  --accent2: #0099bb;
+  --gold: #f5c842;
+  --gold2: #c49a1a;
+  --text: #f0f4f8;
+  --muted: #6b7fa3;
+  --muted2: #4a5878;
+  --green: #22d37a;
+  --red: #ff4d6a;
+  --r: 10px;
+  --r2: 16px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── GRID NOISE TEXTURE ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(0,212,255,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 110%, rgba(245,200,66,0.05) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+/* ── HEADER ── */
+header {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(8,12,18,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+}
+
+.header-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 60px;
+}
+
+.wordmark {
+  display: flex; align-items: center; gap: 10px; cursor: pointer;
+}
+
+.wordmark-badge {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: var(--accent);
+  display: grid; place-items: center;
+  font-size: 16px; font-weight: 900;
+  color: var(--bg);
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: -1px;
+  flex-shrink: 0;
+}
+
+.wordmark-text {
+  font-size: 15px; font-weight: 700;
+  letter-spacing: 0.5px; color: var(--text);
+}
+.wordmark-text span { color: var(--accent); }
+
+nav { display: flex; gap: 2px; }
+
+.nav-btn {
+  background: none; border: none; cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px; font-weight: 500;
+  color: var(--muted); padding: 6px 14px;
+  border-radius: 6px; transition: all 0.15s;
+  letter-spacing: 0.2px;
+}
+.nav-btn:hover { color: var(--text); background: var(--surface2); }
+.nav-btn.active { color: var(--accent); background: rgba(0,212,255,0.08); }
+
+/* ── LAYOUT ── */
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+.page { display: none; padding: 40px 0 80px; }
+.page.on { display: block; }
+
+/* ── TYPE ── */
+.eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; font-weight: 500;
+  color: var(--accent); letter-spacing: 2px;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+
+.display {
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 800; line-height: 1.05;
+  letter-spacing: -1px;
+}
+
+.display em { font-style: normal; color: var(--accent); }
+
+/* ── STAT STRIP ── */
+.stat-strip {
+  display: flex; gap: 0;
+  border: 1px solid var(--border2);
+  border-radius: var(--r2);
+  overflow: hidden;
+  margin: 32px 0;
+}
+
+.stat-cell {
+  flex: 1; padding: 20px 24px;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+}
+.stat-cell:last-child { border-right: none; }
+
+.stat-val {
+  font-size: 28px; font-weight: 800;
+  color: var(--text); line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-val.accent { color: var(--accent); }
+.stat-val.gold { color: var(--gold); }
+.stat-val.green { color: var(--green); }
+
+.stat-label {
+  font-size: 12px; color: var(--muted);
+  font-weight: 400; letter-spacing: 0.3px;
+}
+
+/* ── TWO COL ── */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+@media(max-width:720px){
+  .grid2,.grid3 { grid-template-columns: 1fr; }
+  .stat-strip { flex-direction: column; }
+  .stat-cell { border-right: none; border-bottom: 1px solid var(--border); }
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  overflow: hidden;
+}
+
+.card-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.card-title {
+  font-size: 13px; font-weight: 600;
+  color: var(--muted); letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-family: 'DM Mono', monospace;
+}
+
+.card-body { padding: 20px; }
+
+/* ── SECTION HEAD ── */
+.sh {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 20px;
+}
+.sh h2 { font-size: 20px; font-weight: 700; }
+.sh-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ── LEADERBOARD ── */
+.lb-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+  cursor: default;
+}
+.lb-row:last-child { border-bottom: none; }
+.lb-row:hover { background: var(--surface2); }
+
+.lb-pos {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px; font-weight: 500;
+  color: var(--muted2); width: 24px; text-align: center; flex-shrink: 0;
+}
+.lb-row.p1 .lb-pos { color: var(--gold); }
+.lb-row.p2 .lb-pos { color: #9ca3af; }
+.lb-row.p3 .lb-pos { color: #cd7f32; }
+
+.lb-av {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  display: grid; place-items: center;
+  font-size: 13px; font-weight: 700;
+  color: var(--text); flex-shrink: 0;
+  font-family: 'DM Mono', monospace;
+}
+.lb-row.p1 .lb-av { border-color: var(--gold); color: var(--gold); }
+
+.lb-info { flex: 1; min-width: 0; }
+.lb-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lb-team { font-size: 12px; color: var(--muted); margin-top: 1px; }
+
+.lb-trend {
+  font-size: 11px; font-weight: 600;
+  padding: 2px 7px; border-radius: 100px;
+  font-family: 'DM Mono', monospace;
+}
+.trend-up { background: rgba(34,211,122,0.1); color: var(--green); }
+.trend-dn { background: rgba(255,77,106,0.1); color: var(--red); }
+.trend-eq { background: var(--surface3); color: var(--muted); }
+
+.lb-pts {
+  font-size: 18px; font-weight: 800;
+  font-family: 'DM Mono', monospace;
+  color: var(--text); min-width: 52px; text-align: right;
+}
+
+/* ── HOCKEY TICKET ── */
+.ticket-scroll {
+  display: flex; gap: 16px;
+  overflow-x: auto; padding-bottom: 8px;
+  scrollbar-width: none;
+}
+.ticket-scroll::-webkit-scrollbar { display: none; }
+
+.ticket {
+  flex-shrink: 0; width: 300px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+}
+
+.ticket-top {
+  padding: 16px 18px 14px;
+  background: var(--surface2);
+  border-bottom: none;
+  position: relative;
+}
+
+/* Perforated edge */
+.ticket-perf {
+  height: 0; position: relative;
+  display: flex; align-items: center;
+  padding: 0 0;
+  overflow: hidden;
+}
+.ticket-perf::before {
+  content: '';
+  position: absolute; left: -10px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  box-shadow: inset 0 0 0 1px var(--border2);
+}
+.ticket-perf::after {
+  content: '';
+  position: absolute; right: -10px;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  box-shadow: inset 0 0 0 1px var(--border2);
+}
+.ticket-dash {
+  flex: 1; border-top: 1px dashed var(--border2);
+  margin: 10px 12px;
+}
+
+.ticket-body { padding: 14px 18px 16px; }
+
+.ticket-matchup {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.ticket-team {
+  font-size: 13px; font-weight: 700;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.5px;
+}
+
+.ticket-score {
+  font-size: 22px; font-weight: 900;
+  font-family: 'DM Mono', monospace;
+  color: var(--accent); letter-spacing: 2px;
+}
+
+.ticket-date {
+  font-size: 10px; color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.ticket-players {
+  display: flex; flex-direction: column; gap: 6px;
+}
+
+.tp-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 10px;
+  background: var(--surface3);
+  border-radius: 7px;
+  border: 1px solid var(--border);
+}
+
+.tp-name { font-size: 12px; font-weight: 600; color: var(--text); }
+.tp-team-tag {
+  font-size: 10px; color: var(--muted); margin-top: 1px;
+  font-family: 'DM Mono', monospace;
+}
+
+.tp-stat {
+  display: flex; gap: 8px; align-items: center;
+}
+
+.tp-pill {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; font-weight: 500;
+  padding: 2px 6px; border-radius: 4px;
+}
+.pill-g { background: rgba(245,200,66,0.12); color: var(--gold); }
+.pill-a { background: rgba(0,212,255,0.1); color: var(--accent); }
+.pill-w { background: rgba(34,211,122,0.1); color: var(--green); }
+.pill-so { background: rgba(255,77,106,0.1); color: var(--red); }
+
+.tp-pts {
+  font-family: 'DM Mono', monospace;
+  font-size: 14px; font-weight: 700;
+  color: var(--text);
+  min-width: 28px; text-align: right;
+}
+
+.ticket-barcode {
+  margin-top: 12px; padding-top: 12px;
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.barcode-lines {
+  display: flex; gap: 2px; align-items: flex-end; height: 24px;
+}
+.bc-bar {
+  background: var(--muted2);
+  border-radius: 1px;
+}
+
+.ticket-ref {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px; color: var(--muted2);
+  letter-spacing: 1px;
+}
+
+/* ── TICKET GLOW ACCENT ── */
+.ticket::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.6;
+}
+
+/* ── DRAFT BOXES ── */
+.draft-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.box-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.box-wrap.done { border-color: rgba(0,212,255,0.3); }
+
+.box-hd {
+  padding: 10px 14px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.box-type {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; font-weight: 500;
+  color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase;
+}
+
+.box-name {
+  font-size: 13px; font-weight: 700; color: var(--text);
+}
+
+.box-check {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1.5px solid var(--border2);
+  display: grid; place-items: center;
+  font-size: 10px; color: transparent;
+  transition: all 0.2s; flex-shrink: 0;
+}
+.box-wrap.done .box-check { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+
+.player-opts { padding: 6px; }
+
+.popt {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 7px;
+  cursor: pointer; transition: background 0.12s;
+  margin-bottom: 3px; border: 1px solid transparent;
+}
+.popt:last-child { margin-bottom: 0; }
+.popt:hover { background: var(--surface2); }
+.popt.sel { background: rgba(0,212,255,0.07); border-color: rgba(0,212,255,0.2); }
+.popt input[type=radio] { display: none; }
+
+.popt-name { font-size: 13px; font-weight: 600; flex: 1; }
+.popt-team {
+  font-size: 10px; color: var(--muted);
+  font-family: 'DM Mono', monospace;
+}
+.popt-pts {
+  font-family: 'DM Mono', monospace;
+  font-size: 14px; font-weight: 700; color: var(--accent);
+}
+.popt-pts-label { font-size: 9px; color: var(--muted2); text-align: right; }
+
+/* ── FORM ── */
+.field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.field label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+
+.field input, .field select {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  padding: 11px 14px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px; color: var(--text);
+  outline: none; transition: border-color 0.15s;
+}
+.field input:focus { border-color: var(--accent); }
+.field input::placeholder { color: var(--muted2); }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* ── PROGRESS ── */
+.prog-wrap { background: var(--surface3); border-radius: 100px; height: 4px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 100px; background: var(--accent); transition: width 0.4s ease; }
+
+/* ── CHIP ── */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
+.chip {
+  font-size: 11px; font-weight: 500;
+  padding: 3px 10px; border-radius: 100px;
+  background: rgba(0,212,255,0.08); color: var(--accent);
+  border: 1px solid rgba(0,212,255,0.15);
+  font-family: 'DM Mono', monospace;
+}
+.chip.empty {
+  background: rgba(255,77,106,0.06); color: var(--red);
+  border-color: rgba(255,77,106,0.15);
+  font-style: italic;
+}
+
+/* ── BTN ── */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 24px; border-radius: var(--r);
+  border: none; cursor: pointer; font-family: 'Outfit', sans-serif;
+  font-size: 14px; font-weight: 700; transition: all 0.15s;
+  letter-spacing: 0.2px;
+}
+.btn-accent { background: var(--accent); color: var(--bg); }
+.btn-accent:hover { background: #33ddff; transform: translateY(-1px); }
+.btn-ghost { background: transparent; color: var(--accent); border: 1px solid rgba(0,212,255,0.3); }
+.btn-ghost:hover { background: rgba(0,212,255,0.06); }
+.btn-gold { background: var(--gold); color: #1a1000; }
+.btn-gold:hover { background: #f7d44a; transform: translateY(-1px); }
+
+/* ── PAYOUT ROWS ── */
+.payout-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; border-bottom: 1px solid var(--border);
+}
+.payout-row:last-child { border-bottom: none; }
+.payout-pos { font-size: 14px; font-weight: 700; }
+.payout-pct { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.payout-amt { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 700; color: var(--green); }
+
+/* ── RULES ── */
+.rule-item {
+  display: flex; gap: 14px; padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px; line-height: 1.6; color: var(--text);
+}
+.rule-item:last-child { border-bottom: none; }
+.rule-num {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--accent); flex-shrink: 0; width: 20px;
+  padding-top: 2px;
+}
+
+/* ── SCORE TABLE ── */
+.score-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.score-tbl th {
+  text-align: left; padding: 10px 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--muted);
+  letter-spacing: 1px; text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  font-weight: 500;
+}
+.score-tbl td { padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.score-tbl tr:last-child td { border-bottom: none; }
+.score-tbl .pts-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 16px; font-weight: 700; color: var(--accent);
+}
+
+/* ── CHARITY ── */
+.charity-card {
+  border: 1px solid rgba(0,212,255,0.15);
+  border-radius: var(--r2);
+  padding: 28px; background: var(--surface);
+  margin-bottom: 28px;
+}
+.charity-card h3 {
+  font-size: 18px; font-weight: 800;
+  margin-bottom: 10px; color: var(--gold);
+}
+.charity-card p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+/* ── ADMIN CODE BLOCK ── */
+pre {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 20px;
+  font-family: 'DM Mono', monospace; font-size: 12px;
+  color: #8ecfea; overflow-x: auto; line-height: 1.7;
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+  background: var(--surface2); border: 1px solid var(--accent);
+  border-radius: var(--r2); padding: 16px 20px;
+  transform: translateY(120px); transition: transform 0.3s;
+  max-width: 320px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.toast.show { transform: translateY(0); }
+.toast-title { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+.toast-body { font-size: 13px; color: var(--muted); }
+
+/* ── HOSTING INFO CARD ── */
+.host-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px 20px; margin-bottom: 12px;
+}
+.host-card h4 {
+  font-size: 14px; font-weight: 700; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 8px;
+}
+.host-card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.free-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; padding: 2px 8px; border-radius: 100px;
+  background: rgba(34,211,122,0.12); color: var(--green);
+  font-weight: 500;
+}
+.cost-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; padding: 2px 8px; border-radius: 100px;
+  background: rgba(245,200,66,0.1); color: var(--gold);
+  font-weight: 500;
+}
+
+/* ── LIVE DOT ── */
+.live-dot {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--green); letter-spacing: 1px;
+}
+.live-dot::before {
+  content: ''; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--green);
+  animation: blink 1.8s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ── PICKS SUMMARY BAR ── */
+.picks-bar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r); padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 20px;
+}
+.picks-bar .big {
+  font-family: 'DM Mono', monospace;
+  font-size: 36px; font-weight: 500; color: var(--accent);
+  line-height: 1; flex-shrink: 0;
+}
+.picks-bar-right { flex: 1; }
+.picks-bar .lbl { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+
+/* ── FADE IN ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page.on .card,
+.page.on .ticket,
+.page.on .stat-cell {
+  animation: fadeUp 0.35s ease both;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="wordmark" onclick="showPage('home',this)">
+      <div class="wordmark-badge">AA</div>
+      <div class="wordmark-text">AAHL <span>/</span> Angry Alpaca</div>
+    </div>
+    <nav>
+      <button class="nav-btn active" onclick="showPage('home',this)">Home</button>
+      <button class="nav-btn" onclick="showPage('picks',this)">My Picks</button>
+      <button class="nav-btn" onclick="showPage('board',this)">Standings</button>
+      <button class="nav-btn" onclick="showPage('rules',this)">Rules</button>
+      <button class="nav-btn" onclick="showPage('admin',this)">Admin</button>
+    </nav>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════ HOME ═══════════════════════════════ -->
+<div id="page-home" class="page on">
+<div class="wrap">
+
+  <div style="padding: 48px 0 0">
+    <div class="eyebrow">NHL 2023–24 Regular Season</div>
+    <div class="display">Box Pick<em>'Em</em><br>Pool Portal</div>
+    <p style="font-size:15px;color:var(--muted);margin-top:14px;max-width:520px;line-height:1.65">
+      24 boxes. One player each. All points combined. 50/50 split — half the pot goes to Nick Psaros and family.
+    </p>
+  </div>
+
+  <div class="stat-strip">
+    <div class="stat-cell">
+      <div class="stat-val accent" id="h-entries">1</div>
+      <div class="stat-label">Entries submitted</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-val gold" id="h-pot">$5</div>
+      <div class="stat-label">Prize pool (50%)</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-val green" id="h-charity">$5</div>
+      <div class="stat-label">To Nick's family</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-val" style="font-size:18px">Oct 10 · 7:30p</div>
+      <div class="stat-label">Entry deadline EST</div>
+    </div>
+  </div>
+
+  <!-- LAST NIGHT'S TICKETS -->
+  <div class="sh" style="margin-bottom:14px">
+    <h2>Last Night's Games</h2>
+    <div class="sh-line"></div>
+    <span class="live-dot">UPDATED</span>
+  </div>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Pool players who scored last night — tap any ticket to see full box score.</p>
+
+  <div class="ticket-scroll" id="ticket-rail"></div>
+
+  <div style="margin-top:40px" class="grid2">
+
+    <!-- Leaderboard preview -->
+    <div>
+      <div class="sh"><h2>Top 5</h2><div class="sh-line"></div></div>
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">Standings</span>
+          <span class="live-dot" style="font-size:10px">LIVE</span>
+        </div>
+        <div id="lb-preview"></div>
+        <div style="padding:14px 20px;border-top:1px solid var(--border)">
+          <button class="btn btn-ghost" style="width:100%;justify-content:center" onclick="showPage('board',document.querySelectorAll('.nav-btn')[2])">Full standings →</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scoring + Payout -->
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <div>
+        <div class="sh"><h2>Scoring</h2><div class="sh-line"></div></div>
+        <div class="card">
+          <table class="score-tbl">
+            <thead><tr><th>Position</th><th>Action</th><th>Pts</th></tr></thead>
+            <tbody>
+              <tr><td>Forward / D</td><td>Goal</td><td class="pts-val">1</td></tr>
+              <tr><td>Forward / D</td><td>Assist</td><td class="pts-val">1</td></tr>
+              <tr><td>Goalie</td><td>Win</td><td class="pts-val">2</td></tr>
+              <tr><td>Goalie</td><td>Shutout</td><td class="pts-val">2</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <div class="sh"><h2>Payouts</h2><div class="sh-line"></div></div>
+        <div class="card">
+          <div class="payout-row">
+            <div><div class="payout-pos" style="color:var(--gold)">1st Place</div><div class="payout-pct">50% of prize pool</div></div>
+            <div class="payout-amt" id="p1">$3</div>
+          </div>
+          <div class="payout-row">
+            <div><div class="payout-pos" style="color:#9ca3af">2nd Place</div><div class="payout-pct">30% of prize pool</div></div>
+            <div class="payout-amt" id="p2">$2</div>
+          </div>
+          <div class="payout-row">
+            <div><div class="payout-pos" style="color:#cd7f32">3rd Place</div><div class="payout-pct">20% of prize pool</div></div>
+            <div class="payout-amt" id="p3">$1</div>
+          </div>
+          <div class="payout-row">
+            <div><div class="payout-pos" style="color:var(--red)">Last Place</div><div class="payout-pct">Free entry next year</div></div>
+            <div style="font-size:12px;color:var(--muted)">No cash — next year's on us</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Charity -->
+  <div class="charity-card" style="margin-top:32px">
+    <h3>Supporting Nick Psaros &amp; Family</h3>
+    <p>Nick was injured on the job and underwent a partial leg amputation. He's now in rehab getting fitted for a prosthetic. We know Nick, his mom Tanya, and wife Jody would do anything for anyone — this pool is our way of showing them the same. 50% of every entry goes directly to the family.</p>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════════════════════ PICKS ═══════════════════════════════ -->
+<div id="page-picks" class="page">
+<div class="wrap">
+
+  <div style="padding-top:8px;margin-bottom:28px">
+    <div class="eyebrow">Entry form</div>
+    <div style="font-size:26px;font-weight:800">Make Your Picks</div>
+  </div>
+
+  <!-- Entry info -->
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-head"><span class="card-title">Your Info</span></div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="field"><label>First name</label><input type="text" id="ff" placeholder="First"></div>
+        <div class="field"><label>Last name</label><input type="text" id="fl" placeholder="Last"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Email</label><input type="email" id="fe" placeholder="you@email.com"></div>
+        <div class="field"><label>Phone</label><input type="tel" id="fp" placeholder="416-555-0100"></div>
+      </div>
+      <div class="field"><label>Team name</label><input type="text" id="ft" placeholder="Your team name"></div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;font-size:13px;color:var(--muted)">
+        E-transfer <span style="color:var(--text);font-weight:600">$10 per entry</span> to <span style="color:var(--accent);font-family:'DM Mono',monospace">matt.hope@rocketmail.com</span> — include your full name in the memo.
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="picks-bar">
+    <div class="big" id="pc">0</div>
+    <div class="picks-bar-right">
+      <div class="lbl">of 24 boxes filled</div>
+      <div class="prog-wrap"><div class="prog-fill" id="pbar" style="width:0%"></div></div>
+      <div class="chips" id="chips"></div>
+    </div>
+  </div>
+
+  <div class="draft-grid" id="draft"></div>
+
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn btn-gold" style="font-size:16px;padding:14px 40px" onclick="submitEntry()">
+      Submit Entry →
+    </button>
+    <div style="margin-top:10px;font-size:12px;color:var(--muted2)">Picks lock October 10 @ 7:30 PM EST · No trades after submission</div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════════════════════ BOARD ═══════════════════════════════ -->
+<div id="page-board" class="page">
+<div class="wrap">
+
+  <div style="padding-top:8px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div class="eyebrow">2023–24 season</div>
+      <div style="font-size:26px;font-weight:800">Standings</div>
+    </div>
+    <span class="live-dot">UPDATED NIGHTLY</span>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">All Entries</span>
+      <span style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace" id="bd-count">— entries</span>
+    </div>
+    <div id="full-lb"></div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════════════════════ RULES ═══════════════════════════════ -->
+<div id="page-rules" class="page">
+<div class="wrap">
+
+  <div style="padding-top:8px;margin-bottom:28px">
+    <div class="eyebrow">How it works</div>
+    <div style="font-size:26px;font-weight:800">Rules &amp; Format</div>
+  </div>
+
+  <div class="grid2">
+    <div>
+      <div class="sh"><h2>Pool rules</h2><div class="sh-line"></div></div>
+      <div class="card">
+        <div class="card-body" style="padding:8px 20px">
+          <div class="rule-item"><div class="rule-num">01</div><div>$10 per entry — enter as many times as you want. E-transfer to <strong>matt.hope@rocketmail.com</strong> with your real name.</div></div>
+          <div class="rule-item"><div class="rule-num">02</div><div>Deadline: <strong>October 10, 2023 @ 7:30 PM EST</strong> before Nashville @ Tampa Bay puck drop.</div></div>
+          <div class="rule-item"><div class="rule-num">03</div><div>Select <strong>one (1) player per box</strong> — 24 boxes total. Forwards, defensemen, and goalies.</div></div>
+          <div class="rule-item"><div class="rule-num">04</div><div>All player points — goals, assists, wins, shutouts — are <strong>combined</strong> into one total score per entry.</div></div>
+          <div class="rule-item"><div class="rule-num">05</div><div><strong>No trades.</strong> Picks lock at puck drop and cannot be changed for any reason.</div></div>
+          <div class="rule-item"><div class="rule-num">06</div><div>Ties broken by total goals + assists, then by total goalie saves if still tied.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sh"><h2>Prizes</h2><div class="sh-line"></div></div>
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-body" style="padding:8px 20px">
+          <div class="rule-item"><div class="rule-num" style="color:var(--gold)">1st</div><div><strong>50%</strong> of the prize pool</div></div>
+          <div class="rule-item"><div class="rule-num" style="color:#9ca3af">2nd</div><div><strong>30%</strong> of the prize pool</div></div>
+          <div class="rule-item"><div class="rule-num" style="color:#cd7f32">3rd</div><div><strong>20%</strong> of the prize pool</div></div>
+          <div class="rule-item"><div class="rule-num" style="color:var(--red)">Last</div><div>Free entry for next year's pool</div></div>
+        </div>
+      </div>
+
+      <div class="sh"><h2>Goalie scoring</h2><div class="sh-line"></div></div>
+      <div class="card">
+        <table class="score-tbl">
+          <thead><tr><th>Event</th><th>Points</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Win</td><td class="pts-val">2</td><td style="font-size:12px;color:var(--muted)">Credited goalie only</td></tr>
+            <tr><td>Shutout</td><td class="pts-val">2</td><td style="font-size:12px;color:var(--muted)">Stacks with a win (4 pts)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══════════════════════════════ ADMIN ═══════════════════════════════ -->
+<div id="page-admin" class="page">
+<div class="wrap">
+
+  <div style="padding-top:8px;margin-bottom:28px">
+    <div class="eyebrow">Commissioner tools</div>
+    <div style="font-size:26px;font-weight:800">Admin</div>
+  </div>
+
+  <div class="grid2">
+    <div>
+      <div class="sh"><h2>Free hosting options</h2><div class="sh-line"></div></div>
+
+      <div class="host-card">
+        <h4>GitHub Pages <span class="free-tag">FREE forever</span></h4>
+        <p>Drop this HTML file in a GitHub repo, enable Pages in settings. Done. Custom domain optional. Zero cost, no ads, no server.</p>
+      </div>
+      <div class="host-card">
+        <h4>Netlify Drop <span class="free-tag">FREE forever</span></h4>
+        <p>Drag the file to netlify.com/drop. Instant live URL in 30 seconds. Free tier handles thousands of visitors.</p>
+      </div>
+      <div class="host-card">
+        <h4>Google Sheets backend <span class="free-tag">FREE</span></h4>
+        <p>Apps Script handles the form submissions, nightly NHL API pulls, and standings calculation. Publish Sheets as a web link for live standings. No database cost.</p>
+      </div>
+      <div class="host-card">
+        <h4>Supabase (if you grow) <span class="cost-tag">~$0–25/mo</span></h4>
+        <p>Free tier covers 500MB and 50k monthly active users — more than enough. Only pay if you scale beyond that.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="sh"><h2>NHL API endpoints</h2><div class="sh-line"></div></div>
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-body">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;font-family:'DM Mono',monospace">Schedule (free, no key required)</div>
+          <pre style="margin-bottom:16px">https://api-web.nhle.com/v1/
+schedule/{YYYY-MM-DD}</pre>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;font-family:'DM Mono',monospace">Game boxscore</div>
+          <pre style="margin-bottom:16px">https://api-web.nhle.com/v1/
+gamecenter/{gameId}/boxscore</pre>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;font-family:'DM Mono',monospace">Player season log</div>
+          <pre>https://api-web.nhle.com/v1/
+player/{playerId}/game-log/now</pre>
+        </div>
+      </div>
+
+      <div class="sh"><h2>Manual point entry</h2><div class="sh-line"></div></div>
+      <div class="card">
+        <div class="card-body">
+          <div class="field"><label>Player name</label><input type="text" id="ap" placeholder="e.g. Auston Matthews"></div>
+          <div class="field"><label>Points to add</label><input type="number" id="apts" placeholder="2" min="0" max="20"></div>
+          <button class="btn btn-accent" onclick="adminAdd()" style="width:100%;justify-content:center">Add Points</button>
+          <div id="alog" style="margin-top:12px;max-height:100px;overflow-y:auto;font-size:12px;color:var(--muted);font-family:'DM Mono',monospace"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sh" style="margin-top:32px"><h2>Apps Script — nightly scoring</h2><div class="sh-line"></div></div>
+  <div class="card">
+    <div class="card-body" style="padding:0">
+<pre>function fetchNightlyStats() {
+  const date = Utilities.formatDate(new Date(), 'EST', 'yyyy-MM-dd');
+  const sched = JSON.parse(UrlFetchApp
+    .fetch(`https://api-web.nhle.com/v1/schedule/${date}`)
+    .getContentText());
+
+  (sched.gameWeek?.[0]?.games || []).forEach(g => {
+    const box = JSON.parse(UrlFetchApp
+      .fetch(`https://api-web.nhle.com/v1/gamecenter/${g.id}/boxscore`)
+      .getContentText());
+    updatePlayerStats(box);
+  });
+}
+
+function calcPoints(p) {
+  return p.position === 'G'
+    ? (p.wins * 2) + (p.shutouts * 2)
+    : p.goals + p.assists;
+}
+
+function calculateStandings() {
+  const players = getPlayerMap();
+  const entries = getEntries();
+
+  return entries
+    .map(e => ({
+      ...e,
+      total: e.picks.reduce((s, name) =>
+        s + (players[name]?.pts || 0), 0)
+    }))
+    .sort((a, b) => b.total - a.total);
+}</pre>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-title" id="toast-t"></div>
+  <div class="toast-body" id="toast-b"></div>
+</div>
+
+<script>
+// ══════════ DATA ══════════
+const BOXES = [
+  {id:1,label:'Forwards 1',type:'F',players:[
+    {name:'Leon Draisaitl',team:'EDM',pts:160},{name:'Nikita Kucherov',team:'TB',pts:144},
+    {name:'Nathan MacKinnon',team:'COL',pts:140},{name:'Connor McDavid',team:'EDM',pts:132},
+    {name:'Artemi Panarin',team:'NYR',pts:120}]},
+  {id:2,label:'Forwards 2',type:'F',players:[
+    {name:'Mitch Marner',team:'TOR',pts:107},{name:'Auston Matthews',team:'TOR',pts:107},
+    {name:'Elias Pettersson',team:'VAN',pts:102},{name:'Mikko Rantanen',team:'COL',pts:104},
+    {name:'Jason Robertson',team:'DAL',pts:109}]},
+  {id:3,label:'Forwards 3',type:'F',players:[
+    {name:'Jack Hughes',team:'NJ',pts:92},{name:'Kirill Kaprizov',team:'MIN',pts:96},
+    {name:'J.T. Miller',team:'VAN',pts:100},{name:'William Nylander',team:'TOR',pts:92},
+    {name:'Brayden Point',team:'TB',pts:82}]},
+  {id:4,label:'Forwards 4',type:'F',players:[
+    {name:'Sebastian Aho',team:'CAR',pts:90},{name:'Jesper Bratt',team:'NJ',pts:83},
+    {name:'Sidney Crosby',team:'PIT',pts:94},{name:'Jake Guentzel',team:'CAR',pts:77},
+    {name:'Clayton Keller',team:'ARI',pts:76}]},
+  {id:5,label:'Forwards 5',type:'F',players:[
+    {name:'Aleksander Barkov',team:'FLA',pts:86},{name:'Ryan Nugent-Hopkins',team:'EDM',pts:87},
+    {name:'Kevin Fiala',team:'LA',pts:82},{name:'Dylan Larkin',team:'DET',pts:82},
+    {name:'Steven Stamkos',team:'TB',pts:81}]},
+  {id:6,label:'Forwards 6',type:'F',players:[
+    {name:'Drake Batherson',team:'OTT',pts:82},{name:'Matt Boldy',team:'MIN',pts:75},
+    {name:'Cole Caufield',team:'MTL',pts:82},{name:'Brandon Hagel',team:'TB',pts:74},
+    {name:'Jordan Kyrou',team:'STL',pts:82}]},
+  {id:7,label:'Forwards 7',type:'F',players:[
+    {name:'Wyatt Johnston',team:'DAL',pts:82},{name:'Anze Kopitar',team:'LA',pts:81},
+    {name:'Nikolaj Ehlers',team:'WPG',pts:73},{name:'John Tavares',team:'TOR',pts:82},
+    {name:'Alex Tuch',team:'BUF',pts:75}]},
+  {id:8,label:'Forwards 8',type:'F',players:[
+    {name:'Bo Horvat',team:'NYI',pts:81},{name:'Chris Kreider',team:'NYR',pts:82},
+    {name:'Elias Lindholm',team:'VAN',pts:75},{name:'Tomas Hertl',team:'VGK',pts:72},
+    {name:'Brock Nelson',team:'NYI',pts:82}]},
+  {id:9,label:'Forwards 9',type:'F',players:[
+    {name:'Quinton Byfield',team:'LA',pts:80},{name:'Matt Duchene',team:'DAL',pts:80},
+    {name:'Joel Eriksson Ek',team:'MIN',pts:77},{name:'Brad Marchand',team:'BOS',pts:82},
+    {name:'Jonathan Marchessault',team:'VGK',pts:82}]},
+  {id:10,label:'Forwards 10',type:'F',players:[
+    {name:'Ryan O\'Reilly',team:'NSH',pts:69},{name:'Charlie McAvoy',team:'BOS',pts:74},
+    {name:'Morgan Rielly',team:'TOR',pts:72},{name:'Shea Theodore',team:'VGK',pts:82},
+    {name:'Zach Werenski',team:'CBJ',pts:71}]},
+  {id:11,label:'Forwards 11',type:'F',players:[
+    {name:'Dylan Cozens',team:'BUF',pts:75},{name:'Claude Giroux',team:'OTT',pts:82},
+    {name:'Andrei Kuzmenko',team:'CGY',pts:72},{name:'Evgeni Malkin',team:'PIT',pts:82},
+    {name:'Alex Ovechkin',team:'WSH',pts:79}]},
+  {id:12,label:'Forwards 12',type:'F',players:[
+    {name:'Jake DeBrusk',team:'BOS',pts:75},{name:'Owen Tippett',team:'PHI',pts:82},
+    {name:'Andrei Svechnikov',team:'CAR',pts:59},{name:'Tommy Novak',team:'NSH',pts:82},
+    {name:'Mats Zuccarello',team:'MIN',pts:82}]},
+  {id:13,label:'Defense 1',type:'D',players:[
+    {name:'Noah Dobson',team:'NYI',pts:82},{name:'Dougie Hamilton',team:'NJ',pts:62},
+    {name:'Victor Hedman',team:'TB',pts:78},{name:'Quinn Hughes',team:'VAN',pts:82},
+    {name:'Josh Morrissey',team:'WPG',pts:82}]},
+  {id:14,label:'Defense 2',type:'D',players:[
+    {name:'MacKenzie Weegar',team:'CGY',pts:82},{name:'Erik Karlsson',team:'PIT',pts:67},
+    {name:'Brady Skjei',team:'CAR',pts:80},{name:'Luke Hughes',team:'NJ',pts:82},
+    {name:'Thomas Harley',team:'DAL',pts:79}]},
+  {id:15,label:'Defense 3',type:'D',players:[
+    {name:'Travis Sanheim',team:'PHI',pts:82},{name:'Brent Burns',team:'CAR',pts:82},
+    {name:'Jakob Chychrun',team:'OTT',pts:82},{name:'Sean Durzi',team:'ARI',pts:82},
+    {name:'Cam Fowler',team:'ANA',pts:82}]},
+  {id:16,label:'Defense 4',type:'D',players:[
+    {name:'Torey Krug',team:'STL',pts:77},{name:'Rasmus Dahlin',team:'BUF',pts:82},
+    {name:'Alex Pietrangelo',team:'VGK',pts:64},{name:'Darren Raddysh',team:'TB',pts:82},
+    {name:'Neal Pionk',team:'WPG',pts:79}]},
+  {id:17,label:'Defense 5',type:'D',players:[
+    {name:'Adam Fox',team:'NYR',pts:73},{name:'Rasmus Andersson',team:'CGY',pts:82},
+    {name:'Roman Josi',team:'NSH',pts:82},{name:'Quinn Hughes',team:'VAN',pts:82},
+    {name:'Cale Makar',team:'COL',pts:77}]},
+  {id:18,label:'Defense 6',type:'D',players:[
+    {name:'Rasmus Sandin',team:'WSH',pts:70},{name:'Jacob Trouba',team:'NYR',pts:82},
+    {name:'Damon Severson',team:'CBJ',pts:82},{name:'Ivan Provorov',team:'CBJ',pts:73},
+    {name:'Evan Bouchard',team:'EDM',pts:82}]},
+  {id:19,label:'Goalie 1',type:'G',players:[
+    {name:'Thatcher Demko',team:'VAN',pts:51},{name:'Connor Hellebuyck',team:'WPG',pts:60},
+    {name:'Jake Oettinger',team:'DAL',pts:56},{name:'Juuse Saros',team:'NSH',pts:55},
+    {name:'Stuart Skinner',team:'EDM',pts:56}]},
+  {id:20,label:'Goalie 2',type:'G',players:[
+    {name:'Sergei Bobrovsky',team:'FLA',pts:56},{name:'Alexander Georgiev',team:'COL',pts:63},
+    {name:'Pyotr Kochetkov',team:'CAR',pts:46},{name:'Jordan Binnington',team:'STL',pts:54},
+    {name:'Andrei Vasilevskiy',team:'TB',pts:52}]},
+  {id:21,label:'Goalie 3',type:'G',players:[
+    {name:'Cam Talbot',team:'CGY',pts:54},{name:'Jacob Markstrom',team:'CGY',pts:48},
+    {name:'Ilya Sorokin',team:'NYI',pts:56},{name:'Filip Gustavsson',team:'MIN',pts:56},
+    {name:'Linus Ullmark',team:'BOS',pts:41}]},
+  {id:22,label:'Goalie 4',type:'G',players:[
+    {name:'Laurent Brossoit',team:'VGK',pts:23},{name:'Kevin Lankinen',team:'NSH',pts:47},
+    {name:'Philipp Grubauer',team:'SEA',pts:47},{name:'Lukas Dostal',team:'ANA',pts:44},
+    {name:'Karel Vejmelka',team:'ARI',pts:47}]},
+  {id:23,label:'Goalie 5',type:'G',players:[
+    {name:'Joey Daccord',team:'SEA',pts:50},{name:'Semyon Varlamov',team:'NYI',pts:47},
+    {name:'Joonas Korpisalo',team:'CBJ',pts:55},{name:'Ivan Fedotov',team:'PHI',pts:20},
+    {name:'Thomas Greiss',team:'STL',pts:30}]},
+  {id:24,label:'Goalie 6',type:'G',players:[
+    {name:'Charlie Lindgren',team:'WSH',pts:40},{name:'Mackenzie Blackwood',team:'VAN',pts:35},
+    {name:'Alex Lyon',team:'FLA',pts:44},{name:'Tristan Jarry',team:'PIT',pts:34},
+    {name:'Jonathan Quick',team:'TOR',pts:27}]},
+];
+
+const MOCK_BOARD = [
+  {name:'Alex Thornton',team:'The Slapshot Specials',pts:1842,trend:'+3'},
+  {name:'Sarah Kim',team:'Puck Norris',pts:1791,trend:'+1'},
+  {name:'Marcus Webb',team:'Ice Ice Maybe',pts:1744,trend:'-1'},
+  {name:'Priya Patel',team:'Alpaca My Bags',pts:1712,trend:'+2'},
+  {name:'Jake Morrison',team:'The Mighty Dux',pts:1698,trend:'-2'},
+  {name:'Amanda Chen',team:'Five Hole Club',pts:1655,trend:'='},
+  {name:'Dave Okafor',team:'Gretzky 2.0',pts:1601,trend:'+1'},
+  {name:'Chloe Russo',team:'Biscuit in the Basket',pts:1587,trend:'-1'},
+];
+
+// Last night's games — sample data matching AAHL pool players
+const LAST_NIGHT = [
+  {
+    home:'TOR',away:'BOS',homeScore:4,awayScore:2,
+    date:'Apr 27',
+    players:[
+      {name:'Auston Matthews',team:'TOR',pos:'F',goals:2,assists:1,wins:0,shutouts:0},
+      {name:'Mitch Marner',team:'TOR',pos:'F',goals:0,assists:2,wins:0,shutouts:0},
+      {name:'William Nylander',team:'TOR',pos:'F',goals:1,assists:0,wins:0,shutouts:0},
+      {name:'Brad Marchand',team:'BOS',pos:'F',goals:1,assists:1,wins:0,shutouts:0},
+    ]
+  },
+  {
+    home:'EDM',away:'CGY',homeScore:5,awayScore:1,
+    date:'Apr 27',
+    players:[
+      {name:'Leon Draisaitl',team:'EDM',pos:'F',goals:1,assists:3,wins:0,shutouts:0},
+      {name:'Connor McDavid',team:'EDM',pos:'F',goals:2,assists:1,wins:0,shutouts:0},
+      {name:'Stuart Skinner',team:'EDM',pos:'G',goals:0,assists:0,wins:1,shutouts:0},
+      {name:'Evan Bouchard',team:'EDM',pos:'D',goals:0,assists:2,wins:0,shutouts:0},
+    ]
+  },
+  {
+    home:'NYR',away:'NJ',homeScore:3,awayScore:2,
+    date:'Apr 27',
+    players:[
+      {name:'Artemi Panarin',team:'NYR',pos:'F',goals:1,assists:1,wins:0,shutouts:0},
+      {name:'Jacob Trouba',team:'NYR',pos:'D',goals:0,assists:1,wins:0,shutouts:0},
+      {name:'Jack Hughes',team:'NJ',pos:'F',goals:1,assists:0,wins:0,shutouts:0},
+      {name:'Luke Hughes',team:'NJ',pos:'D',goals:0,assists:1,wins:0,shutouts:0},
+    ]
+  },
+  {
+    home:'VAN',away:'VGK',homeScore:2,awayScore:1,
+    date:'Apr 27',
+    players:[
+      {name:'Quinn Hughes',team:'VAN',pos:'D',goals:1,assists:1,wins:0,shutouts:0},
+      {name:'Thatcher Demko',team:'VAN',pos:'G',goals:0,assists:0,wins:1,shutouts:0},
+      {name:'Brayden Point',team:'TB',pos:'F',goals:0,assists:1,wins:0,shutouts:0},
+      {name:'Shea Theodore',team:'VGK',pos:'D',goals:1,assists:0,wins:0,shutouts:0},
+    ]
+  },
+];
+
+// ══════════ STATE ══════════
+let picks = {};
+let totalEntries = 1;
+
+// ══════════ NAV ══════════
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('on');
+  if (btn && btn.classList) btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ══════════ TICKETS ══════════
+function calcTicketPts(p) {
+  if (p.pos === 'G') return (p.wins * 2) + (p.shutouts * 2);
+  return p.goals + p.assists;
+}
+
+function pillsHTML(p) {
+  let h = '';
+  if (p.goals > 0)    h += `<span class="tp-pill pill-g">${p.goals}G</span>`;
+  if (p.assists > 0)  h += `<span class="tp-pill pill-a">${p.assists}A</span>`;
+  if (p.wins > 0)     h += `<span class="tp-pill pill-w">${p.wins}W</span>`;
+  if (p.shutouts > 0) h += `<span class="tp-pill pill-so">SO</span>`;
+  return h;
+}
+
+function makeBarcode() {
+  const widths = [2,3,1,4,2,1,3,2,4,1,2,3,1,2,4,3,1,2];
+  return widths.map(w =>
+    `<div class="bc-bar" style="width:${w}px;height:${8+Math.floor(Math.random()*14)}px"></div>`
+  ).join('');
+}
+
+function buildTickets() {
+  const rail = document.getElementById('ticket-rail');
+  rail.innerHTML = LAST_NIGHT.map(game => {
+    const poolPlayers = game.players.filter(p => calcTicketPts(p) > 0);
+    const rows = game.players.map(p => {
+      const pts = calcTicketPts(p);
+      return `
+        <div class="tp-row">
+          <div>
+            <div class="tp-name">${p.name}</div>
+            <div class="tp-team-tag">${p.team} · ${p.pos}</div>
+          </div>
+          <div class="tp-stat">
+            ${pillsHTML(p)}
+            <div class="tp-pts">+${pts}</div>
+          </div>
+        </div>`;
+    }).join('');
+
+    const ref = 'AAHL-' + game.home + game.away + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
+
+    return `
+      <div class="ticket">
+        <div class="ticket-top">
+          <div class="ticket-date">${game.date} · NHL Regular Season</div>
+          <div class="ticket-matchup">
+            <div class="ticket-team">${game.away}</div>
+            <div class="ticket-score">${game.awayScore}–${game.homeScore}</div>
+            <div class="ticket-team">${game.home}</div>
+          </div>
+        </div>
+        <div class="ticket-perf"><div class="ticket-dash"></div></div>
+        <div class="ticket-body">
+          <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;margin-bottom:8px;text-transform:uppercase">Pool scorers</div>
+          <div class="ticket-players">${rows}</div>
+          <div class="ticket-barcode">
+            <div class="barcode-lines">${makeBarcode()}</div>
+            <div class="ticket-ref">${ref}</div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ══════════ LEADERBOARD ══════════
+function initials(n) { return n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
+
+function lbRowHTML(e, i) {
+  const cls = i===0?'p1':i===1?'p2':i===2?'p3':'';
+  const t = e.trend;
+  const tCls = t.startsWith('+')?'trend-up':t.startsWith('-')?'trend-dn':'trend-eq';
+  const tLbl = t.startsWith('+')?'▲'+t.slice(1):t.startsWith('-')?'▼'+t.slice(1):'—';
+  return `<div class="lb-row ${cls}">
+    <div class="lb-pos">${i+1}</div>
+    <div class="lb-av">${initials(e.name)}</div>
+    <div class="lb-info">
+      <div class="lb-name">${e.name}</div>
+      <div class="lb-team">${e.team}</div>
+    </div>
+    <span class="lb-trend ${tCls}">${tLbl}</span>
+    <div class="lb-pts">${e.pts.toLocaleString()}</div>
+  </div>`;
+}
+
+function buildBoards() {
+  document.getElementById('lb-preview').innerHTML = MOCK_BOARD.slice(0,5).map((e,i)=>lbRowHTML(e,i)).join('');
+  document.getElementById('full-lb').innerHTML = MOCK_BOARD.map((e,i)=>lbRowHTML(e,i)).join('');
+  document.getElementById('bd-count').textContent = MOCK_BOARD.length + ' entries';
+}
+
+// ══════════ PAYOUTS ══════════
+function updatePayouts() {
+  const prize = totalEntries * 10 * 0.5;
+  document.getElementById('h-entries').textContent = totalEntries;
+  document.getElementById('h-pot').textContent = '$' + Math.round(prize);
+  document.getElementById('h-charity').textContent = '$' + Math.round(prize);
+  document.getElementById('p1').textContent = '$' + Math.round(prize * 0.5);
+  document.getElementById('p2').textContent = '$' + Math.round(prize * 0.3);
+  document.getElementById('p3').textContent = '$' + Math.round(prize * 0.2);
+}
+
+// ══════════ DRAFT ══════════
+function buildDraft() {
+  document.getElementById('draft').innerHTML = BOXES.map(box => {
+    const typeLabel = box.type==='G'?'Goalie':box.type==='D'?'Defense':'Forward';
+    const players = box.players.map(p => `
+      <label class="popt" id="opt-${box.id}-${p.name.replace(/\W/g,'')}">
+        <input type="radio" name="b${box.id}" value="${p.name}" onchange="pick(${box.id},'${p.name}',this)">
+        <div style="flex:1">
+          <div class="popt-name">${p.name}</div>
+          <div class="popt-team">${p.team}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="popt-pts">${p.pts}</div>
+          <div class="popt-pts-label">prev pts</div>
+        </div>
+      </label>`).join('');
+
+    return `<div class="box-wrap" id="bx-${box.id}">
+      <div class="box-hd">
+        <div>
+          <div class="box-type">${typeLabel}</div>
+          <div class="box-name">${box.label}</div>
+        </div>
+        <div class="box-check" id="chk-${box.id}">✓</div>
+      </div>
+      <div class="player-opts">${players}</div>
+    </div>`;
+  }).join('');
+  renderChips();
+}
+
+function pick(boxId, name, radio) {
+  picks[boxId] = name;
+  document.querySelectorAll(`[name=b${boxId}]`).forEach(r => {
+    r.closest('.popt').classList.remove('sel');
+  });
+  radio.closest('.popt').classList.add('sel');
+  document.getElementById('bx-'+boxId).classList.add('done');
+  document.getElementById('chk-'+boxId).style.background = 'var(--accent)';
+  document.getElementById('chk-'+boxId).style.borderColor = 'var(--accent)';
+  document.getElementById('chk-'+boxId).style.color = 'var(--bg)';
+  renderChips();
+  const n = Object.keys(picks).length;
+  document.getElementById('pc').textContent = n;
+  document.getElementById('pbar').style.width = Math.round(n/24*100)+'%';
+}
+
+function renderChips() {
+  document.getElementById('chips').innerHTML = BOXES.map(b => {
+    const p = picks[b.id];
+    return p
+      ? `<span class="chip">${p.split(' ').pop()}</span>`
+      : `<span class="chip empty">${b.label}</span>`;
+  }).join('');
+}
+
+function submitEntry() {
+  const f = document.getElementById('ff').value.trim();
+  const l = document.getElementById('fl').value.trim();
+  const e = document.getElementById('fe').value.trim();
+  const n = Object.keys(picks).length;
+  if (!f||!l) { toast('Missing name','Enter your first and last name.'); return; }
+  if (!e) { toast('Missing email','Enter your email address.'); return; }
+  if (n < 24) { toast('Incomplete picks',`${n}/24 boxes filled — select all players.`); return; }
+  totalEntries++;
+  updatePayouts();
+  toast('Entry submitted!',`Welcome ${f}! Send $10 to matt.hope@rocketmail.com to confirm.`);
+  showPage('home', document.querySelector('.nav-btn'));
+}
+
+// ══════════ ADMIN ══════════
+function adminAdd() {
+  const p = document.getElementById('ap').value.trim();
+  const pts = parseInt(document.getElementById('apts').value)||0;
+  if (!p||!pts) return;
+  const log = document.getElementById('alog');
+  const now = new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'});
+  log.innerHTML = `${now} — +${pts} pts → ${p}\n` + log.innerHTML;
+  document.getElementById('ap').value='';
+  document.getElementById('apts').value='';
+  toast('Points added',`+${pts} pts added to ${p}`);
+}
+
+// ══════════ TOAST ══════════
+function toast(title, body) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-t').textContent = title;
+  document.getElementById('toast-b').textContent = body;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),4200);
+}
+
+// ══════════ INIT ══════════
+buildTickets();
+buildBoards();
+buildDraft();
+updatePayouts();
+</script>
+</body>
+</html>
