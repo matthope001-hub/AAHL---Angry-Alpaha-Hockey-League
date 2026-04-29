@@ -284,6 +284,15 @@ nav { display: flex; gap: 2px; }
 .ht-entry-owner { font-size: 11px; color: var(--accent); font-family: 'DM Mono', monospace; margin-top: 1px; }
 .ht-goals-col { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 700; color: var(--burgundy2); min-width: 40px; text-align: right; }
 
+.player-info-btn {
+  flex-shrink: 0; width: 24px; height: 24px;
+  background: var(--surface3); border: 1px solid var(--border2);
+  border-radius: 50%; color: var(--accent); font-size: 12px;
+  cursor: pointer; display: grid; place-items: center;
+  transition: all 0.15s; line-height: 1;
+}
+.player-info-btn:hover { background: rgba(35,97,146,0.2); border-color: var(--accent); }
+
 /* ── DRAFT BOXES ── */
 .draft-grid {
   display: grid;
@@ -611,7 +620,183 @@ pre {
 .picks-bar-right { flex: 1; }
 .picks-bar .lbl { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
 
-/* ── FADE IN ── */
+/* ══ PLAYER INFO MODAL ══ */
+.player-modal-overlay {
+  position: fixed; inset: 0; z-index: 600;
+  background: rgba(13,6,8,0);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; pointer-events: none;
+  transition: background 0.25s ease;
+}
+.player-modal-overlay.open {
+  background: rgba(13,6,8,0.85);
+  pointer-events: all;
+  backdrop-filter: blur(4px);
+}
+.player-modal {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-top: 3px solid var(--accent);
+  border-radius: var(--r2); width: 100%; max-width: 480px;
+  overflow: hidden;
+  opacity: 0; transform: scale(0.9) translateY(16px);
+  transition: all 0.28s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+}
+.player-modal-overlay.open .player-modal {
+  opacity: 1; transform: scale(1) translateY(0);
+}
+.pm-head {
+  background: var(--surface2); padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.pm-name { font-size: 20px; font-weight: 800; }
+.pm-team-row { display: flex; align-items: center; gap: 8px; margin-top: 3px; }
+.pm-nhl { font-family: 'DM Mono',monospace; font-size: 11px; color: var(--muted); }
+.pm-pos-badge {
+  font-family: 'DM Mono',monospace; font-size: 10px; font-weight: 700;
+  padding: 2px 7px; border-radius: 4px; color: #fff;
+}
+.pm-pos-F { background: var(--surface3); color: var(--muted); }
+.pm-pos-D { background: var(--burgundy); }
+.pm-pos-G { background: var(--accent); }
+
+.pm-close {
+  background: none; border: 1px solid var(--border2); border-radius: 6px;
+  padding: 6px 10px; color: var(--muted); cursor: pointer; font-size: 16px;
+  transition: all 0.15s; flex-shrink: 0;
+}
+.pm-close:hover { background: var(--surface3); color: var(--text); }
+
+.pm-season-label {
+  padding: 10px 20px 4px;
+  font-family: 'DM Mono',monospace; font-size: 9px; font-weight: 500;
+  color: var(--muted2); letter-spacing: 2px; text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2);
+}
+
+.pm-stats-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  padding: 16px 20px; gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.pm-stat { text-align: center; }
+.pm-stat-val {
+  font-family: 'DM Mono',monospace; font-size: 22px; font-weight: 700;
+  color: var(--text); line-height: 1;
+}
+.pm-stat-lbl { font-size: 10px; color: var(--muted); margin-top: 4px; letter-spacing: 0.5px; }
+
+.pm-pts-section {
+  padding: 16px 20px;
+  background: linear-gradient(135deg, rgba(111,38,61,0.08), rgba(35,97,146,0.06));
+  border-bottom: 1px solid var(--border);
+}
+.pm-pts-title {
+  font-family: 'DM Mono',monospace; font-size: 9px; color: var(--muted2);
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px;
+}
+.pm-pts-breakdown {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.pm-pts-item {
+  background: var(--surface3); border: 1px solid var(--border2);
+  border-radius: 6px; padding: 6px 10px; text-align: center;
+}
+.pm-pts-item .pv { font-family: 'DM Mono',monospace; font-size: 15px; font-weight: 700; color: var(--accent); }
+.pm-pts-item .pl { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+.pm-total-pts {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; border-top: 1px solid var(--border);
+}
+.pm-total-label { font-size: 13px; color: var(--muted); }
+.pm-total-val {
+  font-family: 'DM Mono',monospace; font-size: 28px; font-weight: 800;
+  color: var(--burgundy2);
+}
+.pm-total-note { font-size: 11px; color: var(--muted2); }
+
+.pm-pick-btn {
+  display: block; width: calc(100% - 40px); margin: 0 20px 20px;
+  padding: 12px; border-radius: var(--r); border: none; cursor: pointer;
+  background: var(--burgundy); color: #fff;
+  font-family: 'Outfit',sans-serif; font-size: 14px; font-weight: 700;
+  transition: background 0.15s, transform 0.15s;
+}
+.pm-pick-btn:hover { background: var(--burg2); transform: translateY(-1px); }
+.pm-pick-btn:disabled { background: var(--surface3); color: var(--muted); cursor: default; transform: none; }
+
+/* ══ DIVISION PICKS ══ */
+.div-picks-card {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-top: 3px solid var(--gold); border-radius: var(--r2);
+  overflow: hidden; margin-bottom: 24px;
+}
+.div-picks-head {
+  background: var(--surface2); padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.div-picks-title {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 15px; font-weight: 800;
+}
+.div-bonus-badge {
+  font-family: 'DM Mono',monospace; font-size: 10px; font-weight: 600;
+  background: rgba(162,170,173,0.15); color: var(--gold);
+  border: 1px solid rgba(162,170,173,0.25); padding: 2px 9px; border-radius: 100px;
+}
+.div-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+}
+@media(max-width:640px){ .div-grid { grid-template-columns: 1fr; } }
+
+.div-section {
+  padding: 16px 20px; border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.div-section:nth-child(even) { border-right: none; }
+.div-section:nth-last-child(-n+2) { border-bottom: none; }
+@media(max-width:640px){
+  .div-section { border-right: none; }
+  .div-section:last-child { border-bottom: none; }
+}
+
+.div-conf-label {
+  font-family: 'DM Mono',monospace; font-size: 9px; font-weight: 500;
+  color: var(--accent); letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.div-name { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+
+.div-team-select {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: var(--r); padding: 9px 12px;
+  font-family: 'Outfit',sans-serif; font-size: 13px; color: var(--text);
+  cursor: pointer; outline: none; transition: border-color 0.15s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a7a7e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+  padding-right: 32px;
+}
+.div-team-select:focus { border-color: var(--gold); }
+.div-team-select.picked { border-color: rgba(162,170,173,0.4); background-color: rgba(162,170,173,0.05); }
+
+.div-pts-note {
+  font-size: 11px; color: var(--muted); margin-top: 6px;
+  font-family: 'DM Mono',monospace;
+}
+
+.div-picks-footer {
+  padding: 12px 20px; background: var(--surface2);
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.div-picks-count { font-size: 12px; color: var(--muted); }
+.div-picks-count strong { color: var(--gold); }
+
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -1102,6 +1287,36 @@ pre {
 </div>
 </div>
 
+<!-- ══ PLAYER INFO MODAL ══ -->
+<div class="player-modal-overlay" id="player-modal-overlay" onclick="closePlayerModal(event)">
+  <div class="player-modal" id="player-modal">
+    <div class="pm-head">
+      <div>
+        <div class="pm-name" id="pm-name"></div>
+        <div class="pm-team-row">
+          <span class="pm-nhl" id="pm-nhl"></span>
+          <span class="pm-pos-badge" id="pm-pos-badge"></span>
+        </div>
+      </div>
+      <button class="pm-close" onclick="closePlayerModal()">✕</button>
+    </div>
+    <div class="pm-season-label">2025–26 Season Stats (Prior Year)</div>
+    <div class="pm-stats-grid" id="pm-stats-grid"></div>
+    <div class="pm-pts-section">
+      <div class="pm-pts-title">Pool Points Breakdown</div>
+      <div class="pm-pts-breakdown" id="pm-pts-breakdown"></div>
+    </div>
+    <div class="pm-total-pts">
+      <div>
+        <div class="pm-total-label">Prior season pool points</div>
+        <div class="pm-total-note">Based on 2025-26 stats at current scoring rules</div>
+      </div>
+      <div class="pm-total-val" id="pm-total-pts"></div>
+    </div>
+    <button class="pm-pick-btn" id="pm-pick-btn" onclick="pickFromModal()"></button>
+  </div>
+</div>
+
 <!-- ══ TEAM MODAL ══ -->
 <div class="modal-overlay" id="modal-overlay" onclick="overlayClick(event)">
   <div class="modal-card" id="modal-card">
@@ -1173,6 +1388,23 @@ pre {
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;font-size:13px;color:var(--muted)">
         E-transfer <span style="color:var(--text);font-weight:600">$10 per entry</span> to <span style="color:var(--accent);font-family:'DM Mono',monospace">matt.hope@rocketmail.com</span> — include your full name in the memo.
       </div>
+    </div>
+  </div>
+
+  <!-- Division Picks -->
+  <div class="div-picks-card">
+    <div class="div-picks-head">
+      <div class="div-picks-title">
+        <span style="font-size:20px">🏒</span>
+        Division Winner Picks
+        <span class="div-bonus-badge">+10 pts each</span>
+      </div>
+      <span style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace">Pick 1st place team per division at season end</span>
+    </div>
+    <div class="div-grid" id="div-grid"></div>
+    <div class="div-picks-footer">
+      <div class="div-picks-count"><strong id="div-pick-count">0</strong> of 4 divisions picked · +<strong id="div-bonus-total">0</strong> potential bonus pts</div>
+      <span style="font-size:11px;color:var(--muted2);font-family:'DM Mono',monospace">10 pts per correct division winner</span>
     </div>
   </div>
 
@@ -1940,6 +2172,161 @@ function doPost(e) {
 </div>
 
 <script>
+// ══════════ PRIOR SEASON STATS (2025-26) ══════════
+// Used in player info modal. All stats = prior season actuals.
+// Format: goals, assists, sog, pim (skaters) | wins, losses, otl, shutouts, saves (goalies)
+const PREV_STATS = {
+  // Forwards
+  'Leon Draisaitl':        {g:52,a:89,sog:246,pim:30, pos:'F'},
+  'Nikita Kucherov':       {g:44,a:100,sog:231,pim:24,pos:'F'},
+  'Nathan MacKinnon':      {g:51,a:89,sog:278,pim:44, pos:'F'},
+  'Connor McDavid':        {g:42,a:100,sog:259,pim:54,pos:'F'},
+  'Artemi Panarin':        {g:34,a:86,sog:198,pim:20, pos:'F'},
+  'Mitch Marner':          {g:26,a:81,sog:198,pim:16, pos:'F'},
+  'Auston Matthews':       {g:69,a:40,sog:311,pim:20, pos:'F'},
+  'Elias Pettersson':      {g:36,a:66,sog:212,pim:28, pos:'F'},
+  'Mikko Rantanen':        {g:55,a:49,sog:244,pim:40, pos:'F'},
+  'Jason Robertson':       {g:37,a:72,sog:229,pim:16, pos:'F'},
+  'Jack Hughes':           {g:37,a:55,sog:192,pim:24, pos:'F'},
+  'Kirill Kaprizov':       {g:36,a:51,sog:212,pim:18, pos:'F'},
+  'J.T. Miller':           {g:29,a:71,sog:178,pim:34, pos:'F'},
+  'William Nylander':      {g:40,a:52,sog:224,pim:22, pos:'F'},
+  'Brayden Point':         {g:33,a:49,sog:196,pim:26, pos:'F'},
+  'Sebastian Aho':         {g:38,a:52,sog:219,pim:30, pos:'F'},
+  'Jesper Bratt':          {g:28,a:55,sog:176,pim:18, pos:'F'},
+  'Sidney Crosby':         {g:42,a:52,sog:209,pim:28, pos:'F'},
+  'Jake Guentzel':         {g:35,a:42,sog:188,pim:24, pos:'F'},
+  'Clayton Keller':        {g:29,a:47,sog:193,pim:22, pos:'F'},
+  'Aleksander Barkov':     {g:31,a:55,sog:221,pim:20, pos:'F'},
+  'Ryan Nugent-Hopkins':   {g:27,a:56,sog:168,pim:22, pos:'F'},
+  'Kevin Fiala':           {g:28,a:54,sog:187,pim:24, pos:'F'},
+  'Dylan Larkin':          {g:34,a:48,sog:211,pim:40, pos:'F'},
+  'Steven Stamkos':        {g:28,a:53,sog:178,pim:20, pos:'F'},
+  'Drake Batherson':       {g:27,a:55,sog:174,pim:20, pos:'F'},
+  'Matt Boldy':            {g:28,a:35,sog:179,pim:14, pos:'F'},
+  'Cole Caufield':         {g:32,a:50,sog:198,pim:18, pos:'F'},
+  'Brandon Hagel':         {g:26,a:48,sog:184,pim:36, pos:'F'},
+  'Jordan Kyrou':          {g:28,a:54,sog:192,pim:16, pos:'F'},
+  'Wyatt Johnston':        {g:29,a:37,sog:167,pim:22, pos:'F'},
+  'Anze Kopitar':          {g:22,a:47,sog:141,pim:12, pos:'F'},
+  'Nikolaj Ehlers':        {g:28,a:45,sog:162,pim:16, pos:'F'},
+  'John Tavares':          {g:27,a:55,sog:171,pim:14, pos:'F'},
+  'Alex Tuch':             {g:22,a:53,sog:158,pim:26, pos:'F'},
+  'Bo Horvat':             {g:31,a:31,sog:192,pim:22, pos:'F'},
+  'Chris Kreider':         {g:39,a:27,sog:189,pim:38, pos:'F'},
+  'Elias Lindholm':        {g:25,a:50,sog:177,pim:18, pos:'F'},
+  'Tomas Hertl':           {g:27,a:45,sog:168,pim:20, pos:'F'},
+  'Brock Nelson':          {g:28,a:37,sog:164,pim:16, pos:'F'},
+  'Quinton Byfield':       {g:28,a:52,sog:178,pim:28, pos:'F'},
+  'Matt Duchene':          {g:34,a:38,sog:177,pim:14, pos:'F'},
+  'Joel Eriksson Ek':      {g:22,a:55,sog:159,pim:28, pos:'F'},
+  'Brad Marchand':         {g:28,a:48,sog:172,pim:56, pos:'F'},
+  'Jonathan Marchessault': {g:31,a:51,sog:182,pim:28, pos:'F'},
+  "Ryan O'Reilly":         {g:18,a:51,sog:142,pim:20, pos:'F'},
+  'Charlie McAvoy':        {g:11,a:48,sog:178,pim:32, pos:'D'},
+  'Morgan Rielly':         {g:12,a:45,sog:156,pim:22, pos:'D'},
+  'Shea Theodore':         {g:16,a:66,sog:196,pim:20, pos:'D'},
+  'Zach Werenski':         {g:14,a:57,sog:188,pim:18, pos:'D'},
+  'Dylan Cozens':          {g:29,a:46,sog:188,pim:30, pos:'F'},
+  'Claude Giroux':         {g:27,a:42,sog:164,pim:28, pos:'F'},
+  'Andrei Kuzmenko':       {g:24,a:48,sog:171,pim:22, pos:'F'},
+  'Evgeni Malkin':         {g:28,a:54,sog:177,pim:48, pos:'F'},
+  'Alex Ovechkin':         {g:36,a:28,sog:295,pim:26, pos:'F'},
+  'Jake DeBrusk':          {g:27,a:30,sog:182,pim:34, pos:'F'},
+  'Owen Tippett':          {g:27,a:30,sog:182,pim:16, pos:'F'},
+  'Andrei Svechnikov':     {g:22,a:33,sog:148,pim:36, pos:'F'},
+  'Tommy Novak':           {g:20,a:62,sog:144,pim:10, pos:'F'},
+  'Mats Zuccarello':       {g:15,a:67,sog:118,pim:14, pos:'F'},
+  // Defense
+  'Noah Dobson':           {g:15,a:45,sog:178,pim:30, pos:'D'},
+  'Dougie Hamilton':       {g:12,a:50,sog:162,pim:44, pos:'D'},
+  'Victor Hedman':         {g:10,a:68,sog:171,pim:28, pos:'D'},
+  'Quinn Hughes':          {g:16,a:66,sog:189,pim:22, pos:'D'},
+  'Josh Morrissey':        {g:18,a:64,sog:196,pim:38, pos:'D'},
+  'MacKenzie Weegar':      {g:11,a:41,sog:165,pim:32, pos:'D'},
+  'Erik Karlsson':         {g:8, a:59,sog:158,pim:28, pos:'D'},
+  'Brady Skjei':           {g:10,a:42,sog:148,pim:56, pos:'D'},
+  'Luke Hughes':           {g:16,a:51,sog:147,pim:30, pos:'D'},
+  'Thomas Harley':         {g:14,a:52,sog:166,pim:24, pos:'D'},
+  'Travis Sanheim':        {g:12,a:37,sog:143,pim:38, pos:'D'},
+  'Brent Burns':           {g:14,a:41,sog:198,pim:44, pos:'D'},
+  'Jakob Chychrun':        {g:11,a:39,sog:152,pim:36, pos:'D'},
+  'Sean Durzi':            {g:9, a:33,sog:128,pim:22, pos:'D'},
+  'Cam Fowler':            {g:10,a:48,sog:144,pim:28, pos:'D'},
+  'Torey Krug':            {g:13,a:44,sog:152,pim:30, pos:'D'},
+  'Rasmus Dahlin':         {g:17,a:49,sog:211,pim:28, pos:'D'},
+  'Alex Pietrangelo':      {g:8, a:56,sog:144,pim:34, pos:'D'},
+  'Darren Raddysh':        {g:10,a:46,sog:152,pim:42, pos:'D'},
+  'Neal Pionk':            {g:9, a:43,sog:138,pim:50, pos:'D'},
+  'Adam Fox':              {g:14,a:52,sog:187,pim:20, pos:'D'},
+  'Rasmus Andersson':      {g:11,a:43,sog:162,pim:38, pos:'D'},
+  'Roman Josi':            {g:17,a:65,sog:218,pim:32, pos:'D'},
+  'Cale Makar':            {g:24,a:53,sog:234,pim:18, pos:'D'},
+  'Evan Bouchard':         {g:19,a:56,sog:254,pim:38, pos:'D'},
+  'Rasmus Sandin':         {g:8, a:39,sog:132,pim:28, pos:'D'},
+  'Jacob Trouba':          {g:8, a:33,sog:144,pim:66, pos:'D'},
+  'Damon Severson':        {g:10,a:44,sog:148,pim:52, pos:'D'},
+  'Ivan Provorov':         {g:7, a:36,sog:128,pim:44, pos:'D'},
+  // Goalies — wins, losses, otl, shutouts, saves
+  'Thatcher Demko':        {w:31,l:18,otl:5,so:5,sv:1488, pos:'G'},
+  'Connor Hellebuyck':     {w:37,l:18,otl:4,so:6,sv:1502, pos:'G'},
+  'Jake Oettinger':        {w:34,l:20,otl:5,so:4,sv:1401, pos:'G'},
+  'Juuse Saros':           {w:29,l:22,otl:6,so:4,sv:1388, pos:'G'},
+  'Stuart Skinner':        {w:31,l:14,otl:4,so:3,sv:886,  pos:'G'},
+  'Sergei Bobrovsky':      {w:36,l:14,otl:4,so:6,sv:1421, pos:'G'},
+  'Alexander Georgiev':    {w:31,l:15,otl:3,so:4,sv:1188, pos:'G'},
+  'Pyotr Kochetkov':       {w:28,l:16,otl:4,so:3,sv:1122, pos:'G'},
+  'Jordan Binnington':     {w:26,l:22,otl:5,so:3,sv:1188, pos:'G'},
+  'Andrei Vasilevskiy':    {w:33,l:16,otl:4,so:5,sv:1298, pos:'G'},
+  'Cam Talbot':            {w:24,l:18,otl:5,so:3,sv:966,  pos:'G'},
+  'Jacob Markstrom':       {w:26,l:20,otl:4,so:4,sv:1144, pos:'G'},
+  'Ilya Sorokin':          {w:24,l:24,otl:5,so:4,sv:1148, pos:'G'},
+  'Filip Gustavsson':      {w:29,l:16,otl:4,so:5,sv:1198, pos:'G'},
+  'Linus Ullmark':         {w:24,l:14,otl:4,so:4,sv:988,  pos:'G'},
+  'Laurent Brossoit':      {w:12,l:8, otl:3,so:2,sv:488,  pos:'G'},
+  'Kevin Lankinen':        {w:22,l:18,otl:3,so:2,sv:874,  pos:'G'},
+  'Philipp Grubauer':      {w:20,l:16,otl:4,so:2,sv:822,  pos:'G'},
+  'Lukas Dostal':          {w:22,l:18,otl:4,so:3,sv:911,  pos:'G'},
+  'Karel Vejmelka':        {w:18,l:22,otl:5,so:2,sv:944,  pos:'G'},
+  'Joey Daccord':          {w:26,l:16,otl:4,so:3,sv:1088, pos:'G'},
+  'Semyon Varlamov':       {w:16,l:19,otl:4,so:1,sv:788,  pos:'G'},
+  'Joonas Korpisalo':      {w:18,l:26,otl:4,so:2,sv:967,  pos:'G'},
+  'Ivan Fedotov':          {w:8, l:12,otl:2,so:1,sv:488,  pos:'G'},
+  'Thomas Greiss':         {w:10,l:14,otl:3,so:1,sv:544,  pos:'G'},
+  'Charlie Lindgren':      {w:18,l:14,otl:3,so:2,sv:712,  pos:'G'},
+  'Mackenzie Blackwood':   {w:22,l:14,otl:4,so:3,sv:866,  pos:'G'},
+  'Alex Lyon':             {w:20,l:12,otl:3,so:1,sv:688,  pos:'G'},
+  'Tristan Jarry':         {w:16,l:16,otl:3,so:2,sv:722,  pos:'G'},
+  'Jonathan Quick':        {w:14,l:10,otl:2,so:1,sv:544,  pos:'G'},
+};
+
+// ══════════ DIVISIONS (2026-27 NHL) ══════════
+const DIVISIONS = {
+  'Atlantic': {
+    conf: 'Eastern',
+    teams: ['Boston Bruins','Buffalo Sabres','Detroit Red Wings','Florida Panthers',
+            'Montreal Canadiens','Ottawa Senators','Tampa Bay Lightning','Toronto Maple Leafs']
+  },
+  'Metropolitan': {
+    conf: 'Eastern',
+    teams: ['Carolina Hurricanes','Columbus Blue Jackets','New Jersey Devils','New York Islanders',
+            'New York Rangers','Philadelphia Flyers','Pittsburgh Penguins','Washington Capitals']
+  },
+  'Central': {
+    conf: 'Western',
+    teams: ['Arizona Coyotes','Chicago Blackhawks','Colorado Avalanche','Dallas Stars',
+            'Minnesota Wild','Nashville Predators','St. Louis Blues','Winnipeg Jets']
+  },
+  'Pacific': {
+    conf: 'Western',
+    teams: ['Anaheim Ducks','Calgary Flames','Edmonton Oilers','Los Angeles Kings',
+            'San Jose Sharks','Seattle Kraken','Utah Hockey Club','Vancouver Canucks']
+  },
+};
+
+// Division picks state
+let divisionPicks = {}; // { 'Atlantic': 'Boston Bruins', ... }
+
 // ══════════ DATA ══════════
 const BOXES = [
   {id:1,label:'Forwards 1',type:'F',players:[
@@ -2507,22 +2894,169 @@ function updatePayouts() {
   document.getElementById('h-pot').textContent = '$' + Math.round(prize);
 }
 
-// ══════════ DRAFT ══════════
+// ══════════ DIVISION PICKS ══════════
+function buildDivisionPicks() {
+  const grid = document.getElementById('div-grid');
+  grid.innerHTML = Object.entries(DIVISIONS).map(([divName, div]) => {
+    const options = div.teams.map(t =>
+      `<option value="${t}">${t}</option>`
+    ).join('');
+    return `
+      <div class="div-section">
+        <div class="div-conf-label">${div.conf}ern Conference</div>
+        <div class="div-name">${divName} Division</div>
+        <select class="div-team-select" id="div-${divName}"
+          onchange="pickDivision('${divName}', this)">
+          <option value="">— Pick division winner —</option>
+          ${options}
+        </select>
+        <div class="div-pts-note">+10 pts if correct at season end</div>
+      </div>`;
+  }).join('');
+}
+
+function pickDivision(divName, sel) {
+  divisionPicks[divName] = sel.value || null;
+  if (sel.value) sel.classList.add('picked');
+  else sel.classList.remove('picked');
+  updateDivisionCount();
+}
+
+function updateDivisionCount() {
+  const filled = Object.values(divisionPicks).filter(Boolean).length;
+  document.getElementById('div-pick-count').textContent = filled;
+  document.getElementById('div-bonus-total').textContent = filled * 10;
+}
+
+// ══════════ PLAYER INFO MODAL ══════════
+let playerModalContext = null; // { boxId, playerName, radio }
+
+function calcPrevPts(s) {
+  if (!s) return 0;
+  if (s.pos === 'G') {
+    return roundPts(s.w*3 + s.l*1 + s.otl*1.5 + s.so*2 + s.sv*0.02);
+  }
+  const pimPts = s.pos === 'D' ? (s.pim||0)*0.25 : 0;
+  return roundPts((s.g||0)*1 + (s.a||0)*1 + (s.sog||0)*0.11 + pimPts);
+}
+
+function openPlayerModal(playerName, team, pos, boxId, radioEl) {
+  const s = PREV_STATS[playerName];
+  playerModalContext = { boxId, playerName, radio: radioEl };
+
+  document.getElementById('pm-name').textContent = playerName;
+  document.getElementById('pm-nhl').textContent = team + ' · ' + (s?.pos || pos);
+  const badge = document.getElementById('pm-pos-badge');
+  badge.textContent = pos;
+  badge.className = `pm-pos-badge pm-pos-${pos}`;
+
+  // Stats grid
+  const statsGrid = document.getElementById('pm-stats-grid');
+  if (!s) {
+    statsGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px;padding:8px 0">No prior season data available</div>`;
+    document.getElementById('pm-pts-breakdown').innerHTML = '';
+    document.getElementById('pm-total-pts').textContent = '—';
+  } else if (pos === 'G') {
+    statsGrid.innerHTML = `
+      <div class="pm-stat"><div class="pm-stat-val">${s.w}</div><div class="pm-stat-lbl">Wins</div></div>
+      <div class="pm-stat"><div class="pm-stat-val">${s.l}</div><div class="pm-stat-lbl">Losses</div></div>
+      <div class="pm-stat"><div class="pm-stat-val">${s.otl}</div><div class="pm-stat-lbl">OT Loss</div></div>
+      <div class="pm-stat"><div class="pm-stat-val">${s.so}</div><div class="pm-stat-lbl">Shutouts</div></div>
+      <div class="pm-stat" style="grid-column:1/3"><div class="pm-stat-val">${s.sv.toLocaleString()}</div><div class="pm-stat-lbl">Saves</div></div>
+      <div class="pm-stat" style="grid-column:3/5"><div class="pm-stat-val" style="color:var(--accent)">${roundPts(s.sv * 0.02)}</div><div class="pm-stat-lbl">Save pts</div></div>`;
+    const winPts = s.w * 3, lossPts = s.l * 1, otlPts = roundPts(s.otl * 1.5), soPts = s.so * 2, svPts = roundPts(s.sv * 0.02);
+    document.getElementById('pm-pts-breakdown').innerHTML = `
+      <div class="pm-pts-item"><div class="pv">${winPts}</div><div class="pl">${s.w}W × 3</div></div>
+      <div class="pm-pts-item"><div class="pv">${lossPts}</div><div class="pl">${s.l}L × 1</div></div>
+      <div class="pm-pts-item"><div class="pv">${otlPts}</div><div class="pl">${s.otl}OTL × 1.5</div></div>
+      <div class="pm-pts-item"><div class="pv">${soPts}</div><div class="pl">${s.so}SO × 2</div></div>
+      <div class="pm-pts-item"><div class="pv">${svPts}</div><div class="pl">${s.sv.toLocaleString()}SV × 0.02</div></div>`;
+  } else {
+    statsGrid.innerHTML = `
+      <div class="pm-stat"><div class="pm-stat-val">${s.g}</div><div class="pm-stat-lbl">Goals</div></div>
+      <div class="pm-stat"><div class="pm-stat-val">${s.a}</div><div class="pm-stat-lbl">Assists</div></div>
+      <div class="pm-stat"><div class="pm-stat-val">${s.sog}</div><div class="pm-stat-lbl">SOG</div></div>
+      <div class="pm-stat"><div class="pm-stat-val">${pos==='D'?s.pim:'—'}</div><div class="pm-stat-lbl">PIM</div></div>`;
+    const gPts = s.g*1, aPts = s.a*1, sogPts = roundPts(s.sog*0.11), pimPts = pos==='D' ? roundPts(s.pim*0.25) : 0;
+    let breakdown = `
+      <div class="pm-pts-item"><div class="pv">${gPts}</div><div class="pl">${s.g}G × 1</div></div>
+      <div class="pm-pts-item"><div class="pv">${aPts}</div><div class="pl">${s.a}A × 1</div></div>
+      <div class="pm-pts-item"><div class="pv">${sogPts}</div><div class="pl">${s.sog}SOG × 0.11</div></div>`;
+    if (pos === 'D') breakdown += `<div class="pm-pts-item"><div class="pv">${pimPts}</div><div class="pl">${s.pim}PIM × 0.25</div></div>`;
+    document.getElementById('pm-pts-breakdown').innerHTML = breakdown;
+  }
+
+  const totalPts = calcPrevPts(s);
+  document.getElementById('pm-total-pts').textContent = totalPts;
+
+  // Pick button state
+  const btn = document.getElementById('pm-pick-btn');
+  const alreadyPicked = picks[boxId] === playerName;
+  btn.textContent = alreadyPicked ? `✓ ${playerName} already selected` : `Pick ${playerName} for ${document.getElementById('bx-'+boxId)?.querySelector('.box-name')?.textContent || 'this box'}`;
+  btn.disabled = alreadyPicked;
+
+  document.getElementById('player-modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePlayerModal(e) {
+  if (e && e.target !== document.getElementById('player-modal-overlay')) return;
+  document.getElementById('player-modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  playerModalContext = null;
+}
+
+function pickFromModal() {
+  if (!playerModalContext) return;
+  const { boxId, playerName, radio } = playerModalContext;
+  // Trigger the pick as if radio was clicked
+  radio.checked = true;
+  pick(boxId, playerName, radio);
+  // Update button state
+  document.getElementById('pm-pick-btn').textContent = `✓ ${playerName} selected`;
+  document.getElementById('pm-pick-btn').disabled = true;
+  // Close after brief delay
+  setTimeout(() => {
+    document.getElementById('player-modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+    playerModalContext = null;
+  }, 600);
+}
+
+// Close on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closePlayerModal();
+    closeTeamPanel();
+  }
+});
+
+
 function buildDraft() {
   document.getElementById('draft').innerHTML = BOXES.map(box => {
     const typeLabel = box.type==='G'?'Goalie':box.type==='D'?'Defense':'Forward';
-    const players = box.players.map(p => `
-      <label class="popt" id="opt-${box.id}-${p.name.replace(/\W/g,'')}">
-        <input type="radio" name="b${box.id}" value="${p.name}" onchange="pick(${box.id},'${p.name}',this)">
-        <div style="flex:1">
-          <div class="popt-name">${p.name}</div>
-          <div class="popt-team">${p.team}</div>
-        </div>
-        <div style="text-align:right">
-          <div class="popt-pts">${p.pts}</div>
-          <div class="popt-pts-label">prev pts</div>
-        </div>
-      </label>`).join('');
+    const players = box.players.map(p => {
+      const rid = `radio-${box.id}-${p.name.replace(/\W/g,'')}`;
+      const prevPts = calcPrevPts(PREV_STATS[p.name]);
+      const displayPts = prevPts > 0 ? prevPts : p.pts;
+      return `
+        <div style="display:flex;align-items:center;gap:4px;margin-bottom:3px">
+          <label class="popt" id="opt-${box.id}-${p.name.replace(/\W/g,'')}" style="flex:1;margin-bottom:0">
+            <input type="radio" name="b${box.id}" value="${p.name}" id="${rid}"
+              onchange="pick(${box.id},'${p.name}',this)">
+            <div style="flex:1">
+              <div class="popt-name">${p.name}</div>
+              <div class="popt-team">${p.team}</div>
+            </div>
+            <div style="text-align:right">
+              <div class="popt-pts">${displayPts}</div>
+              <div class="popt-pts-label">prev pts</div>
+            </div>
+          </label>
+          <button class="player-info-btn" title="View ${p.name} stats"
+            onclick="event.stopPropagation();openPlayerModal('${p.name.replace(/'/g,"\\'")}','${p.team}','${box.type}',${box.id},document.getElementById('${rid}'))">ℹ</button>
+        </div>`;
+    }).join('');
 
     return `<div class="box-wrap" id="bx-${box.id}">
       <div class="box-hd">
@@ -2563,18 +3097,90 @@ function renderChips() {
   }).join('');
 }
 
-function submitEntry() {
-  const f = document.getElementById('ff').value.trim();
-  const l = document.getElementById('fl').value.trim();
-  const e = document.getElementById('fe').value.trim();
+function updateProgress() {
   const n = Object.keys(picks).length;
-  if (!f||!l) { toast('Missing name','Enter your first and last name.'); return; }
-  if (!e) { toast('Missing email','Enter your email address.'); return; }
-  if (n < 24) { toast('Incomplete picks',`${n}/24 boxes filled — select all players.`); return; }
-  totalEntries++;
-  updatePayouts();
-  toast('Entry submitted!',`Welcome ${f}! Send $10 to matt.hope@rocketmail.com to confirm.`);
-  showPage('home', document.querySelector('.nav-btn'));
+  document.getElementById('pc').textContent = n;
+  document.getElementById('pbar').style.width = Math.round(n/24*100)+'%';
+}
+
+// ══════════ WEB APP CONFIG ══════════
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzqqijpX3BoRCDXMH5ZzWCkN2ZlALGJd_HBHMetPlXCir7_ue_WfEtqvo3NM0Z-xMhKUA/exec';
+
+// ══════════ SUBMIT ENTRY ══════════
+async function submitEntry() {
+  const f    = document.getElementById('ff').value.trim();
+  const l    = document.getElementById('fl').value.trim();
+  const e    = document.getElementById('fe').value.trim();
+  const ph   = document.getElementById('fp').value.trim();
+  const team = document.getElementById('ft').value.trim() || `${f}'s Team`;
+  const n    = Object.keys(picks).length;
+
+  // ── Validate locally first ──
+  if (!f || !l) { toast('Missing name', 'Enter your first and last name.'); return; }
+  if (!e)       { toast('Missing email', 'Enter your email address.'); return; }
+  if (n < 24)   { toast('Incomplete picks', `${n}/24 boxes filled — select all players.`); return; }
+
+  // ── Build ordered picks array (Box 1 → Box 24) ──
+  const picksArray = Array.from({length: 24}, (_, i) => picks[i + 1] || '');
+
+  // ── Loading state on button ──
+  const btn = document.querySelector('#page-picks .btn-gold');
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '⏳ Submitting…';
+  btn.disabled = true;
+  btn.style.opacity = '0.7';
+
+  try {
+    const response = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        firstName: f,
+        lastName:  l,
+        email:     e,
+        phone:     ph,
+        teamName:  team,
+        picks:     picksArray,
+        divisionPicks: divisionPicks,
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      // ── Success ──
+      totalEntries++;
+      updatePayouts();
+      toast('🏒 Entry received!', `Welcome ${f}! Check your email for confirmation. Send $10 to matt.hope@rocketmail.com to lock in your spot.`);
+      showPage('home', document.querySelector('.nav-btn'));
+      // Reset form
+      picks = {};
+      divisionPicks = {};
+      document.getElementById('ff').value = '';
+      document.getElementById('fl').value = '';
+      document.getElementById('fe').value = '';
+      document.getElementById('fp').value = '';
+      document.getElementById('ft').value = '';
+      buildDraft();
+      buildDivisionPicks();
+      renderChips();
+      updateProgress();
+      updateDivisionCount();
+    } else {
+      // ── Server-side error ──
+      toast('Submission failed', result.message || result.error || 'Something went wrong. Try again.');
+    }
+
+  } catch (err) {
+    // ── Network error ──
+    toast('Connection error', 'Could not reach the server. Check your connection and try again.');
+    console.error('AAHL submit error:', err);
+  } finally {
+    // ── Always restore button ──
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+    btn.style.opacity = '1';
+  }
 }
 
 // ══════════ ADMIN ══════════
@@ -2622,6 +3228,7 @@ buildHomeStandings();
 buildBoards();
 buildHatTrickHall();
 buildDraft();
+buildDivisionPicks();
 buildPayoutTable();
 updatePayouts();
 </script>
