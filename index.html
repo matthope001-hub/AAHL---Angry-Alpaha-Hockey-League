@@ -7,21 +7,24 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #080c12;
-  --surface: #0e1520;
-  --surface2: #141d2b;
-  --surface3: #1a2538;
+  /* Colorado Avalanche — burgundy, steel blue, silver */
+  --bg: #0d0608;
+  --surface: #160a0d;
+  --surface2: #1f0f13;
+  --surface3: #2a1419;
   --border: rgba(255,255,255,0.06);
-  --border2: rgba(255,255,255,0.12);
-  --accent: #00d4ff;
-  --accent2: #0099bb;
-  --gold: #f5c842;
-  --gold2: #c49a1a;
-  --text: #f0f4f8;
-  --muted: #6b7fa3;
-  --muted2: #4a5878;
+  --border2: rgba(255,255,255,0.11);
+  --accent: #236192;      /* Avalanche steel blue */
+  --accent2: #1a4a6e;
+  --gold: #A2AAAD;        /* Avalanche silver */
+  --gold2: #7a8285;
+  --burgundy: #6F263D;    /* Avalanche burgundy — primary */
+  --burgundy2: #8f3050;
+  --text: #f2eef0;
+  --muted: #8a7a7e;
+  --muted2: #5a4a4e;
   --green: #22d37a;
-  --red: #ff4d6a;
+  --red: #c0392b;
   --r: 10px;
   --r2: 16px;
 }
@@ -43,8 +46,8 @@ body::before {
   content: '';
   position: fixed; inset: 0; z-index: 0;
   background-image:
-    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(0,212,255,0.07) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 110%, rgba(245,200,66,0.05) 0%, transparent 55%);
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(111,38,61,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 110%, rgba(35,97,146,0.12) 0%, transparent 55%);
   pointer-events: none;
 }
 
@@ -70,10 +73,10 @@ header {
 
 .wordmark-badge {
   width: 32px; height: 32px; border-radius: 8px;
-  background: var(--accent);
+  background: var(--burgundy);
   display: grid; place-items: center;
   font-size: 16px; font-weight: 900;
-  color: var(--bg);
+  color: #fff;
   font-family: 'Outfit', sans-serif;
   letter-spacing: -1px;
   flex-shrink: 0;
@@ -83,7 +86,7 @@ header {
   font-size: 15px; font-weight: 700;
   letter-spacing: 0.5px; color: var(--text);
 }
-.wordmark-text span { color: var(--accent); }
+.wordmark-text span { color: var(--gold); }
 
 nav { display: flex; gap: 2px; }
 
@@ -96,67 +99,90 @@ nav { display: flex; gap: 2px; }
   letter-spacing: 0.2px;
 }
 .nav-btn:hover { color: var(--text); background: var(--surface2); }
-.nav-btn.active { color: var(--accent); background: rgba(0,212,255,0.08); }
-
+.nav-btn.active { color: #fff; background: var(--burgundy); }
 /* ── LAYOUT ── */
 .wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
 .page { display: none; padding: 40px 0 80px; }
 .page.on { display: block; }
 
-/* ── TYPE ── */
-.eyebrow {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px; font-weight: 500;
-  color: var(--accent); letter-spacing: 2px;
-  text-transform: uppercase; margin-bottom: 8px;
-}
-
-.display {
-  font-size: clamp(32px, 5vw, 56px);
-  font-weight: 800; line-height: 1.05;
-  letter-spacing: -1px;
-}
-
-.display em { font-style: normal; color: var(--accent); }
-
-/* ── STAT STRIP ── */
-.stat-strip {
-  display: flex; gap: 0;
-  border: 1px solid var(--border2);
-  border-radius: var(--r2);
-  overflow: hidden;
-  margin: 32px 0;
-}
-
-.stat-cell {
-  flex: 1; padding: 20px 24px;
-  border-right: 1px solid var(--border);
-  background: var(--surface);
-}
-.stat-cell:last-child { border-right: none; }
-
-.stat-val {
-  font-size: 28px; font-weight: 800;
-  color: var(--text); line-height: 1;
-  margin-bottom: 4px;
-}
-.stat-val.accent { color: var(--accent); }
-.stat-val.gold { color: var(--gold); }
-.stat-val.green { color: var(--green); }
-
-.stat-label {
-  font-size: 12px; color: var(--muted);
-  font-weight: 400; letter-spacing: 0.3px;
-}
-
-/* ── TWO COL ── */
+/* ── CARD ── */
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .grid3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
-@media(max-width:720px){
-  .grid2,.grid3 { grid-template-columns: 1fr; }
-  .stat-strip { flex-direction: column; }
-  .stat-cell { border-right: none; border-bottom: 1px solid var(--border); }
+
+/* ══ MOBILE — single breakpoint at 640px handles phones ══ */
+@media(max-width:640px) {
+  /* wrap */
+  .wrap { padding: 0 16px; }
+
+  /* header — hide wordmark subtitle, tighten nav */
+  .header-inner { height: 52px; padding: 0; }
+  .wordmark-text { font-size: 13px; }
+  .nav-btn { font-size: 11px; padding: 5px 9px; }
+
+  /* ticker — smaller text */
+  .ticker-wrap { height: 48px; }
+  .ticker-tag { font-size: 8px; padding: 0 10px; letter-spacing: 1.5px; }
+  .ticker-reel { height: 48px; }
+  .t-item { padding: 0 14px; gap: 5px; font-size: 10px; height: 24px; }
+  .t-stat { font-size: 8px; padding: 1px 4px; }
+  .page { padding-top: 48px; }
+
+  /* home topbar — stack vertically */
+  .home-topbar { flex-direction: column; align-items: flex-start; padding: 20px 0 16px; gap: 14px; }
+  .home-topbar-left h1 { font-size: 22px; }
+  .kpi-row { width: 100%; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+  .kpi { min-width: 0; align-items: center; padding: 8px 10px; }
+  .kpi-val { font-size: 15px; }
+  .kpi-lbl { font-size: 9px; }
+
+  /* home grid — full width, scoring ref goes below */
+  .home-grid { grid-template-columns: 1fr; gap: 16px; }
+  .home-right { gap: 0; } /* scoring ref only, no gap needed */
+
+  /* standings table — simplify columns on mobile */
+  /* hide avatar and hat trick cols, keep rank + name + pts */
+  .sc-cols { grid-template-columns: 28px 1fr 44px 64px; padding: 6px 14px; }
+  .sc-cols span:nth-child(2),
+  .sc-cols span:nth-child(4) { display: none; }
+  .sc-row  { grid-template-columns: 28px 1fr 44px 64px; padding: 9px 14px; }
+  .sc-av   { display: none; }
+  .sc-ht   { display: none; }
+  .sc-name { font-size: 12px; }
+  .sc-team { font-size: 10px; }
+  .sc-pts  { font-size: 14px; }
+
+  /* score table on mobile */
+  .score-tbl td, .score-tbl th { padding: 7px 12px; }
+
+  /* picks page */
+  .form-row { grid-template-columns: 1fr; }
+  .picks-bar { gap: 14px; }
+  .picks-bar .big { font-size: 28px; }
+  .draft-grid { grid-template-columns: 1fr; }
+
+  /* rules grid */
+  .grid2, .grid3 { grid-template-columns: 1fr; }
+
+  /* payout estimate table — scroll on very small screens */
+  .payout-estimate { overflow-x: auto; }
+
+  /* admin */
+  .host-card { padding: 12px 16px; }
+  pre { font-size: 11px; padding: 14px; }
 }
+
+/* ══ TABLET — 641px–860px ══ */
+@media(min-width:641px) and (max-width:860px) {
+  .home-grid { grid-template-columns: 1fr; }
+  .kpi-row { gap: 8px; }
+  .sc-cols { grid-template-columns: 28px 36px 1fr 44px 64px; }
+  .sc-cols span:nth-child(4) { display: none; }
+  .sc-row  { grid-template-columns: 28px 36px 1fr 44px 64px; }
+  .sc-ht   { display: none; }
+  .form-row { grid-template-columns: 1fr 1fr; }
+  .draft-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+}
+
 
 /* ── CARD ── */
 .card {
@@ -239,151 +265,24 @@ nav { display: flex; gap: 2px; }
   color: var(--text); min-width: 52px; text-align: right;
 }
 
-/* ── HOCKEY TICKET ── */
-.ticket-scroll {
-  display: flex; gap: 16px;
-  overflow-x: auto; padding-bottom: 8px;
-  scrollbar-width: none;
-}
-.ticket-scroll::-webkit-scrollbar { display: none; }
 
-.ticket {
-  flex-shrink: 0; width: 300px;
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: 14px;
-  overflow: hidden;
-  position: relative;
-}
-
-.ticket-top {
-  padding: 16px 18px 14px;
-  background: var(--surface2);
-  border-bottom: none;
-  position: relative;
-}
-
-/* Perforated edge */
-.ticket-perf {
-  height: 0; position: relative;
-  display: flex; align-items: center;
-  padding: 0 0;
-  overflow: hidden;
-}
-.ticket-perf::before {
-  content: '';
-  position: absolute; left: -10px;
-  width: 20px; height: 20px; border-radius: 50%;
-  background: var(--bg);
-  border: 1px solid var(--border2);
-  box-shadow: inset 0 0 0 1px var(--border2);
-}
-.ticket-perf::after {
-  content: '';
-  position: absolute; right: -10px;
-  width: 20px; height: 20px; border-radius: 50%;
-  background: var(--bg);
-  border: 1px solid var(--border2);
-  box-shadow: inset 0 0 0 1px var(--border2);
-}
-.ticket-dash {
-  flex: 1; border-top: 1px dashed var(--border2);
-  margin: 10px 12px;
-}
-
-.ticket-body { padding: 14px 18px 16px; }
-
-.ticket-matchup {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 4px;
-}
-
-.ticket-team {
-  font-size: 13px; font-weight: 700;
-  color: var(--text);
-  font-family: 'DM Mono', monospace;
-  letter-spacing: 0.5px;
-}
-
-.ticket-score {
-  font-size: 22px; font-weight: 900;
-  font-family: 'DM Mono', monospace;
-  color: var(--accent); letter-spacing: 2px;
-}
-
-.ticket-date {
-  font-size: 10px; color: var(--muted);
-  font-family: 'DM Mono', monospace;
-  letter-spacing: 1px; text-transform: uppercase;
-  margin-bottom: 12px;
-}
-
-.ticket-players {
-  display: flex; flex-direction: column; gap: 6px;
-}
-
-.tp-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 7px 10px;
-  background: var(--surface3);
-  border-radius: 7px;
-  border: 1px solid var(--border);
-}
-
-.tp-name { font-size: 12px; font-weight: 600; color: var(--text); }
-.tp-team-tag {
-  font-size: 10px; color: var(--muted); margin-top: 1px;
-  font-family: 'DM Mono', monospace;
-}
-
-.tp-stat {
-  display: flex; gap: 8px; align-items: center;
-}
-
-.tp-pill {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px; font-weight: 500;
-  padding: 2px 6px; border-radius: 4px;
-}
-.pill-g { background: rgba(245,200,66,0.12); color: var(--gold); }
-.pill-a { background: rgba(0,212,255,0.1); color: var(--accent); }
-.pill-w { background: rgba(34,211,122,0.1); color: var(--green); }
-.pill-so { background: rgba(255,77,106,0.1); color: var(--red); }
-
-.tp-pts {
-  font-family: 'DM Mono', monospace;
-  font-size: 14px; font-weight: 700;
-  color: var(--text);
-  min-width: 28px; text-align: right;
-}
-
-.ticket-barcode {
-  margin-top: 12px; padding-top: 12px;
-  border-top: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between;
-}
-
-.barcode-lines {
-  display: flex; gap: 2px; align-items: flex-end; height: 24px;
-}
-.bc-bar {
-  background: var(--muted2);
-  border-radius: 1px;
-}
-
-.ticket-ref {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px; color: var(--muted2);
-  letter-spacing: 1px;
-}
-
-/* ── TICKET GLOW ACCENT ── */
-.ticket::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  opacity: 0.6;
-}
+/* ── HAT TRICK HALL ── */
+.ht-hall { background: var(--surface); border: 1px solid var(--border2); border-top: 3px solid var(--burgundy); border-radius: var(--r2); overflow: hidden; margin-bottom: 24px; }
+.ht-hall-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.ht-hall-title { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 800; color: var(--text); }
+.ht-count-badge { font-family: 'DM Mono', monospace; font-size: 11px; background: rgba(111,38,61,0.2); color: var(--burgundy2); border: 1px solid rgba(111,38,61,0.25); padding: 2px 9px; border-radius: 100px; }
+.ht-row { display: flex; align-items: center; gap: 14px; padding: 13px 20px; border-bottom: 1px solid var(--border); transition: background 0.15s; }
+.ht-row:last-child { border-bottom: none; }
+.ht-row:hover { background: var(--surface2); }
+.ht-num { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted2); width: 20px; flex-shrink: 0; text-align: center; }
+.ht-av { width: 36px; height: 36px; border-radius: 50%; background: var(--surface3); border: 1px solid rgba(111,38,61,0.35); display: grid; place-items: center; font-size: 13px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--burgundy2); flex-shrink: 0; }
+.ht-info { flex: 1; min-width: 0; }
+.ht-player { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ht-meta { font-size: 11px; color: var(--muted); margin-top: 2px; font-family: 'DM Mono', monospace; }
+.ht-hats { display: flex; gap: 2px; flex-shrink: 0; align-items: center; }
+.ht-hat-icon { font-size: 15px; line-height: 1; }
+.ht-entry-owner { font-size: 11px; color: var(--accent); font-family: 'DM Mono', monospace; margin-top: 1px; }
+.ht-goals-col { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 700; color: var(--burgundy2); min-width: 40px; text-align: right; }
 
 /* ── DRAFT BOXES ── */
 .draft-grid {
@@ -399,7 +298,7 @@ nav { display: flex; gap: 2px; }
   overflow: hidden;
   transition: border-color 0.2s;
 }
-.box-wrap.done { border-color: rgba(0,212,255,0.3); }
+.box-wrap.done { border-color: rgba(111,38,61,0.5); }
 
 .box-hd {
   padding: 10px 14px;
@@ -437,7 +336,7 @@ nav { display: flex; gap: 2px; }
 }
 .popt:last-child { margin-bottom: 0; }
 .popt:hover { background: var(--surface2); }
-.popt.sel { background: rgba(0,212,255,0.07); border-color: rgba(0,212,255,0.2); }
+.popt.sel { background: rgba(111,38,61,0.1); border-color: rgba(111,38,61,0.35); }
 .popt input[type=radio] { display: none; }
 
 .popt-name { font-size: 13px; font-weight: 600; flex: 1; }
@@ -448,8 +347,7 @@ nav { display: flex; gap: 2px; }
 .popt-pts {
   font-family: 'DM Mono', monospace;
   font-size: 14px; font-weight: 700; color: var(--accent);
-}
-.popt-pts-label { font-size: 9px; color: var(--muted2); text-align: right; }
+}.popt-pts-label { font-size: 9px; color: var(--muted2); text-align: right; }
 
 /* ── FORM ── */
 .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
@@ -464,22 +362,22 @@ nav { display: flex; gap: 2px; }
   font-size: 14px; color: var(--text);
   outline: none; transition: border-color 0.15s;
 }
-.field input:focus { border-color: var(--accent); }
+.field input:focus { border-color: var(--burgundy); box-shadow: 0 0 0 3px rgba(111,38,61,0.15); }
 .field input::placeholder { color: var(--muted2); }
 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
 /* ── PROGRESS ── */
 .prog-wrap { background: var(--surface3); border-radius: 100px; height: 4px; overflow: hidden; }
-.prog-fill { height: 100%; border-radius: 100px; background: var(--accent); transition: width 0.4s ease; }
+.prog-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--burgundy), var(--accent)); transition: width 0.4s ease; }
 
 /* ── CHIP ── */
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; }
 .chip {
   font-size: 11px; font-weight: 500;
   padding: 3px 10px; border-radius: 100px;
-  background: rgba(0,212,255,0.08); color: var(--accent);
-  border: 1px solid rgba(0,212,255,0.15);
+  background: rgba(111,38,61,0.1); color: var(--burgundy2);
+  border: 1px solid rgba(111,38,61,0.2);
   font-family: 'DM Mono', monospace;
 }
 .chip.empty {
@@ -496,22 +394,57 @@ nav { display: flex; gap: 2px; }
   font-size: 14px; font-weight: 700; transition: all 0.15s;
   letter-spacing: 0.2px;
 }
-.btn-accent { background: var(--accent); color: var(--bg); }
-.btn-accent:hover { background: #33ddff; transform: translateY(-1px); }
-.btn-ghost { background: transparent; color: var(--accent); border: 1px solid rgba(0,212,255,0.3); }
-.btn-ghost:hover { background: rgba(0,212,255,0.06); }
+.btn-accent { background: var(--burgundy); color: #fff; }
+.btn-accent:hover { background: var(--burgundy2); transform: translateY(-1px); }
+.btn-ghost { background: transparent; color: var(--accent); border: 1px solid rgba(35,97,146,0.35); }
+.btn-ghost:hover { background: rgba(35,97,146,0.08); }
 .btn-gold { background: var(--gold); color: #1a1000; }
 .btn-gold:hover { background: #f7d44a; transform: translateY(-1px); }
 
-/* ── PAYOUT ROWS ── */
-.payout-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 20px; border-bottom: 1px solid var(--border);
+/* ── RULES PAGE ── */
+.rules-section-title {
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+  color: var(--muted); letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 12px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
 }
-.payout-row:last-child { border-bottom: none; }
-.payout-pos { font-size: 14px; font-weight: 700; }
-.payout-pct { font-size: 12px; color: var(--muted); margin-top: 2px; }
-.payout-amt { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 700; color: var(--green); }
+
+.rules-scoring-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 0;
+}
+@media(max-width:720px){ .rules-scoring-grid { grid-template-columns: 1fr; } }
+@media(min-width:721px) and (max-width:900px){ .rules-scoring-grid { grid-template-columns: 1fr 1fr; } }
+
+.rules-card-head {
+  padding: 12px 16px;
+  display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px; font-weight: 700;
+}
+.rules-head-f { background: rgba(42,20,25,0.8); color: var(--muted); }
+.rules-head-d { background: rgba(111,38,61,0.15); color: var(--burgundy2); }
+.rules-head-g { background: rgba(35,97,146,0.15); color: var(--accent); }
+
+.rules-pos-badge {
+  width: 24px; height: 24px; border-radius: 5px;
+  background: var(--surface3);
+  display: grid; place-items: center;
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 700;
+  color: var(--muted); flex-shrink: 0;
+}
+.rules-head-d .rules-pos-badge { background: var(--burgundy); color: #fff; }
+.rules-pos-badge-g { background: var(--accent) !important; color: #fff !important; }
+
+.rules-example {
+  padding: 10px 16px;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--muted); background: var(--surface2);
+  border-top: 1px solid var(--border);
+}
+.rules-example strong { color: var(--accent); }
 
 /* ── RULES ── */
 .rule-item {
@@ -522,39 +455,89 @@ nav { display: flex; gap: 2px; }
 .rule-item:last-child { border-bottom: none; }
 .rule-num {
   font-family: 'DM Mono', monospace; font-size: 11px;
-  color: var(--accent); flex-shrink: 0; width: 20px;
+  color: var(--burgundy2); flex-shrink: 0; width: 20px;
   padding-top: 2px;
 }
 
-/* ── SCORE TABLE ── */
-.score-tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
-.score-tbl th {
-  text-align: left; padding: 10px 16px;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px; color: var(--muted);
-  letter-spacing: 1px; text-transform: uppercase;
+/* ── ADMIN PAGE ── */
+.admin-section-title {
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+  color: var(--muted); letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 12px; padding-bottom: 8px;
   border-bottom: 1px solid var(--border);
-  font-weight: 500;
-}
-.score-tbl td { padding: 12px 16px; border-bottom: 1px solid var(--border); }
-.score-tbl tr:last-child td { border-bottom: none; }
-.score-tbl .pts-val {
-  font-family: 'DM Mono', monospace;
-  font-size: 16px; font-weight: 700; color: var(--accent);
 }
 
-/* ── CHARITY ── */
-.charity-card {
-  border: 1px solid rgba(0,212,255,0.15);
-  border-radius: var(--r2);
-  padding: 28px; background: var(--surface);
-  margin-bottom: 28px;
+/* Setup steps */
+.setup-step {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 13px 20px; border-bottom: 1px solid var(--border);
+  font-size: 13px; line-height: 1.6;
 }
-.charity-card h3 {
-  font-size: 18px; font-weight: 800;
-  margin-bottom: 10px; color: var(--gold);
+.setup-num {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--burgundy); color: #fff;
+  display: grid; place-items: center;
+  font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 700;
+  flex-shrink: 0; margin-top: 1px;
 }
-.charity-card p { font-size: 14px; color: var(--muted); line-height: 1.7; }
+.setup-step code {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  background: var(--surface3); padding: 1px 6px; border-radius: 4px;
+  color: var(--accent);
+}
+
+/* Sheets tab grid */
+.sheets-tabs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  margin-bottom: 0;
+}
+
+.sheet-tab-card {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: var(--r); overflow: hidden;
+}
+
+.stc-head {
+  padding: 11px 14px; display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.stc-icon { font-size: 18px; flex-shrink: 0; }
+.stc-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.stc-desc { font-size: 10px; color: var(--muted); margin-top: 1px; font-family: 'DM Mono', monospace; }
+
+.stc-entries  { background: rgba(35,97,146,0.12); }
+.stc-players  { background: rgba(111,38,61,0.12); }
+.stc-standings{ background: rgba(162,170,173,0.08); }
+.stc-ht       { background: rgba(111,38,61,0.08); }
+.stc-games    { background: rgba(240,165,0,0.06); }
+.stc-status   { background: rgba(34,211,122,0.06); }
+.stc-config   { background: rgba(162,170,173,0.06); }
+
+.stc-cols { padding: 8px 0; }
+.stc-col-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 14px; font-size: 11px;
+}
+.stc-col-row:hover { background: var(--surface2); }
+.stc-col {
+  font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 600;
+  color: var(--muted2); width: 28px; flex-shrink: 0;
+}
+.stc-col-key { background: rgba(111,38,61,0.06); }
+.stc-col-key .stc-col { color: var(--burgundy2); }
+.stc-col-key span:last-child { color: var(--burgundy2); font-weight: 600; }
+
+/* Agent code badges */
+.agent-badge {
+  font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500;
+  padding: 2px 8px; border-radius: 100px; letter-spacing: 0.5px;
+}
+.agt2 { background: rgba(35,97,146,0.15); color: var(--accent); border: 1px solid rgba(35,97,146,0.25); }
+.agt4 { background: rgba(111,38,61,0.15); color: var(--burgundy2); border: 1px solid rgba(111,38,61,0.25); }
+.agt5 { background: rgba(162,170,173,0.12); color: var(--gold); border: 1px solid rgba(162,170,173,0.2); }
+.agt7 { background: rgba(34,211,122,0.1); color: var(--green); border: 1px solid rgba(34,211,122,0.2); }
 
 /* ── ADMIN CODE BLOCK ── */
 pre {
@@ -567,13 +550,13 @@ pre {
 /* ── TOAST ── */
 .toast {
   position: fixed; bottom: 24px; right: 24px; z-index: 9999;
-  background: var(--surface2); border: 1px solid var(--accent);
+  background: var(--surface2); border: 1px solid var(--burgundy);
   border-radius: var(--r2); padding: 16px 20px;
   transform: translateY(120px); transition: transform 0.3s;
   max-width: 320px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
 }
 .toast.show { transform: translateY(0); }
-.toast-title { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+.toast-title { font-size: 14px; font-weight: 700; color: var(--burgundy2); margin-bottom: 4px; }
 .toast-body { font-size: 13px; color: var(--muted); }
 
 /* ── HOSTING INFO CARD ── */
@@ -603,11 +586,11 @@ pre {
 .live-dot {
   display: inline-flex; align-items: center; gap: 6px;
   font-family: 'DM Mono', monospace; font-size: 11px;
-  color: var(--green); letter-spacing: 1px;
+  color: var(--gold); letter-spacing: 1px;
 }
 .live-dot::before {
   content: ''; width: 6px; height: 6px;
-  border-radius: 50%; background: var(--green);
+  border-radius: 50%; background: var(--gold);
   animation: blink 1.8s infinite;
 }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
@@ -622,7 +605,7 @@ pre {
 }
 .picks-bar .big {
   font-family: 'DM Mono', monospace;
-  font-size: 36px; font-weight: 500; color: var(--accent);
+  font-size: 36px; font-weight: 500; color: var(--burgundy2);
   line-height: 1; flex-shrink: 0;
 }
 .picks-bar-right { flex: 1; }
@@ -633,10 +616,396 @@ pre {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.page.on .card,
-.page.on .ticket,
-.page.on .stat-cell {
-  animation: fadeUp 0.35s ease both;
+.page.on .card, .page.on .stat-cell { animation: fadeUp 0.35s ease both; }
+
+/* ══ SPORTS TICKER ══ */
+.ticker-wrap {
+  position: fixed; top: 60px; left: 0; right: 0; z-index: 150;
+  height: 64px; background: #09030a;
+  border-bottom: 2px solid var(--burgundy);
+  display: flex; overflow: hidden;
+}
+.ticker-tag {
+  flex-shrink: 0; background: var(--burgundy);
+  display: flex; align-items: center; padding: 0 14px;
+  font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500;
+  color: #fff; letter-spacing: 2.5px; text-transform: uppercase;
+  white-space: nowrap; z-index: 2;
+  border-right: 1px solid rgba(255,255,255,0.15);
+}
+.ticker-viewport { flex: 1; overflow: hidden; position: relative; }
+.ticker-reel {
+  display: flex; flex-direction: column;
+  height: 64px;
+}
+.t-row {
+  display: flex; align-items: center;
+  white-space: nowrap; flex: 1;
+  overflow: hidden;
+}
+.t-row1 { animation: reel 25s linear infinite; border-bottom: 1px solid rgba(255,255,255,0.05); }
+.t-row2 { animation: reel 25s linear infinite reverse; }
+.t-row:hover { animation-play-state: paused; }
+@keyframes reel { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+.t-item {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 0 20px; height: 32px;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  cursor: default;
+}
+.t-item:hover { background: rgba(255,255,255,0.03); }
+.t-game { color: rgba(255,255,255,0.3); font-size: 9px; letter-spacing: 0.5px; }
+.t-name { color: #fff; font-weight: 500; }
+.t-team { color: rgba(255,255,255,0.4); font-size: 9px; }
+.t-sep  { color: rgba(255,255,255,0.12); }
+.t-stat {
+  font-size: 9px; font-weight: 600; padding: 1px 5px;
+  border-radius: 3px; letter-spacing: 0.3px;
+}
+.ts-g   { background: rgba(111,38,61,0.4);  color: #d4748a; }
+.ts-a   { background: rgba(35,97,146,0.4);  color: #6aaad4; }
+.ts-sog { background: rgba(162,170,173,0.15); color: #a2aaad; }
+.ts-w   { background: rgba(34,211,122,0.2); color: #22d37a; }
+.ts-l   { background: rgba(192,57,43,0.2);  color: #e74c3c; }
+.ts-otl { background: rgba(240,165,0,0.2);  color: #f0a500; }
+.ts-so  { background: rgba(35,97,146,0.5);  color: #a0ccee; }
+.ts-sv  { background: rgba(162,170,173,0.1); color: #777; }
+.ts-pim { background: rgba(240,165,0,0.2);  color: #d4920a; }
+.ts-ht  { background: rgba(111,38,61,0.6);  color: #ffbbcc; font-weight:700; }
+.t-pts  { color: var(--burgundy2); font-weight: 700; font-size: 12px; }
+
+/* pages pushed down by ticker */
+.page { padding-top: 64px; }
+
+/* ══ HOME REVAMP ══ */
+.home-topbar {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: 28px 0 20px; gap: 16px; flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+.home-topbar-left .eyebrow { margin-bottom: 6px; }
+.home-topbar-left h1 {
+  font-size: clamp(20px, 3vw, 32px); font-weight: 800;
+  letter-spacing: -0.5px; line-height: 1.1;
+}
+.home-topbar-left h1 em { font-style: normal; color: var(--burgundy2); }
+
+.kpi-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.kpi {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 8px 14px;
+  display: flex; flex-direction: column; align-items: flex-end;
+  min-width: 80px;
+}
+.kpi-val {
+  font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 700;
+  line-height: 1; color: var(--text);
+}
+.kpi-val.burg { color: var(--burgundy2); }
+.kpi-val.blue { color: var(--accent); }
+.kpi-val.grn  { color: var(--green); }
+.kpi-val.slvr { color: var(--gold); }
+.kpi-lbl { font-size: 10px; color: var(--muted); margin-top: 3px; letter-spacing: 0.3px; }
+
+/* main home grid */
+.home-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+@media(max-width:860px){ .home-grid { grid-template-columns: 1fr; } }
+
+/* standings table — hero */
+.standings-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r2); overflow: hidden;
+}
+.sc-head {
+  background: var(--surface2); padding: 13px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.sc-title {
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+  color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase;
+}
+.sc-cols {
+  display: grid;
+  grid-template-columns: 28px 36px 1fr 56px 44px 64px;
+  gap: 6px; padding: 7px 18px;
+  border-bottom: 1px solid var(--border);
+}
+.sc-cols span {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  color: var(--muted2); text-transform: uppercase; letter-spacing: 1px;
+}
+.sc-cols span.ra { text-align: right; }
+
+.sc-row {
+  display: grid;
+  grid-template-columns: 28px 36px 1fr 56px 44px 64px;
+  gap: 6px; align-items: center;
+  padding: 10px 18px; border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+}
+.sc-row:last-child { border-bottom: none; }
+.sc-row:hover { background: var(--surface2); }
+.sc-row.r1 { background: linear-gradient(90deg, rgba(111,38,61,0.1), transparent 55%); }
+.sc-row.r2 { background: linear-gradient(90deg, rgba(162,170,173,0.05), transparent 55%); }
+.sc-row.r3 { background: linear-gradient(90deg, rgba(35,97,146,0.06), transparent 55%); }
+.sc-row.rl { background: linear-gradient(90deg, rgba(192,57,43,0.05), transparent 55%); }
+
+.sc-pos {
+  font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 700;
+  color: var(--muted2); text-align: center;
+}
+.sc-row.r1 .sc-pos { color: var(--gold); }
+.sc-row.r2 .sc-pos { color: #9ca3af; }
+.sc-row.r3 .sc-pos { color: #cd7f32; }
+.sc-row.rl .sc-pos { color: var(--red); font-size: 10px; }
+
+.sc-av {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--surface3); border: 1px solid var(--border2);
+  display: grid; place-items: center;
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  font-weight: 700; color: var(--muted);
+}
+.sc-row.r1 .sc-av { border-color: var(--gold); color: var(--gold); }
+
+.sc-info { min-width: 0; }
+.sc-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sc-team { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 1px; }
+
+.sc-ht { font-size: 11px; text-align: center; }
+
+.sc-mv {
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 600;
+  padding: 2px 5px; border-radius: 4px; text-align: right; justify-self: end;
+}
+.sc-mv.up { background: rgba(34,211,122,0.08); color: var(--green); }
+.sc-mv.dn { background: rgba(192,57,43,0.08);  color: var(--red); }
+.sc-mv.eq { background: var(--surface3); color: var(--muted2); }
+
+.sc-pts {
+  font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 800;
+  color: var(--text); text-align: right;
+}
+
+/* right column */
+.home-right { display: flex; flex-direction: column; gap: 18px; }
+
+/* ══ TEAM DETAIL PANEL ══ */
+/* ══ TEAM MODAL OVERLAY ══ */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(13,6,8,0);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  pointer-events: none;
+  transition: background 0.28s ease;
+}
+.modal-overlay.open {
+  background: rgba(13,6,8,0.82);
+  pointer-events: all;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.modal-card {
+  background: var(--surface);
+  border: 1px solid rgba(111,38,61,0.35);
+  border-top: 3px solid var(--burgundy);
+  border-radius: var(--r2);
+  width: 100%; max-width: 860px;
+  max-height: 88vh;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.88) translateY(20px);
+  transition: opacity 0.3s cubic-bezier(0.34,1.56,0.64,1),
+              transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+}
+.modal-overlay.open .modal-card {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* header stays fixed inside modal */
+.tp-header {
+  background: var(--surface2);
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+.tp-header-left { display: flex; align-items: center; gap: 14px; }
+.tp-av {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--surface3);
+  border: 2px solid var(--burgundy);
+  display: grid; place-items: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 15px; font-weight: 700; color: var(--burgundy2);
+  flex-shrink: 0;
+}
+.tp-team-name { font-size: 18px; font-weight: 800; line-height: 1.1; }
+.tp-owner     { font-size: 12px; color: var(--muted); margin-top: 2px; font-family: 'DM Mono', monospace; }
+
+.tp-meta { display: flex; gap: 10px; flex-wrap: wrap; }
+.tp-stat-pill {
+  display: flex; flex-direction: column; align-items: flex-end;
+  background: var(--surface3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 7px 12px; min-width: 62px;
+}
+.tp-stat-pill .spv {
+  font-family: 'DM Mono', monospace; font-size: 17px; font-weight: 700;
+  color: var(--text); line-height: 1;
+}
+.tp-stat-pill .spv.burg { color: var(--burgundy2); }
+.tp-stat-pill .spv.blue { color: var(--accent); }
+.tp-stat-pill .spv.grn  { color: var(--green); }
+.tp-stat-pill .spl { font-size: 10px; color: var(--muted); margin-top: 3px; letter-spacing: 0.3px; }
+
+.tp-close-btn {
+  background: none; border: 1px solid var(--border2);
+  border-radius: 6px; padding: 8px 12px;
+  color: var(--muted); cursor: pointer; font-size: 18px;
+  transition: all 0.15s; align-self: flex-start; flex-shrink: 0;
+  line-height: 1;
+}
+.tp-close-btn:hover { background: var(--surface3); color: var(--text); }
+
+/* position tabs */
+.tp-tabs {
+  display: flex; border-bottom: 1px solid var(--border);
+  background: var(--surface2); flex-shrink: 0;
+}
+.tp-tab {
+  padding: 10px 20px;
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+  color: var(--muted); letter-spacing: 1px; text-transform: uppercase;
+  cursor: pointer; border-bottom: 2px solid transparent;
+  transition: all 0.15s; white-space: nowrap;
+}
+.tp-tab:hover { color: var(--text); }
+.tp-tab.active { color: var(--text); border-bottom-color: var(--burgundy); }
+
+/* scrollable table */
+.tp-scroll {
+  overflow-y: auto; flex: 1;
+}
+.tp-scroll::-webkit-scrollbar { width: 4px; }
+.tp-scroll::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 2px; }
+
+.tp-table { width: 100%; border-collapse: collapse; }
+.tp-table th {
+  text-align: left; padding: 9px 16px;
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  color: var(--muted2); letter-spacing: 1px; text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface2); font-weight: 500;
+  position: sticky; top: 0; z-index: 2;
+}
+.tp-table th.ra { text-align: right; }
+.tp-table td { padding: 11px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
+.tp-table tr:last-child td { border-bottom: none; }
+.tp-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+.tp-pos-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 4px;
+  font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 700; color: #fff;
+}
+.pos-F { background: var(--surface3); color: var(--muted); }
+.pos-D { background: var(--burgundy); }
+.pos-G { background: var(--accent); }
+
+.tp-pname { font-weight: 700; color: var(--text); }
+.tp-nhl   { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+.tp-box   { font-size: 10px; color: var(--muted2); font-family: 'DM Mono', monospace; }
+
+.tp-stat-num {
+  font-family: 'DM Mono', monospace; font-size: 13px;
+  font-weight: 600; text-align: right; color: var(--muted);
+}
+.tp-pts-num {
+  font-family: 'DM Mono', monospace; font-size: 14px;
+  font-weight: 800; text-align: right; color: var(--text);
+}
+.tp-ht-flag { font-size: 13px; }
+
+.tp-footer td {
+  background: var(--surface2) !important;
+  border-top: 2px solid var(--border2) !important;
+  font-weight: 700; font-family: 'DM Mono', monospace; font-size: 13px;
+}
+.tp-footer .tp-pts-num { color: var(--burgundy2); font-size: 16px; }
+
+/* mobile */
+@media(max-width:640px) {
+  .modal-overlay { padding: 12px; align-items: flex-end; }
+  .modal-card { max-height: 92vh; border-radius: 16px 16px 0 0; }
+  .tp-header { padding: 14px; }
+  .tp-meta { gap: 6px; }
+  .tp-stat-pill { padding: 5px 8px; min-width: 52px; }
+  .tp-stat-pill .spv { font-size: 14px; }
+  .tp-table td, .tp-table th { padding: 8px 10px; font-size: 11px; }
+  .tp-tab { padding: 9px 12px; font-size: 9px; }
+  /* hide less critical columns on mobile */
+  .tp-table th:nth-child(4),
+  .tp-table td:nth-child(4),
+  .tp-table th:nth-child(8),
+  .tp-table td:nth-child(8) { display: none; }
+}
+
+
+.mini-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r2); overflow: hidden;
+}
+.mini-head {
+  background: var(--surface2); padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  font-weight: 500; color: var(--muted);
+  letter-spacing: 1.5px; text-transform: uppercase;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+.payout-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 16px; border-bottom: 1px solid var(--border);
+}
+.payout-row:last-child { border-bottom: none; }
+.payout-pos { font-size: 13px; font-weight: 700; }
+.payout-pct { font-size: 11px; color: var(--muted); margin-top: 1px; }
+.payout-amt { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 700; color: var(--green); }
+
+.score-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.score-tbl th {
+  text-align: left; padding: 8px 16px;
+  font-family: 'DM Mono', monospace; font-size: 9px; color: var(--muted);
+  letter-spacing: 1px; text-transform: uppercase;
+  border-bottom: 1px solid var(--border); font-weight: 500;
+}
+.score-tbl td { padding: 9px 16px; border-bottom: 1px solid var(--border); }
+.score-tbl tr:last-child td { border-bottom: none; }
+.score-tbl .pts-val {
+  font-family: 'DM Mono', monospace; font-size: 14px;
+  font-weight: 700; color: var(--accent);
+}
+.score-tbl .sec-lbl {
+  font-family: 'DM Mono', monospace; font-size: 9px;
+  color: var(--muted2); letter-spacing: 1px; text-transform: uppercase;
+  padding-top: 8px;
 }
 </style>
 </head>
@@ -658,115 +1027,128 @@ pre {
   </div>
 </header>
 
+<!-- ═══════ SPORTS TICKER ═══════ -->
+<div class="ticker-wrap">
+  <div class="ticker-tag">Last Night</div>
+  <div class="ticker-viewport">
+    <div class="ticker-reel" id="ticker-reel"></div>
+  </div>
+</div>
+
 <!-- ═══════════════════════════════ HOME ═══════════════════════════════ -->
 <div id="page-home" class="page on">
 <div class="wrap">
 
-  <div style="padding: 48px 0 0">
-    <div class="eyebrow">NHL 2023–24 Regular Season</div>
-    <div class="display">Box Pick<em>'Em</em><br>Pool Portal</div>
-    <p style="font-size:15px;color:var(--muted);margin-top:14px;max-width:520px;line-height:1.65">
-      24 boxes. One player each. All points combined. 50/50 split — half the pot goes to Nick Psaros and family.
-    </p>
-  </div>
-
-  <div class="stat-strip">
-    <div class="stat-cell">
-      <div class="stat-val accent" id="h-entries">1</div>
-      <div class="stat-label">Entries submitted</div>
+  <!-- Top bar: title left, KPIs right -->
+  <div class="home-topbar">
+    <div class="home-topbar-left">
+      <div class="eyebrow">NHL 2026–27 Regular Season</div>
+      <h1>AAHL Box Pick<em>'Em</em></h1>
     </div>
-    <div class="stat-cell">
-      <div class="stat-val gold" id="h-pot">$5</div>
-      <div class="stat-label">Prize pool (50%)</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-val green" id="h-charity">$5</div>
-      <div class="stat-label">To Nick's family</div>
-    </div>
-    <div class="stat-cell">
-      <div class="stat-val" style="font-size:18px">Oct 10 · 7:30p</div>
-      <div class="stat-label">Entry deadline EST</div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-val blue" id="h-entries">1</div><div class="kpi-lbl">Entries</div></div>
+      <div class="kpi"><div class="kpi-val burg" id="h-pot">$5</div><div class="kpi-lbl">Prize Pool</div></div>
+      <div class="kpi"><div class="kpi-val slvr">Sep 29</div><div class="kpi-lbl">Deadline</div></div>
     </div>
   </div>
 
-  <!-- LAST NIGHT'S TICKETS -->
-  <div class="sh" style="margin-bottom:14px">
-    <h2>Last Night's Games</h2>
-    <div class="sh-line"></div>
-    <span class="live-dot">UPDATED</span>
-  </div>
-  <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Pool players who scored last night — tap any ticket to see full box score.</p>
+  <!-- Main two-col grid -->
+  <div class="home-grid">
 
-  <div class="ticket-scroll" id="ticket-rail"></div>
-
-  <div style="margin-top:40px" class="grid2">
-
-    <!-- Leaderboard preview -->
-    <div>
-      <div class="sh"><h2>Top 5</h2><div class="sh-line"></div></div>
-      <div class="card">
-        <div class="card-head">
-          <span class="card-title">Standings</span>
-          <span class="live-dot" style="font-size:10px">LIVE</span>
-        </div>
-        <div id="lb-preview"></div>
-        <div style="padding:14px 20px;border-top:1px solid var(--border)">
-          <button class="btn btn-ghost" style="width:100%;justify-content:center" onclick="showPage('board',document.querySelectorAll('.nav-btn')[2])">Full standings →</button>
-        </div>
+    <!-- LEFT — standings hero -->
+    <div class="standings-card">
+      <div class="sc-head">
+        <span class="sc-title">Current Standings</span>
+        <span class="live-dot" style="font-size:10px">Live</span>
       </div>
+      <div class="sc-cols">
+        <span></span><span></span>
+        <span>Entry</span>
+        <span class="ra">🎩</span>
+        <span class="ra">Move</span>
+        <span class="ra">Pts</span>
+      </div>
+      <div id="home-standings"></div>
     </div>
 
-    <!-- Scoring + Payout -->
-    <div style="display:flex;flex-direction:column;gap:20px">
-      <div>
-        <div class="sh"><h2>Scoring</h2><div class="sh-line"></div></div>
-        <div class="card">
-          <table class="score-tbl">
-            <thead><tr><th>Position</th><th>Action</th><th>Pts</th></tr></thead>
-            <tbody>
-              <tr><td>Forward / D</td><td>Goal</td><td class="pts-val">1</td></tr>
-              <tr><td>Forward / D</td><td>Assist</td><td class="pts-val">1</td></tr>
-              <tr><td>Goalie</td><td>Win</td><td class="pts-val">2</td></tr>
-              <tr><td>Goalie</td><td>Shutout</td><td class="pts-val">2</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div>
-        <div class="sh"><h2>Payouts</h2><div class="sh-line"></div></div>
-        <div class="card">
-          <div class="payout-row">
-            <div><div class="payout-pos" style="color:var(--gold)">1st Place</div><div class="payout-pct">50% of prize pool</div></div>
-            <div class="payout-amt" id="p1">$3</div>
-          </div>
-          <div class="payout-row">
-            <div><div class="payout-pos" style="color:#9ca3af">2nd Place</div><div class="payout-pct">30% of prize pool</div></div>
-            <div class="payout-amt" id="p2">$2</div>
-          </div>
-          <div class="payout-row">
-            <div><div class="payout-pos" style="color:#cd7f32">3rd Place</div><div class="payout-pct">20% of prize pool</div></div>
-            <div class="payout-amt" id="p3">$1</div>
-          </div>
-          <div class="payout-row">
-            <div><div class="payout-pos" style="color:var(--red)">Last Place</div><div class="payout-pct">Free entry next year</div></div>
-            <div style="font-size:12px;color:var(--muted)">No cash — next year's on us</div>
-          </div>
-        </div>
+    <!-- RIGHT — scoring quick ref only -->
+    <div class="home-right">
+      <div class="mini-card">
+        <div class="mini-head">Scoring Reference</div>
+        <table class="score-tbl">
+          <thead><tr><th>Stat</th><th style="text-align:right">Pts</th></tr></thead>
+          <tbody>
+            <tr><td colspan="2" class="sec-lbl">Forwards &amp; Defense</td></tr>
+            <tr><td>Goal</td><td class="pts-val" style="text-align:right">1</td></tr>
+            <tr><td>Assist</td><td class="pts-val" style="text-align:right">1</td></tr>
+            <tr><td>Shot on Goal</td><td class="pts-val" style="text-align:right">0.11</td></tr>
+            <tr><td>🎩 Hat Trick bonus</td><td class="pts-val" style="text-align:right">+3</td></tr>
+            <tr><td>PIM / min (D only)</td><td class="pts-val" style="text-align:right">0.25</td></tr>
+            <tr><td colspan="2" class="sec-lbl">Goalies</td></tr>
+            <tr><td>Win</td><td class="pts-val" style="text-align:right">3</td></tr>
+            <tr><td>Loss</td><td class="pts-val" style="text-align:right">1</td></tr>
+            <tr><td>OT Loss</td><td class="pts-val" style="text-align:right">1.5</td></tr>
+            <tr><td>Shutout</td><td class="pts-val" style="text-align:right">2</td></tr>
+            <tr><td>Save</td><td class="pts-val" style="text-align:right">0.02</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
   </div>
 
-  <!-- Charity -->
-  <div class="charity-card" style="margin-top:32px">
-    <h3>Supporting Nick Psaros &amp; Family</h3>
-    <p>Nick was injured on the job and underwent a partial leg amputation. He's now in rehab getting fitted for a prosthetic. We know Nick, his mom Tanya, and wife Jody would do anything for anyone — this pool is our way of showing them the same. 50% of every entry goes directly to the family.</p>
-  </div>
+  <!-- Team detail panel (shown on row click) -->
 
 </div>
 </div>
 
-<!-- ═══════════════════════════════ PICKS ═══════════════════════════════ -->
+<!-- ══ TEAM MODAL ══ -->
+<div class="modal-overlay" id="modal-overlay" onclick="overlayClick(event)">
+  <div class="modal-card" id="modal-card">
+    <div class="tp-header">
+      <div class="tp-header-left">
+        <div class="tp-av" id="tp-av"></div>
+        <div>
+          <div class="tp-team-name" id="tp-tname"></div>
+          <div class="tp-owner" id="tp-owner"></div>
+        </div>
+      </div>
+      <div class="tp-meta" id="tp-meta"></div>
+      <button class="tp-close-btn" onclick="closeTeamPanel()">✕</button>
+    </div>
+    <div class="tp-tabs">
+      <div class="tp-tab active" onclick="filterRoster('ALL',this)">All Players</div>
+      <div class="tp-tab" onclick="filterRoster('F',this)">Forwards</div>
+      <div class="tp-tab" onclick="filterRoster('D',this)">Defense</div>
+      <div class="tp-tab" onclick="filterRoster('G',this)">Goalies</div>
+    </div>
+    <div class="tp-scroll">
+      <table class="tp-table" id="tp-table">
+        <thead>
+          <tr>
+            <th style="width:26px"></th>
+            <th>Player</th>
+            <th>NHL</th>
+            <th>Box</th>
+            <th class="ra">G</th>
+            <th class="ra">A</th>
+            <th class="ra">SOG</th>
+            <th class="ra">PIM</th>
+            <th class="ra">W</th>
+            <th class="ra">L</th>
+            <th class="ra">OTL</th>
+            <th class="ra">SO</th>
+            <th class="ra">SV</th>
+            <th class="ra">🎩</th>
+            <th class="ra">Pts</th>
+          </tr>
+        </thead>
+        <tbody id="tp-tbody"></tbody>
+        <tfoot id="tp-tfoot"></tfoot>
+      </table>
+    </div>
+  </div>
+</div>
 <div id="page-picks" class="page">
 <div class="wrap">
 
@@ -810,7 +1192,7 @@ pre {
     <button class="btn btn-gold" style="font-size:16px;padding:14px 40px" onclick="submitEntry()">
       Submit Entry →
     </button>
-    <div style="margin-top:10px;font-size:12px;color:var(--muted2)">Picks lock October 10 @ 7:30 PM EST · No trades after submission</div>
+    <div style="margin-top:10px;font-size:12px;color:var(--muted2)">Picks lock September 29, 2026 · No trades after submission</div>
   </div>
 
 </div>
@@ -822,10 +1204,23 @@ pre {
 
   <div style="padding-top:8px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between">
     <div>
-      <div class="eyebrow">2023–24 season</div>
+      <div class="eyebrow">2026–27 season</div>
       <div style="font-size:26px;font-weight:800">Standings</div>
     </div>
     <span class="live-dot">UPDATED NIGHTLY</span>
+  </div>
+
+  <!-- HAT TRICK HALL -->
+  <div class="ht-hall">
+    <div class="ht-hall-head">
+      <div class="ht-hall-title">
+        <span style="font-size:22px">🎩</span>
+        Hat Trick Hall
+        <span class="ht-count-badge" id="ht-total-badge">0 this season</span>
+      </div>
+      <span style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace">Tracked separately · No bonus pts</span>
+    </div>
+    <div id="ht-hall-rows"></div>
   </div>
 
   <div class="card">
@@ -848,43 +1243,134 @@ pre {
     <div style="font-size:26px;font-weight:800">Rules &amp; Format</div>
   </div>
 
-  <div class="grid2">
-    <div>
-      <div class="sh"><h2>Pool rules</h2><div class="sh-line"></div></div>
-      <div class="card">
-        <div class="card-body" style="padding:8px 20px">
-          <div class="rule-item"><div class="rule-num">01</div><div>$10 per entry — enter as many times as you want. E-transfer to <strong>matt.hope@rocketmail.com</strong> with your real name.</div></div>
-          <div class="rule-item"><div class="rule-num">02</div><div>Deadline: <strong>October 10, 2023 @ 7:30 PM EST</strong> before Nashville @ Tampa Bay puck drop.</div></div>
-          <div class="rule-item"><div class="rule-num">03</div><div>Select <strong>one (1) player per box</strong> — 24 boxes total. Forwards, defensemen, and goalies.</div></div>
-          <div class="rule-item"><div class="rule-num">04</div><div>All player points — goals, assists, wins, shutouts — are <strong>combined</strong> into one total score per entry.</div></div>
-          <div class="rule-item"><div class="rule-num">05</div><div><strong>No trades.</strong> Picks lock at puck drop and cannot be changed for any reason.</div></div>
-          <div class="rule-item"><div class="rule-num">06</div><div>Ties broken by total goals + assists, then by total goalie saves if still tied.</div></div>
+  <!-- ROW 1: Pool rules full width -->
+  <div class="rules-section-title">Pool Rules</div>
+  <div class="card" style="margin-bottom:28px">
+    <div class="card-body" style="padding:4px 20px">
+      <div class="rule-item"><div class="rule-num">01</div><div>$10 per entry — enter as many times as you want. E-transfer to <strong>matt.hope@rocketmail.com</strong> with your full real name in the memo.</div></div>
+      <div class="rule-item"><div class="rule-num">02</div><div>All entries must be received before puck drop on opening night. Deadline: <strong>September 29, 2026</strong> — the expected start of the 2026-27 NHL season. Exact opening game TBD when the schedule releases June 2026.</div></div>
+      <div class="rule-item"><div class="rule-num">03</div><div>Select <strong>one (1) player per box</strong> — 24 boxes total covering forwards, defensemen, and goalies.</div></div>
+      <div class="rule-item"><div class="rule-num">04</div><div>Points from all 24 players are <strong>combined</strong> into one total score per entry. Every goal, assist, shot, save, and penalty minute adds up over the full season.</div></div>
+      <div class="rule-item"><div class="rule-num">05</div><div><strong>No trades.</strong> Picks lock at puck drop on September 29, 2026 and cannot be changed for any reason after that.</div></div>
+      <div class="rule-item"><div class="rule-num">06</div><div><strong>Tie-breaker sequence:</strong> total points → total goals + assists → total goalie saves. If still tied after all three, the prize is split equally.</div></div>
+      <div class="rule-item" style="background:rgba(111,38,61,0.05);border-radius:var(--r);margin:4px 0;border:1px solid rgba(111,38,61,0.18)">
+        <div class="rule-num" style="color:var(--burgundy2);font-size:16px">🎩</div>
+        <div><strong>Hat Trick bonus:</strong> Any skater scoring 3 or more goals in a single game earns +3 bonus points on top of their normal goal points. A hat trick night = 3G + 2A + 8 SOG would score 3 + 3(bonus) + 2 + 0.88 = <strong>8.88 pts</strong>. Hat tricks are also tracked in the Hat Trick Hall on the Standings page.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: Scoring — three cards side by side -->
+  <div class="rules-section-title">Scoring System</div>
+  <div class="rules-scoring-grid">
+
+    <!-- Forwards -->
+    <div class="card">
+      <div class="rules-card-head rules-head-f">
+        <span class="rules-pos-badge">F</span>
+        Forwards
+      </div>
+      <table class="score-tbl">
+        <thead><tr><th>Stat</th><th style="text-align:right">Pts</th></tr></thead>
+        <tbody>
+          <tr><td>Goal</td><td class="pts-val" style="text-align:right">1</td></tr>
+          <tr><td>Assist</td><td class="pts-val" style="text-align:right">1</td></tr>
+          <tr><td>Shot on Goal</td><td class="pts-val" style="text-align:right">0.11</td></tr>
+          <tr style="border-top:1px solid rgba(111,38,61,0.2);background:rgba(111,38,61,0.04)">
+            <td>🎩 Hat Trick bonus</td>
+            <td class="pts-val" style="text-align:right;color:var(--burgundy2)">+3</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="rules-example">e.g. 1G + 2A + 5 SOG = <strong>3.55 pts</strong></div>
+    </div>
+
+    <!-- Defense -->
+    <div class="card">
+      <div class="rules-card-head rules-head-d">
+        <span class="rules-pos-badge">D</span>
+        Defense
+      </div>
+      <table class="score-tbl">
+        <thead><tr><th>Stat</th><th style="text-align:right">Pts</th></tr></thead>
+        <tbody>
+          <tr><td>Goal</td><td class="pts-val" style="text-align:right">1</td></tr>
+          <tr><td>Assist</td><td class="pts-val" style="text-align:right">1</td></tr>
+          <tr><td>Shot on Goal</td><td class="pts-val" style="text-align:right">0.11</td></tr>
+          <tr><td>PIM (per minute)</td><td class="pts-val" style="text-align:right">0.25</td></tr>
+          <tr style="border-top:1px solid rgba(111,38,61,0.2);background:rgba(111,38,61,0.04)">
+            <td>🎩 Hat Trick bonus</td>
+            <td class="pts-val" style="text-align:right;color:var(--burgundy2)">+3</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="rules-example">e.g. 0G + 2A + 4 SOG + 4 PIM = <strong>3.44 pts</strong></div>
+    </div>
+
+    <!-- Goalies -->
+    <div class="card">
+      <div class="rules-card-head rules-head-g">
+        <span class="rules-pos-badge rules-pos-badge-g">G</span>
+        Goalies
+      </div>
+      <table class="score-tbl">
+        <thead><tr><th>Stat</th><th style="text-align:right">Pts</th></tr></thead>
+        <tbody>
+          <tr><td>Win</td><td class="pts-val" style="text-align:right">3</td></tr>
+          <tr><td>Loss</td><td class="pts-val" style="text-align:right">1</td></tr>
+          <tr><td>OT Loss</td><td class="pts-val" style="text-align:right">1.5</td></tr>
+          <tr><td>Shutout</td><td class="pts-val" style="text-align:right">2</td></tr>
+          <tr><td>Save (each)</td><td class="pts-val" style="text-align:right">0.02</td></tr>
+        </tbody>
+      </table>
+      <div class="rules-example">e.g. Win + SO + 32 SV = <strong>7.64 pts</strong></div>
+    </div>
+
+  </div>
+
+  <!-- ROW 3: Prizes left, Payout table right -->
+  <div class="rules-section-title" style="margin-top:28px">Prizes &amp; Payouts</div>
+  <div class="grid2" style="margin-bottom:40px">
+
+    <div class="card">
+      <div class="card-body" style="padding:4px 20px">
+        <div class="rule-item">
+          <div class="rule-num" style="color:var(--gold);font-size:20px">🥇</div>
+          <div><strong style="font-size:15px">1st Place</strong><br><span style="color:var(--muted);font-size:13px">50% of the prize pool</span></div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num" style="color:#9ca3af;font-size:20px">🥈</div>
+          <div><strong style="font-size:15px">2nd Place</strong><br><span style="color:var(--muted);font-size:13px">30% of the prize pool</span></div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num" style="color:#cd7f32;font-size:20px">🥉</div>
+          <div><strong style="font-size:15px">3rd Place</strong><br><span style="color:var(--muted);font-size:13px">20% of the prize pool</span></div>
+        </div>
+        <div class="rule-item" style="border-bottom:none">
+          <div class="rule-num" style="color:var(--red);font-size:20px">💀</div>
+          <div><strong style="font-size:15px">Last Place</strong><br><span style="color:var(--muted);font-size:13px">Free entry for next year — no cash</span></div>
         </div>
       </div>
     </div>
 
-    <div>
-      <div class="sh"><h2>Prizes</h2><div class="sh-line"></div></div>
-      <div class="card" style="margin-bottom:20px">
-        <div class="card-body" style="padding:8px 20px">
-          <div class="rule-item"><div class="rule-num" style="color:var(--gold)">1st</div><div><strong>50%</strong> of the prize pool</div></div>
-          <div class="rule-item"><div class="rule-num" style="color:#9ca3af">2nd</div><div><strong>30%</strong> of the prize pool</div></div>
-          <div class="rule-item"><div class="rule-num" style="color:#cd7f32">3rd</div><div><strong>20%</strong> of the prize pool</div></div>
-          <div class="rule-item"><div class="rule-num" style="color:var(--red)">Last</div><div>Free entry for next year's pool</div></div>
-        </div>
+    <div class="card">
+      <div class="card-head" style="padding:12px 18px">
+        <span class="card-title">Estimated Payouts</span>
+        <span style="font-size:11px;color:var(--muted2);font-family:'DM Mono',monospace">$10/entry · 50% to prize pool</span>
       </div>
-
-      <div class="sh"><h2>Goalie scoring</h2><div class="sh-line"></div></div>
-      <div class="card">
-        <table class="score-tbl">
-          <thead><tr><th>Event</th><th>Points</th><th>Notes</th></tr></thead>
-          <tbody>
-            <tr><td>Win</td><td class="pts-val">2</td><td style="font-size:12px;color:var(--muted)">Credited goalie only</td></tr>
-            <tr><td>Shutout</td><td class="pts-val">2</td><td style="font-size:12px;color:var(--muted)">Stacks with a win (4 pts)</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <table class="score-tbl" id="payout-table">
+        <thead>
+          <tr>
+            <th>Entries</th>
+            <th style="text-align:right;color:var(--gold)">1st</th>
+            <th style="text-align:right;color:#9ca3af">2nd</th>
+            <th style="text-align:right;color:#cd7f32">3rd</th>
+          </tr>
+        </thead>
+        <tbody id="payout-tbody"></tbody>
+      </table>
     </div>
+
   </div>
 
 </div>
@@ -896,94 +1382,551 @@ pre {
 
   <div style="padding-top:8px;margin-bottom:28px">
     <div class="eyebrow">Commissioner tools</div>
-    <div style="font-size:26px;font-weight:800">Admin</div>
+    <div style="font-size:26px;font-weight:800">Admin &amp; Setup</div>
   </div>
 
-  <div class="grid2">
-    <div>
-      <div class="sh"><h2>Free hosting options</h2><div class="sh-line"></div></div>
-
-      <div class="host-card">
-        <h4>GitHub Pages <span class="free-tag">FREE forever</span></h4>
-        <p>Drop this HTML file in a GitHub repo, enable Pages in settings. Done. Custom domain optional. Zero cost, no ads, no server.</p>
-      </div>
-      <div class="host-card">
-        <h4>Netlify Drop <span class="free-tag">FREE forever</span></h4>
-        <p>Drag the file to netlify.com/drop. Instant live URL in 30 seconds. Free tier handles thousands of visitors.</p>
-      </div>
-      <div class="host-card">
-        <h4>Google Sheets backend <span class="free-tag">FREE</span></h4>
-        <p>Apps Script handles the form submissions, nightly NHL API pulls, and standings calculation. Publish Sheets as a web link for live standings. No database cost.</p>
-      </div>
-      <div class="host-card">
-        <h4>Supabase (if you grow) <span class="cost-tag">~$0–25/mo</span></h4>
-        <p>Free tier covers 500MB and 50k monthly active users — more than enough. Only pay if you scale beyond that.</p>
-      </div>
-    </div>
-
-    <div>
-      <div class="sh"><h2>NHL API endpoints</h2><div class="sh-line"></div></div>
-      <div class="card" style="margin-bottom:20px">
-        <div class="card-body">
-          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;font-family:'DM Mono',monospace">Schedule (free, no key required)</div>
-          <pre style="margin-bottom:16px">https://api-web.nhle.com/v1/
-schedule/{YYYY-MM-DD}</pre>
-          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;font-family:'DM Mono',monospace">Game boxscore</div>
-          <pre style="margin-bottom:16px">https://api-web.nhle.com/v1/
-gamecenter/{gameId}/boxscore</pre>
-          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;font-family:'DM Mono',monospace">Player season log</div>
-          <pre>https://api-web.nhle.com/v1/
-player/{playerId}/game-log/now</pre>
-        </div>
-      </div>
-
-      <div class="sh"><h2>Manual point entry</h2><div class="sh-line"></div></div>
-      <div class="card">
-        <div class="card-body">
-          <div class="field"><label>Player name</label><input type="text" id="ap" placeholder="e.g. Auston Matthews"></div>
-          <div class="field"><label>Points to add</label><input type="number" id="apts" placeholder="2" min="0" max="20"></div>
-          <button class="btn btn-accent" onclick="adminAdd()" style="width:100%;justify-content:center">Add Points</button>
-          <div id="alog" style="margin-top:12px;max-height:100px;overflow-y:auto;font-size:12px;color:var(--muted);font-family:'DM Mono',monospace"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="sh" style="margin-top:32px"><h2>Apps Script — nightly scoring</h2><div class="sh-line"></div></div>
-  <div class="card">
+  <!-- STEP 1: GOOGLE SHEETS SETUP -->
+  <div class="admin-section-title">Step 1 — Create the Google Sheet</div>
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-head"><span class="card-title">Setup Instructions</span><span class="free-tag">FREE · Google Account Required</span></div>
     <div class="card-body" style="padding:0">
-<pre>function fetchNightlyStats() {
-  const date = Utilities.formatDate(new Date(), 'EST', 'yyyy-MM-dd');
-  const sched = JSON.parse(UrlFetchApp
-    .fetch(`https://api-web.nhle.com/v1/schedule/${date}`)
-    .getContentText());
+      <div class="setup-step">
+        <div class="setup-num">1</div>
+        <div>Go to <strong>sheets.google.com</strong> → click <strong>Blank spreadsheet</strong> → name it <strong>"AAHL 2026-27"</strong></div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-num">2</div>
+        <div>Create <strong>7 tabs</strong> at the bottom — right-click Sheet1 → Rename. Add tabs by clicking the <strong>+</strong> button.</div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-num">3</div>
+        <div>Go to <strong>Extensions → Apps Script</strong>. Delete the default code and paste the full script from Step 2 below.</div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-num">4</div>
+        <div>In Apps Script: click <strong>Triggers (clock icon)</strong> → Add Trigger → <code>fetchNightlyStats</code> → Time-driven → Day timer → 3am–4am EST.</div>
+      </div>
+      <div class="setup-step">
+        <div class="setup-num">5</div>
+        <div>Back in Sheets: <strong>File → Share → Publish to web</strong> → Select the <strong>Standings</strong> tab → Publish. Copy the URL — that's your live public standings link.</div>
+      </div>
+      <div class="setup-step" style="border-bottom:none">
+        <div class="setup-num">6</div>
+        <div>Paste your Sheet URL into the portal's entry form action and the Admin manual entry section so submissions route correctly.</div>
+      </div>
+    </div>
+  </div>
 
-  (sched.gameWeek?.[0]?.games || []).forEach(g => {
-    const box = JSON.parse(UrlFetchApp
-      .fetch(`https://api-web.nhle.com/v1/gamecenter/${g.id}/boxscore`)
+  <!-- SHEET TABS DEFINITION -->
+  <div class="admin-section-title" style="margin-top:24px">Sheet Tab Structure — 7 Tabs Required</div>
+  <div class="sheets-tabs-grid">
+
+    <div class="sheet-tab-card">
+      <div class="stc-head stc-entries">
+        <span class="stc-icon">📝</span>
+        <div><div class="stc-name">Entries</div><div class="stc-desc">One row per submission</div></div>
+      </div>
+      <div class="stc-cols">
+        <div class="stc-col-row"><span class="stc-col">A</span><span>EntryID</span></div>
+        <div class="stc-col-row"><span class="stc-col">B</span><span>FirstName</span></div>
+        <div class="stc-col-row"><span class="stc-col">C</span><span>LastName</span></div>
+        <div class="stc-col-row"><span class="stc-col">D</span><span>Email</span></div>
+        <div class="stc-col-row"><span class="stc-col">E</span><span>TeamName</span></div>
+        <div class="stc-col-row"><span class="stc-col">F</span><span>PaymentReceived (Y/N)</span></div>
+        <div class="stc-col-row"><span class="stc-col">G</span><span>SubmittedAt</span></div>
+        <div class="stc-col-row"><span class="stc-col">H–AE</span><span>Pick_Box1 … Pick_Box24</span></div>
+        <div class="stc-col-row"><span class="stc-col">AF</span><span>TotalPts (formula)</span></div>
+        <div class="stc-col-row"><span class="stc-col">AG</span><span>Rank (formula)</span></div>
+      </div>
+    </div>
+
+    <div class="sheet-tab-card">
+      <div class="stc-head stc-players">
+        <span class="stc-icon">🏒</span>
+        <div><div class="stc-name">Players</div><div class="stc-desc">Master player stat table</div></div>
+      </div>
+      <div class="stc-cols">
+        <div class="stc-col-row"><span class="stc-col">A</span><span>PlayerName</span></div>
+        <div class="stc-col-row"><span class="stc-col">B</span><span>NHLTeam</span></div>
+        <div class="stc-col-row"><span class="stc-col">C</span><span>Position (F/D/G)</span></div>
+        <div class="stc-col-row"><span class="stc-col">D</span><span>BoxNumber</span></div>
+        <div class="stc-col-row"><span class="stc-col">E</span><span>Goals</span></div>
+        <div class="stc-col-row"><span class="stc-col">F</span><span>Assists</span></div>
+        <div class="stc-col-row"><span class="stc-col">G</span><span>SOG</span></div>
+        <div class="stc-col-row"><span class="stc-col">H</span><span>PIM</span></div>
+        <div class="stc-col-row"><span class="stc-col">I</span><span>Wins</span></div>
+        <div class="stc-col-row"><span class="stc-col">J</span><span>Losses</span></div>
+        <div class="stc-col-row"><span class="stc-col">K</span><span>OTLosses</span></div>
+        <div class="stc-col-row"><span class="stc-col">L</span><span>Shutouts</span></div>
+        <div class="stc-col-row"><span class="stc-col">M</span><span>Saves</span></div>
+        <div class="stc-col-row"><span class="stc-col">N</span><span>HatTricks</span></div>
+        <div class="stc-col-row stc-col-key"><span class="stc-col">O</span><span>TotalPts (formula)</span></div>
+      </div>
+    </div>
+
+    <div class="sheet-tab-card">
+      <div class="stc-head stc-standings">
+        <span class="stc-icon">🏆</span>
+        <div><div class="stc-name">Standings</div><div class="stc-desc">Live ranked table — publish this tab</div></div>
+      </div>
+      <div class="stc-cols">
+        <div class="stc-col-row"><span class="stc-col">A</span><span>Rank</span></div>
+        <div class="stc-col-row"><span class="stc-col">B</span><span>EntryID</span></div>
+        <div class="stc-col-row"><span class="stc-col">C</span><span>TeamName</span></div>
+        <div class="stc-col-row"><span class="stc-col">D</span><span>OwnerName</span></div>
+        <div class="stc-col-row"><span class="stc-col">E</span><span>TotalPts</span></div>
+        <div class="stc-col-row"><span class="stc-col">F</span><span>PrevRank</span></div>
+        <div class="stc-col-row"><span class="stc-col">G</span><span>RankChange</span></div>
+        <div class="stc-col-row"><span class="stc-col">H</span><span>TotalGoals</span></div>
+        <div class="stc-col-row"><span class="stc-col">I</span><span>TotalAssists</span></div>
+        <div class="stc-col-row stc-col-key"><span class="stc-col">J</span><span>TotalSaves (tiebreaker)</span></div>
+        <div class="stc-col-row"><span class="stc-col">K</span><span>HatTricks</span></div>
+        <div class="stc-col-row"><span class="stc-col">L</span><span>LastUpdated</span></div>
+      </div>
+    </div>
+
+    <div class="sheet-tab-card">
+      <div class="stc-head stc-ht">
+        <span class="stc-icon">🎩</span>
+        <div><div class="stc-name">HatTricks</div><div class="stc-desc">Every hat trick this season</div></div>
+      </div>
+      <div class="stc-cols">
+        <div class="stc-col-row"><span class="stc-col">A</span><span>Date</span></div>
+        <div class="stc-col-row"><span class="stc-col">B</span><span>PlayerName</span></div>
+        <div class="stc-col-row"><span class="stc-col">C</span><span>NHLTeam</span></div>
+        <div class="stc-col-row"><span class="stc-col">D</span><span>Position</span></div>
+        <div class="stc-col-row"><span class="stc-col">E</span><span>Goals (that game)</span></div>
+        <div class="stc-col-row"><span class="stc-col">F</span><span>GameID</span></div>
+        <div class="stc-col-row"><span class="stc-col">G</span><span>DraftedBy (EntryID)</span></div>
+        <div class="stc-col-row stc-col-key"><span class="stc-col">H</span><span>BonusPtsAwarded</span></div>
+      </div>
+    </div>
+
+    <div class="sheet-tab-card">
+      <div class="stc-head stc-games">
+        <span class="stc-icon">📅</span>
+        <div><div class="stc-name">ProcessedGames</div><div class="stc-desc">Duplicate guard — every game ever processed</div></div>
+      </div>
+      <div class="stc-cols">
+        <div class="stc-col-row"><span class="stc-col">A</span><span>GameID</span></div>
+        <div class="stc-col-row"><span class="stc-col">B</span><span>Date</span></div>
+        <div class="stc-col-row"><span class="stc-col">C</span><span>HomeTeam</span></div>
+        <div class="stc-col-row"><span class="stc-col">D</span><span>AwayTeam</span></div>
+        <div class="stc-col-row stc-col-key"><span class="stc-col">E</span><span>ProcessedAt</span></div>
+      </div>
+    </div>
+
+    <div class="sheet-tab-card">
+      <div class="stc-head stc-status">
+        <span class="stc-icon">📡</span>
+        <div><div class="stc-name">AgentStatus</div><div class="stc-desc">Inter-agent communication log</div></div>
+      </div>
+      <div class="stc-cols">
+        <div class="stc-col-row"><span class="stc-col">A</span><span>Timestamp</span></div>
+        <div class="stc-col-row"><span class="stc-col">B</span><span>AgentID</span></div>
+        <div class="stc-col-row"><span class="stc-col">C</span><span>Status (✅ ⚠️ ❌ ⏸)</span></div>
+        <div class="stc-col-row"><span class="stc-col">D</span><span>Message</span></div>
+        <div class="stc-col-row stc-col-key"><span class="stc-col">E</span><span>RequiresAction (Y/N)</span></div>
+      </div>
+    </div>
+
+    <div class="sheet-tab-card">
+      <div class="stc-head stc-config">
+        <span class="stc-icon">⚙️</span>
+        <div><div class="stc-name">Config</div><div class="stc-desc">Season settings — edit these once</div></div>
+      </div>
+      <div class="stc-cols">
+        <div class="stc-col-row"><span class="stc-col">A2</span><span>SeasonYear → 2026-27</span></div>
+        <div class="stc-col-row"><span class="stc-col">A3</span><span>EntryFee → 10</span></div>
+        <div class="stc-col-row"><span class="stc-col">A4</span><span>CommissionerEmail</span></div>
+        <div class="stc-col-row"><span class="stc-col">A5</span><span>DigestDay → MONDAY</span></div>
+        <div class="stc-col-row"><span class="stc-col">A6</span><span>SeasonEndDate → 2027-04-10</span></div>
+        <div class="stc-col-row stc-col-key"><span class="stc-col">A7</span><span>PicksLocked (TRUE/FALSE)</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- STEP 2: APPS SCRIPT -->
+  <div class="admin-section-title" style="margin-top:32px">Step 2 — Apps Script (paste into Extensions → Apps Script)</div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-head"><span class="card-title">Shared Utilities — Agent Communication</span><span style="font-size:11px;color:var(--muted2);font-family:'DM Mono',monospace">All agents use these</span></div>
+    <pre style="margin:0;border-radius:0">// ══════════════════════════════════════════════
+// AAHL APPS SCRIPT — Full Inter-Agent System
+// ══════════════════════════════════════════════
+const SS = SpreadsheetApp.getActiveSpreadsheet();
+const CONFIG = () => {
+  const cfg = SS.getSheetByName('Config').getDataRange().getValues();
+  return Object.fromEntries(cfg.map(r => [r[0], r[1]]));
+};
+
+// ── Agent Status Logger (inter-agent communication) ──
+function agentLog(agentId, status, message, requiresAction = false) {
+  SS.getSheetByName('AgentStatus').appendRow([
+    new Date(), agentId, status, message, requiresAction ? 'Y' : 'N'
+  ]);
+}
+
+// ── Check if a previous agent completed successfully ──
+function agentReady(agentId) {
+  const rows = SS.getSheetByName('AgentStatus').getDataRange().getValues();
+  const today = Utilities.formatDate(new Date(), 'EST', 'yyyy-MM-dd');
+  const todayRows = rows.filter(r =>
+    Utilities.formatDate(new Date(r[0]), 'EST', 'yyyy-MM-dd') === today &&
+    r[1] === agentId
+  );
+  if (!todayRows.length) return false;
+  const last = todayRows[todayRows.length - 1];
+  return last[2] === '✅';
+}
+
+// ── Alert commissioner ──
+function alertCommissioner(subject, body) {
+  const cfg = CONFIG();
+  MailApp.sendEmail(cfg['CommissionerEmail'], subject, body);
+}
+
+// ── Duplicate game guard ──
+function gameAlreadyProcessed(gameId) {
+  const rows = SS.getSheetByName('ProcessedGames').getDataRange().getValues();
+  return rows.some(r => String(r[0]) === String(gameId));
+}
+
+function markGameProcessed(gameId, date, home, away) {
+  SS.getSheetByName('ProcessedGames').appendRow([
+    gameId, date, home, away, new Date()
+  ]);
+}</pre>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-head"><span class="card-title">AGT-004 — Stat Fetch Agent</span><span class="agent-badge agt4">Nightly 3 AM</span></div>
+    <pre style="margin:0;border-radius:0">function fetchNightlyStats() {
+  agentLog('AGT-004', '⏳', 'Starting nightly stat fetch');
+  const date = Utilities.formatDate(
+    new Date(Date.now() - 86400000), 'EST', 'yyyy-MM-dd'
+  ); // yesterday
+
+  try {
+    const sched = JSON.parse(UrlFetchApp
+      .fetch(`https://api-web.nhle.com/v1/schedule/${date}`)
       .getContentText());
-    updatePlayerStats(box);
-  });
+
+    const games = sched.gameWeek?.[0]?.games || [];
+    if (!games.length) {
+      agentLog('AGT-004', '✅', `No games on ${date} — nothing to process`);
+      return;
+    }
+
+    let processed = 0, skipped = 0, anomalies = 0;
+
+    games.forEach(game => {
+      // ── DUPLICATE GUARD (AGT-006 dependency) ──
+      if (gameAlreadyProcessed(game.id)) {
+        skipped++;
+        agentLog('AGT-004', '⚠️', `Game ${game.id} already processed — skipping`, false);
+        return;
+      }
+
+      const box = JSON.parse(UrlFetchApp
+        .fetch(`https://api-web.nhle.com/v1/gamecenter/${game.id}/boxscore`)
+        .getContentText());
+
+      // Determine game outcome for goalies
+      const homeGoals = box.homeTeam?.score || 0;
+      const awayGoals = box.awayTeam?.score || 0;
+      const periodType = box.periodDescriptor?.periodType;
+      const isOT = periodType === 'OT' || periodType === 'SO';
+
+      // Process all skaters + goalies
+      ['homeTeam','awayTeam'].forEach(side => {
+        const team = box[side];
+        if (!team) return;
+
+        // Forwards & Defense
+        [...(team.forwards||[]), ...(team.defense||[])].forEach(p => {
+          const stats = p.toi ? {
+            name:    p.name?.default || '',
+            team:    team.abbrev,
+            pos:     team.forwards?.includes(p) ? 'F' : 'D',
+            goals:   p.goals   || 0,
+            assists: p.assists  || 0,
+            sog:     p.sog     || 0,
+            pim:     p.pim     || 0,
+          } : null;
+          if (!stats) return;
+
+          // ── SANITY CHECK (AGT-006) ──
+          if (stats.goals > 6 || stats.assists > 6) {
+            anomalies++;
+            agentLog('AGT-006', '⚠️',
+              `Suspicious stat: ${stats.name} — ${stats.goals}G ${stats.assists}A in game ${game.id}`,
+              true
+            );
+            return; // block this player from being written
+          }
+
+          updateSkaterStats(stats);
+          checkHatTrick(stats, game.id, date);
+        });
+
+        // Goalies
+        (team.goalies || []).forEach(g => {
+          if (!g.toi || g.toi === '00:00') return;
+          const isHomeWin = homeGoals > awayGoals;
+          const teamWon = (side === 'homeTeam') ? isHomeWin : !isHomeWin;
+          const goalieStats = {
+            name:     g.name?.default || '',
+            team:     team.abbrev,
+            pos:      'G',
+            wins:     teamWon && !isOT ? 1 : 0,
+            losses:   !teamWon && !isOT ? 1 : 0,
+            otl:      !teamWon && isOT ? 1 : 0,
+            shutouts: g.shotsAgainst > 0 && g.goalsAgainst === 0 ? 1 : 0,
+            saves:    g.saves || 0,
+          };
+          updateGoalieStats(goalieStats);
+        });
+      });
+
+      markGameProcessed(game.id, date,
+        box.homeTeam?.abbrev, box.awayTeam?.abbrev);
+      processed++;
+    });
+
+    agentLog('AGT-004', '✅',
+      `Complete — ${processed} games processed, ${skipped} skipped, ${anomalies} anomalies flagged`
+    );
+
+    if (anomalies > 0) {
+      alertCommissioner(
+        'AAHL ⚠️ Stat Anomalies Detected',
+        `${anomalies} suspicious stat(s) were flagged and blocked on ${date}. Check the AgentStatus tab.`
+      );
+    }
+
+    // ── HAND OFF TO AGT-005 ──
+    calculateStandings();
+
+  } catch(err) {
+    agentLog('AGT-004', '❌', `Fatal error: ${err.message}`, true);
+    alertCommissioner('AAHL ❌ Stat Fetch Failed', `AGT-004 failed on ${date}: ${err.message}`);
+  }
+}</pre>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-head"><span class="card-title">AGT-005 — Scoring &amp; Standings Agent</span><span class="agent-badge agt5">Runs after AGT-004</span></div>
+    <pre style="margin:0;border-radius:0">function calculateStandings() {
+  // ── CHECK AGT-004 COMPLETED FIRST ──
+  if (!agentReady('AGT-004')) {
+    agentLog('AGT-005', '⏸', 'Waiting — AGT-004 not complete. Will retry in 10 min.');
+    Utilities.sleep(600000);
+    if (!agentReady('AGT-004')) {
+      agentLog('AGT-005', '❌', 'AGT-004 still not ready after retry — aborting', true);
+      alertCommissioner('AAHL ❌ Standings Not Updated',
+        'AGT-005 could not run because AGT-004 did not complete successfully.');
+      return;
+    }
+  }
+
+  agentLog('AGT-005', '⏳', 'Recalculating standings');
+
+  try {
+    const players = getPlayerMap();
+    const entries = getEntries();
+
+    const ranked = entries.map(e => {
+      const pts = Math.round(
+        e.picks.reduce((s, name) => s + (players[name]?.pts || 0), 0) * 100) / 100;
+      const goals   = e.picks.reduce((s, n) => s + (players[n]?.goals   || 0), 0);
+      const assists = e.picks.reduce((s, n) => s + (players[n]?.assists  || 0), 0);
+      const saves   = e.picks.reduce((s, n) => s + (players[n]?.saves    || 0), 0);
+      const hts     = e.picks.reduce((s, n) => s + (players[n]?.hatTricks|| 0), 0);
+      return { ...e, pts, goals, assists, saves, hts };
+    }).sort((a, b) =>
+      b.pts - a.pts ||
+      (b.goals + b.assists) - (a.goals + a.assists) ||  // tiebreaker 1
+      b.saves - a.saves                                  // tiebreaker 2
+    );
+
+    writeStandings(ranked);
+
+    agentLog('AGT-005', '✅',
+      `Standings updated — ${ranked.length} entries ranked. Leader: ${ranked[0]?.teamName} with ${ranked[0]?.pts} pts`
+    );
+
+    // ── HAND OFF TO AGT-007 (weekly digest check) ──
+    const day = new Date().getDay(); // 1 = Monday
+    if (day === 1) sendWeeklyDigest(ranked);
+
+  } catch(err) {
+    agentLog('AGT-005', '❌', `Standings calculation failed: ${err.message}`, true);
+    alertCommissioner('AAHL ❌ Standings Failed', err.message);
+  }
 }
 
 function calcPoints(p) {
-  return p.position === 'G'
-    ? (p.wins * 2) + (p.shutouts * 2)
-    : p.goals + p.assists;
+  if (p.pos === 'G') {
+    return Math.round((
+      (p.wins * 3) + (p.losses * 1) + (p.otl * 1.5) +
+      (p.shutouts * 2) + (p.saves * 0.02)
+    ) * 100) / 100;
+  }
+  const htBonus = p.hatTricks > 0 ? p.hatTricks * 3 : 0;
+  const pimPts  = p.pos === 'D' ? p.pim * 0.25 : 0;
+  return Math.round((
+    (p.goals * 1) + (p.assists * 1) + (p.sog * 0.11) + htBonus + pimPts
+  ) * 100) / 100;
+}</pre>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-head"><span class="card-title">AGT-007 — Comms Agent</span><span class="agent-badge agt7">Monday digest + on-demand</span></div>
+    <pre style="margin:0;border-radius:0">// ── Entry confirmation (fires when form submitted) ──
+function sendEntryConfirmation(entry) {
+  agentLog('AGT-007', '⏳', `Sending confirmation to ${entry.email}`);
+  MailApp.sendEmail({
+    to: entry.email,
+    subject: '🏒 AAHL Entry Confirmed — ' + entry.teamName,
+    htmlBody: `
+      <h2>You're in, ${entry.firstName}!</h2>
+      <p>Your entry <strong>${entry.teamName}</strong> has been received.</p>
+      <p>Please send $10 via e-transfer to <strong>matt.hope@rocketmail.com</strong>
+         with your name in the memo to confirm your spot.</p>
+      <p>Picks lock September 29, 2026 (opening night). No changes after that — good luck!</p>
+    `
+  });
+  agentLog('AGT-007', '✅', `Confirmation sent to ${entry.email}`);
 }
 
-function calculateStandings() {
-  const players = getPlayerMap();
-  const entries = getEntries();
+// ── Weekly digest (fires every Monday via AGT-005 handoff) ──
+function sendWeeklyDigest(standings) {
+  // ── CHECK AGT-005 COMPLETED ──
+  if (!agentReady('AGT-005')) {
+    agentLog('AGT-007', '⏸', 'Holding digest — AGT-005 standings not ready', false);
+    return;
+  }
 
-  return entries
-    .map(e => ({
-      ...e,
-      total: e.picks.reduce((s, name) =>
-        s + (players[name]?.pts || 0), 0)
-    }))
-    .sort((a, b) => b.total - a.total);
+  agentLog('AGT-007', '⏳', 'Building weekly digest');
+  const cfg = CONFIG();
+  const allEntries = getEntries();
+
+  const top3 = standings.slice(0, 3);
+  const rows = standings.map((e, i) =>
+    `<tr><td>${i+1}</td><td>${e.teamName}</td><td>${e.firstName} ${e.lastName}</td><td>${e.pts}</td></tr>`
+  ).join('');
+
+  allEntries.forEach(e => {
+    MailApp.sendEmail({
+      to: e.email,
+      subject: `🦙 AAHL Weekly Update — ${top3[0].teamName} leads with ${top3[0].pts} pts`,
+      htmlBody: `
+        <h2>This Week in AAHL</h2>
+        <h3>🏆 Current Standings</h3>
+        <table border="1" cellpadding="6" style="border-collapse:collapse">
+          <tr><th>#</th><th>Team</th><th>Owner</th><th>Pts</th></tr>
+          ${rows}
+        </table>
+        <p>Prize pool: $${Math.round(allEntries.length * 10 * 0.5 * 0.5)} for 1st place.</p>
+        <p>Check live standings anytime at your pool link.</p>
+      `
+    });
+  });
+
+  agentLog('AGT-007', '✅', `Weekly digest sent to ${allEntries.length} participants`);
+}
+
+// ── Hat trick alert (fires immediately when AGT-004 detects one) ──
+function sendHatTrickAlert(playerName, team, goals, assists, ptsEarned, draftedBy) {
+  agentLog('AGT-007', '⏳', `Sending hat trick alert for ${playerName}`);
+  const allEntries = getEntries();
+  allEntries.forEach(e => {
+    MailApp.sendEmail({
+      to: e.email,
+      subject: `🎩 HAT TRICK — ${playerName} scored ${goals} goals last night!`,
+      htmlBody: `
+        <h2>🎩 Hat Trick Alert!</h2>
+        <p><strong>${playerName}</strong> (${team}) scored <strong>${goals} goals</strong>
+           and added ${assists} assists last night.</p>
+        <p>Drafted by: <strong>${draftedBy}</strong></p>
+        <p>Points earned: <strong>${ptsEarned}</strong> (incl. +3 hat trick bonus)</p>
+      `
+    });
+  });
+  agentLog('AGT-007', '✅', `Hat trick alert sent for ${playerName}`);
 }</pre>
+  </div>
+
+  <div class="card" style="margin-bottom:28px">
+    <div class="card-head"><span class="card-title">AGT-002 — Entry Form Receiver</span><span class="agent-badge agt2">On form submit</span></div>
+    <pre style="margin:0;border-radius:0">// ── Receives web form POST and writes to Entries sheet ──
+function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const cfg = CONFIG();
+
+    if (cfg['PicksLocked'] === true || cfg['PicksLocked'] === 'TRUE') {
+      return ContentService.createTextOutput(
+        JSON.stringify({ success: false, error: 'Picks are locked.' })
+      ).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    const sheet = SS.getSheetByName('Entries');
+    const id = 'AAHL-' + Date.now();
+
+    sheet.appendRow([
+      id,
+      data.firstName, data.lastName,
+      data.email, data.teamName,
+      'N', // payment not yet confirmed
+      new Date(),
+      ...data.picks // 24 player names
+    ]);
+
+    agentLog('AGT-002', '✅', `New entry: ${data.teamName} by ${data.firstName} ${data.lastName}`);
+
+    // ── HAND OFF TO AGT-007 ──
+    sendEntryConfirmation(data);
+
+    return ContentService.createTextOutput(
+      JSON.stringify({ success: true, entryId: id })
+    ).setMimeType(ContentService.MimeType.JSON);
+
+  } catch(err) {
+    agentLog('AGT-002', '❌', `Entry submission failed: ${err.message}`, true);
+    return ContentService.createTextOutput(
+      JSON.stringify({ success: false, error: err.message })
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
+}</pre>
+  </div>
+
+  <!-- STATUS MONITOR -->
+  <div class="admin-section-title">Step 3 — Manual Tools</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-head"><span class="card-title">Manual Point Entry</span></div>
+      <div class="card-body">
+        <div class="field"><label>Player name</label><input type="text" id="ap" placeholder="e.g. Auston Matthews"></div>
+        <div class="field"><label>Points to add</label><input type="number" id="apts" placeholder="2" min="0" max="30"></div>
+        <button class="btn btn-accent" onclick="adminAdd()" style="width:100%;justify-content:center;margin-bottom:10px">Add Points</button>
+        <div id="alog" style="max-height:100px;overflow-y:auto;font-size:12px;color:var(--muted);font-family:'DM Mono',monospace"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Hosting</span></div>
+      <div class="card-body" style="padding:12px 20px">
+        <div class="host-card" style="margin-bottom:10px">
+          <h4>GitHub Pages <span class="free-tag">FREE</span></h4>
+          <p>Push HTML file to a repo → Settings → Pages → Deploy. Done.</p>
+        </div>
+        <div class="host-card">
+          <h4>Netlify Drop <span class="free-tag">FREE</span></h4>
+          <p>Drag file to netlify.com/drop. Live in 30 seconds.</p>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1108,49 +2051,347 @@ const MOCK_BOARD = [
   {name:'Chloe Russo',team:'Biscuit in the Basket',pts:1587,trend:'-1'},
 ];
 
-// Last night's games — sample data matching AAHL pool players
-const LAST_NIGHT = [
-  {
-    home:'TOR',away:'BOS',homeScore:4,awayScore:2,
-    date:'Apr 27',
-    players:[
-      {name:'Auston Matthews',team:'TOR',pos:'F',goals:2,assists:1,wins:0,shutouts:0},
-      {name:'Mitch Marner',team:'TOR',pos:'F',goals:0,assists:2,wins:0,shutouts:0},
-      {name:'William Nylander',team:'TOR',pos:'F',goals:1,assists:0,wins:0,shutouts:0},
-      {name:'Brad Marchand',team:'BOS',pos:'F',goals:1,assists:1,wins:0,shutouts:0},
-    ]
-  },
-  {
-    home:'EDM',away:'CGY',homeScore:5,awayScore:1,
-    date:'Apr 27',
-    players:[
-      {name:'Leon Draisaitl',team:'EDM',pos:'F',goals:1,assists:3,wins:0,shutouts:0},
-      {name:'Connor McDavid',team:'EDM',pos:'F',goals:2,assists:1,wins:0,shutouts:0},
-      {name:'Stuart Skinner',team:'EDM',pos:'G',goals:0,assists:0,wins:1,shutouts:0},
-      {name:'Evan Bouchard',team:'EDM',pos:'D',goals:0,assists:2,wins:0,shutouts:0},
-    ]
-  },
-  {
-    home:'NYR',away:'NJ',homeScore:3,awayScore:2,
-    date:'Apr 27',
-    players:[
-      {name:'Artemi Panarin',team:'NYR',pos:'F',goals:1,assists:1,wins:0,shutouts:0},
-      {name:'Jacob Trouba',team:'NYR',pos:'D',goals:0,assists:1,wins:0,shutouts:0},
-      {name:'Jack Hughes',team:'NJ',pos:'F',goals:1,assists:0,wins:0,shutouts:0},
-      {name:'Luke Hughes',team:'NJ',pos:'D',goals:0,assists:1,wins:0,shutouts:0},
-    ]
-  },
-  {
-    home:'VAN',away:'VGK',homeScore:2,awayScore:1,
-    date:'Apr 27',
-    players:[
-      {name:'Quinn Hughes',team:'VAN',pos:'D',goals:1,assists:1,wins:0,shutouts:0},
-      {name:'Thatcher Demko',team:'VAN',pos:'G',goals:0,assists:0,wins:1,shutouts:0},
-      {name:'Brayden Point',team:'TB',pos:'F',goals:0,assists:1,wins:0,shutouts:0},
-      {name:'Shea Theodore',team:'VGK',pos:'D',goals:1,assists:0,wins:0,shutouts:0},
-    ]
-  },
+
+// Hat trick hall — season-long tracker (player, # of hat tricks, entry owner, dates)
+const HAT_TRICKS = [
+  {player:'Leon Draisaitl',  team:'EDM', pos:'F', count:2, owner:'Alex Thornton',  ownerTeam:'The Slapshot Specials', dates:['Oct 14','Apr 27']},
+  {player:'Auston Matthews',  team:'TOR', pos:'F', count:2, owner:'Sarah Kim',       ownerTeam:'Puck Norris',           dates:['Nov 3','Jan 18']},
+  {player:'Nathan MacKinnon', team:'COL', pos:'F', count:1, owner:'Marcus Webb',     ownerTeam:'Ice Ice Maybe',         dates:['Dec 9']},
+  {player:'Kirill Kaprizov',  team:'MIN', pos:'F', count:1, owner:'Priya Patel',     ownerTeam:'Alpaca My Bags',        dates:['Feb 2']},
+  {player:'Sidney Crosby',    team:'PIT', pos:'F', count:1, owner:'Dave Okafor',     ownerTeam:'Gretzky 2.0',           dates:['Mar 11']},
 ];
+
+// ══════════ TEAM ROSTERS ══════════
+// Each entry's 24 picks — [boxId, playerName]
+// In a live system this comes from the Entries sheet. Here it's sample data.
+const TEAM_ROSTERS = {
+  'Alex Thornton': {
+    team:'The Slapshot Specials',
+    picks:[
+      {box:'Forwards 1', pos:'F', name:'Leon Draisaitl',    nhl:'EDM', g:52, a:89, sog:246, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 2', pos:'F', name:'Auston Matthews',   nhl:'TOR', g:69, a:40, sog:311, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 3', pos:'F', name:'Jack Hughes',       nhl:'NJ',  g:37, a:55, sog:192, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 4', pos:'F', name:'Sidney Crosby',     nhl:'PIT', g:42, a:52, sog:209, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 5', pos:'F', name:'Aleksander Barkov', nhl:'FLA', g:31, a:55, sog:221, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 6', pos:'F', name:'Cole Caufield',     nhl:'MTL', g:28, a:37, sog:198, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 7', pos:'F', name:'Wyatt Johnston',    nhl:'DAL', g:29, a:37, sog:167, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 8', pos:'F', name:'Chris Kreider',     nhl:'NYR', g:39, a:27, sog:189, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 9', pos:'F', name:'Brad Marchand',     nhl:'BOS', g:28, a:48, sog:172, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 10',pos:'F', name:'Charlie McAvoy',    nhl:'BOS', g:11, a:48, sog:178, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 11',pos:'F', name:'Alex Ovechkin',     nhl:'WSH', g:36, a:28, sog:295, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 12',pos:'F', name:'Owen Tippett',      nhl:'PHI', g:27, a:30, sog:182, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Defense 1',  pos:'D', name:'Quinn Hughes',      nhl:'VAN', g:16, a:66, sog:189, pim:22, w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Defense 2',  pos:'D', name:'Luke Hughes',       nhl:'NJ',  g:16, a:51, sog:147, pim:30, w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Defense 3',  pos:'D', name:'Brent Burns',       nhl:'CAR', g:14, a:41, sog:198, pim:44, w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Defense 4',  pos:'D', name:'Rasmus Dahlin',     nhl:'BUF', g:17, a:49, sog:211, pim:28, w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Defense 5',  pos:'D', name:'Cale Makar',        nhl:'COL', g:24, a:53, sog:234, pim:18, w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Defense 6',  pos:'D', name:'Evan Bouchard',     nhl:'EDM', g:19, a:56, sog:254, pim:38, w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Goalie 1',   pos:'G', name:'Stuart Skinner',    nhl:'EDM', g:0,  a:0,  sog:0,   pim:0,  w:31,l:14,otl:4,so:3,sv:886},
+      {box:'Goalie 2',   pos:'G', name:'Sergei Bobrovsky',  nhl:'FLA', g:0,  a:0,  sog:0,   pim:0,  w:36,l:14,otl:4,so:6,sv:1421},
+      {box:'Goalie 3',   pos:'G', name:'Ilya Sorokin',      nhl:'NYI', g:0,  a:0,  sog:0,   pim:0,  w:24,l:24,otl:5,so:4,sv:1148},
+      {box:'Goalie 4',   pos:'G', name:'Kevin Lankinen',    nhl:'NSH', g:0,  a:0,  sog:0,   pim:0,  w:22,l:18,otl:3,so:2,sv:874},
+      {box:'Goalie 5',   pos:'G', name:'Joonas Korpisalo',  nhl:'CBJ', g:0,  a:0,  sog:0,   pim:0,  w:18,l:26,otl:4,so:2,sv:967},
+      {box:'Goalie 6',   pos:'G', name:'Alex Lyon',         nhl:'FLA', g:0,  a:0,  sog:0,   pim:0,  w:20,l:12,otl:3,so:1,sv:688},
+    ]
+  },
+  'Sarah Kim': {
+    team:'Puck Norris',
+    picks:[
+      {box:'Forwards 1', pos:'F', name:'Nikita Kucherov',   nhl:'TB',  g:44, a:100,sog:231, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 2', pos:'F', name:'Mitch Marner',      nhl:'TOR', g:26, a:81, sog:198, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 3', pos:'F', name:'Kirill Kaprizov',   nhl:'MIN', g:36, a:51, sog:212, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 4', pos:'F', name:'Jesper Bratt',      nhl:'NJ',  g:28, a:55, sog:176, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 5', pos:'F', name:'Ryan Nugent-Hopkins',nhl:'EDM',g:27, a:56, sog:168, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 6', pos:'F', name:'Matt Boldy',         nhl:'MIN',g:28, a:35, sog:179, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 7', pos:'F', name:'Anze Kopitar',       nhl:'LA', g:22, a:47, sog:141, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 8', pos:'F', name:'Bo Horvat',          nhl:'NYI',g:31, a:31, sog:192, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 9', pos:'F', name:'Matt Duchene',       nhl:'DAL',g:34, a:38, sog:177, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 10',pos:'F', name:'Morgan Rielly',      nhl:'TOR',g:12, a:45, sog:156, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 11',pos:'F', name:'Claude Giroux',      nhl:'OTT',g:27, a:42, sog:164, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Forwards 12',pos:'F', name:'Andrei Svechnikov',  nhl:'CAR',g:22, a:33, sog:148, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Defense 1',  pos:'D', name:'Noah Dobson',        nhl:'NYI',g:15, a:45, sog:178, pim:24, w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Defense 2',  pos:'D', name:'MacKenzie Weegar',   nhl:'CGY',g:11, a:41, sog:165, pim:32, w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Defense 3',  pos:'D', name:'Travis Sanheim',     nhl:'PHI',g:12, a:37, sog:143, pim:38, w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Defense 4',  pos:'D', name:'Torey Krug',         nhl:'STL',g:13, a:44, sog:152, pim:30, w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Defense 5',  pos:'D', name:'Adam Fox',           nhl:'NYR',g:14, a:52, sog:187, pim:20, w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Defense 6',  pos:'D', name:'Jacob Trouba',       nhl:'NYR',g:8,  a:33, sog:144, pim:66, w:0,l:0,otl:0,so:0,sv:0},
+      {box:'Goalie 1',   pos:'G', name:'Connor Hellebuyck',  nhl:'WPG',g:0,  a:0,  sog:0,   pim:0,  w:37,l:18,otl:4,so:6,sv:1502},
+      {box:'Goalie 2',   pos:'G', name:'Alexander Georgiev', nhl:'COL',g:0,  a:0,  sog:0,   pim:0,  w:31,l:15,otl:3,so:4,sv:1188},
+      {box:'Goalie 3',   pos:'G', name:'Cam Talbot',         nhl:'CGY',g:0,  a:0,  sog:0,   pim:0,  w:24,l:18,otl:5,so:3,sv:966},
+      {box:'Goalie 4',   pos:'G', name:'Philipp Grubauer',   nhl:'SEA',g:0,  a:0,  sog:0,   pim:0,  w:20,l:16,otl:4,so:2,sv:822},
+      {box:'Goalie 5',   pos:'G', name:'Semyon Varlamov',    nhl:'NYI',g:0,  a:0,  sog:0,   pim:0,  w:16,l:19,otl:4,so:1,sv:788},
+      {box:'Goalie 6',   pos:'G', name:'Charlie Lindgren',   nhl:'WSH',g:0,  a:0,  sog:0,   pim:0,  w:18,l:14,otl:3,so:2,sv:712},
+    ]
+  },
+};
+// Default roster generator for entries without detailed picks (sample data fallback)
+function getDefaultRoster(entryName) {
+  // Pick one player per box based on entry index for variety
+  const idx = MOCK_BOARD.findIndex(e=>e.name===entryName);
+  return BOXES.map(box => {
+    const p = box.players[idx % box.players.length];
+    const isG = box.type==='G', isD = box.type==='D';
+    return {
+      box: box.label, pos: box.type,
+      name: p.name, nhl: p.team,
+      g:  isG?0:Math.floor(p.pts*0.35), a: isG?0:Math.floor(p.pts*0.55),
+      sog:isG?0:Math.floor(p.pts*1.8),  pim:isD?Math.floor(Math.random()*40+10):0,
+      w:  isG?Math.floor(p.pts*0.52):0, l:isG?Math.floor(p.pts*0.28):0,
+      otl:isG?Math.floor(p.pts*0.08):0, so:isG?Math.floor(p.pts*0.06):0,
+      sv: isG?Math.floor(p.pts*18):0,
+    };
+  });
+}
+
+// ══════════ PLAYER POINTS CALC FOR ROSTER ══════════
+function rosterPts(p) {
+  if (p.pos==='G') {
+    return roundPts(p.w*3 + p.l*1 + p.otl*1.5 + p.so*2 + p.sv*0.02);
+  }
+  const ht = p.g>=3 ? 3 : 0;
+  const pimPts = p.pos==='D' ? p.pim*0.25 : 0;
+  return roundPts(p.g*1 + p.a*1 + p.sog*0.11 + ht + pimPts);
+}
+
+// ══════════ TEAM PANEL ══════════
+let currentFilter = 'ALL';
+let currentRoster = [];
+
+function openTeamPanel(entryName) {
+  const entry = MOCK_BOARD.find(e=>e.name===entryName);
+  if (!entry) return;
+
+  const rosterData = TEAM_ROSTERS[entryName];
+  const picks = rosterData ? rosterData.picks : getDefaultRoster(entryName);
+  currentRoster = picks;
+
+  // Header
+  const ini = entryName.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('tp-av').textContent = ini;
+  document.getElementById('tp-tname').textContent = entry.team;
+  document.getElementById('tp-owner').textContent = entryName;
+
+  // Summary pills
+  const fwd  = picks.filter(p=>p.pos==='F');
+  const def  = picks.filter(p=>p.pos==='D');
+  const gol  = picks.filter(p=>p.pos==='G');
+  const totalPts = picks.reduce((s,p)=>s+rosterPts(p),0);
+  const totalG   = picks.reduce((s,p)=>s+(p.g||0),0);
+  const totalA   = picks.reduce((s,p)=>s+(p.a||0),0);
+
+  document.getElementById('tp-meta').innerHTML = `
+    <div class="tp-stat-pill"><div class="spv burg">${roundPts(totalPts)}</div><div class="spl">Total Pts</div></div>
+    <div class="tp-stat-pill"><div class="spv">${totalG}</div><div class="spl">Goals</div></div>
+    <div class="tp-stat-pill"><div class="spv">${totalA}</div><div class="spl">Assists</div></div>
+    <div class="tp-stat-pill"><div class="spv blue">${entry.pts.toLocaleString()}</div><div class="spl">Season Rank Pts</div></div>
+  `;
+
+  // Reset tab
+  document.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector('.tp-tab').classList.add('active');
+  currentFilter = 'ALL';
+
+  renderRoster(picks, 'ALL');
+
+  const overlay = document.getElementById('modal-overlay');
+  overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeTeamPanel() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function overlayClick(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeTeamPanel();
+}
+
+// Close on Escape key
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTeamPanel(); });
+
+function filterRoster(pos, tab) {
+  currentFilter = pos;
+  document.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  renderRoster(currentRoster, pos);
+}
+
+function renderRoster(picks, filter) {
+  const rows = filter==='ALL' ? picks : picks.filter(p=>p.pos===filter);
+  const htMap = {};
+  HAT_TRICKS.forEach(h=>{
+    // find if this player had hat tricks for the currently viewed entry
+    if(h.ownerTeam === (MOCK_BOARD.find(e=>e.name===document.getElementById('tp-owner').textContent)||{}).team) {
+      htMap[h.player] = h.count;
+    }
+  });
+
+  // Check HAT_TRICKS by owner name instead
+  const ownerName = document.getElementById('tp-owner').textContent;
+  HAT_TRICKS.forEach(h=>{ if(h.owner===ownerName) htMap[h.player]=(htMap[h.player]||0)+h.count; });
+
+  const rowsHTML = rows.map(p => {
+    const pts = rosterPts(p);
+    const isHT = p.pos!=='G' && p.g>=3;
+    const htCell = htMap[p.name] ? '🎩'.repeat(Math.min(htMap[p.name],3)) : '';
+    const posCls = `pos-${p.pos}`;
+
+    // Skater stat cells
+    const skaterCells = p.pos==='G'
+      ? `<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>
+         <td class="tp-stat-num">${p.w}</td><td class="tp-stat-num">${p.l}</td><td class="tp-stat-num">${p.otl}</td>
+         <td class="tp-stat-num">${p.so}</td><td class="tp-stat-num">${p.sv.toLocaleString()}</td>`
+      : `<td class="tp-stat-num">${p.g}</td><td class="tp-stat-num">${p.a}</td>
+         <td class="tp-stat-num">${p.sog}</td>
+         <td class="tp-stat-num">${p.pos==='D'?p.pim:'—'}</td>
+         <td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>
+         <td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>`;
+
+    return `<tr style="${isHT?'background:rgba(111,38,61,0.06)':''}">
+      <td><span class="tp-pos-badge ${posCls}">${p.pos}</span></td>
+      <td><div class="tp-pname">${p.name}${isHT?' 🎩':''}</div><div class="tp-box">${p.box}</div></td>
+      <td><div class="tp-nhl">${p.nhl}</div></td>
+      <td class="tp-box">${p.box.replace(/Forwards |Defense |Goalie /,'').padStart(2,'0')}</td>
+      ${skaterCells}
+      <td class="tp-ht-flag">${htCell}</td>
+      <td class="tp-pts-num">${pts}</td>
+    </tr>`;
+  }).join('');
+
+  // Footer totals
+  const totalPts = roundPts(rows.reduce((s,p)=>s+rosterPts(p),0));
+  const totalG   = rows.reduce((s,p)=>s+(p.g||0),0);
+  const totalA   = rows.reduce((s,p)=>s+(p.a||0),0);
+  const totalSOG = rows.reduce((s,p)=>s+(p.sog||0),0);
+  const totalPIM = rows.reduce((s,p)=>s+(p.pim||0),0);
+  const totalSV  = rows.reduce((s,p)=>s+(p.sv||0),0);
+  const totalW   = rows.reduce((s,p)=>s+(p.w||0),0);
+
+  document.getElementById('tp-tbody').innerHTML = rowsHTML;
+  document.getElementById('tp-tfoot').innerHTML = `
+    <tr class="tp-footer">
+      <td></td><td style="font-size:13px;color:var(--muted)">${rows.length} player${rows.length!==1?'s':''}</td>
+      <td></td><td></td>
+      <td class="tp-stat-num">${totalG}</td>
+      <td class="tp-stat-num">${totalA}</td>
+      <td class="tp-stat-num">${totalSOG}</td>
+      <td class="tp-stat-num">${totalPIM}</td>
+      <td class="tp-stat-num">${totalW}W</td>
+      <td></td><td></td><td></td>
+      <td class="tp-stat-num">${totalSV.toLocaleString()}</td>
+      <td></td>
+      <td class="tp-pts-num">${totalPts}</td>
+    </tr>`;
+}
+
+// ══════════ NIGHTLY STATS (previous night — pool players only) ══════════
+const NIGHTLY_STATS = [
+  // TOR 4 — BOS 2
+  {name:'Auston Matthews', team:'TOR', pos:'F', game:'TOR 4 · BOS 2 — Oct 2026', goals:2, assists:1, sog:6,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'Mitch Marner',    team:'TOR', pos:'F', game:'TOR 4 · BOS 2 — Oct 2026', goals:0, assists:2, sog:3,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'William Nylander',team:'TOR', pos:'F', game:'TOR 4 · BOS 2 — Oct 2026', goals:1, assists:0, sog:4,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'Brad Marchand',   team:'BOS', pos:'F', game:'TOR 4 · BOS 2 — Oct 2026', goals:1, assists:1, sog:3,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'Jeremy Swayman',  team:'BOS', pos:'G', game:'TOR 4 · BOS 2 — Oct 2026', goals:0, assists:0, sog:0,  wins:0,losses:1,otl:0,shutouts:0,saves:28,pim:0},
+  // EDM 6 — CGY 1
+  {name:'Leon Draisaitl',  team:'EDM', pos:'F', game:'EDM 6 · CGY 1', goals:3, assists:2, sog:8,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'Connor McDavid',  team:'EDM', pos:'F', game:'EDM 6 · CGY 1', goals:1, assists:3, sog:5,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'Stuart Skinner',  team:'EDM', pos:'G', game:'EDM 6 · CGY 1', goals:0, assists:0, sog:0,  wins:1,losses:0,otl:0,shutouts:0,saves:22,pim:0},
+  {name:'Evan Bouchard',   team:'EDM', pos:'D', game:'EDM 6 · CGY 1', goals:0, assists:2, sog:4,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:4},
+  // NYR 3 — NJ 2
+  {name:'Artemi Panarin',  team:'NYR', pos:'F', game:'NYR 3 · NJ 2',  goals:1, assists:1, sog:4,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'Jacob Trouba',    team:'NYR', pos:'D', game:'NYR 3 · NJ 2',  goals:0, assists:1, sog:3,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:7},
+  {name:'Jack Hughes',     team:'NJ',  pos:'F', game:'NYR 3 · NJ 2',  goals:1, assists:0, sog:5,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'Luke Hughes',     team:'NJ',  pos:'D', game:'NYR 3 · NJ 2',  goals:0, assists:1, sog:2,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:2},
+  // VAN 2 — VGK 1 OT
+  {name:'Quinn Hughes',      team:'VAN', pos:'D', game:'VAN 2 · VGK 1 OT', goals:1, assists:1, sog:5, wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'Thatcher Demko',    team:'VAN', pos:'G', game:'VAN 2 · VGK 1 OT', goals:0, assists:0, sog:0, wins:1,losses:0,otl:0,shutouts:1,saves:31,pim:0},
+  {name:'Elias Pettersson',  team:'VAN', pos:'F', game:'VAN 2 · VGK 1 OT', goals:0, assists:1, sog:3, wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'Shea Theodore',     team:'VGK', pos:'D', game:'VAN 2 · VGK 1 OT', goals:1, assists:0, sog:4, wins:0,losses:0,otl:1,shutouts:0,saves:0, pim:2},
+];
+
+// ══════════ TICKER ══════════
+function nightlyPts(p) {
+  if (p.pos === 'G') return roundPts(p.wins*3 + p.losses*1 + p.otl*1.5 + p.shutouts*2 + p.saves*0.02);
+  const ht = (p.goals >= 3) ? 3 : 0;
+  const pimPts = (p.pos === 'D') ? p.pim * 0.25 : 0;
+  return roundPts(p.goals*1 + p.assists*1 + p.sog*0.11 + ht + pimPts);
+}
+
+function tickerStatChips(p) {
+  let chips = '';
+  const isHT = p.pos !== 'G' && p.goals >= 3;
+  if (isHT) chips += `<span class="t-stat ts-ht">🎩 HAT TRICK</span>`;
+  else if (p.goals)   chips += `<span class="t-stat ts-g">${p.goals}G</span>`;
+  if (p.assists)      chips += `<span class="t-stat ts-a">${p.assists}A</span>`;
+  if (p.sog)          chips += `<span class="t-stat ts-sog">${p.sog}SOG</span>`;
+  if (p.wins)         chips += `<span class="t-stat ts-w">${p.wins}W</span>`;
+  if (p.losses)       chips += `<span class="t-stat ts-l">${p.losses}L</span>`;
+  if (p.otl)          chips += `<span class="t-stat ts-otl">${p.otl}OTL</span>`;
+  if (p.shutouts)     chips += `<span class="t-stat ts-so">SO</span>`;
+  if (p.saves)        chips += `<span class="t-stat ts-sv">${p.saves}SV</span>`;
+  if (p.pos==='D' && p.pim) chips += `<span class="t-stat ts-pim">${p.pim}PIM</span>`;
+  return chips;
+}
+
+function buildTicker() {
+  const reel = document.getElementById('ticker-reel');
+  const scorers = NIGHTLY_STATS.filter(p => nightlyPts(p) > 0);
+
+  const itemHTML = p => {
+    const pts = nightlyPts(p);
+    return `<div class="t-item">
+      <span class="t-game">${p.game}</span>
+      <span class="t-sep">·</span>
+      <span class="t-name">${p.name}</span>
+      <span class="t-team">${p.team}&nbsp;${p.pos}</span>
+      <span class="t-sep">|</span>
+      ${tickerStatChips(p)}
+      <span class="t-pts">+${pts}pts</span>
+    </div>`;
+  };
+
+  // Split scorers into two rows
+  const mid = Math.ceil(scorers.length / 2);
+  const row1 = scorers.slice(0, mid);
+  const row2 = scorers.slice(mid);
+
+  // Each row is a flex strip; duplicate each for seamless loop
+  const makeRow = (items, cls) => {
+    const inner = items.map(itemHTML).join('');
+    return `<div class="t-row ${cls}">${inner}${inner}</div>`;
+  };
+
+  reel.innerHTML = makeRow(row1, 't-row1') + makeRow(row2, 't-row2');
+}
+
+// ══════════ HOME STANDINGS ══════════
+function buildHomeStandings() {
+  const last = MOCK_BOARD.length - 1;
+  document.getElementById('home-standings').innerHTML = MOCK_BOARD.map((e, i) => {
+    const rowCls = i===0?'r1':i===1?'r2':i===2?'r3':i===last?'rl':'';
+    const pos = i===last
+      ? `<span style="font-size:9px;letter-spacing:0px">LAST</span>`
+      : (i+1);
+    const t = e.trend;
+    const mvCls = t.startsWith('+')?'up':t.startsWith('-')?'dn':'eq';
+    const mvLbl = t.startsWith('+')?'▲'+t.slice(1):t.startsWith('-')?'▼'+t.slice(1):'—';
+    const htCount = HAT_TRICKS.filter(h=>h.owner===e.name).reduce((s,h)=>s+h.count,0);
+    const htCell = htCount > 0 ? '🎩'.repeat(Math.min(htCount,3)) : '';
+    const ini = e.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    return `<div class="sc-row ${rowCls}" onclick="openTeamPanel('${e.name}')" style="cursor:pointer" title="View ${e.team} roster">
+      <div class="sc-pos">${pos}</div>
+      <div class="sc-av">${ini}</div>
+      <div class="sc-info">
+        <div class="sc-name">${e.team}</div>
+        <div class="sc-team">${e.name}</div>
+      </div>
+      <div class="sc-ht">${htCell}</div>
+      <div class="sc-mv ${mvCls}">${mvLbl}</div>
+      <div class="sc-pts">${e.pts.toLocaleString()}</div>
+    </div>`;
+  }).join('');
+}
 
 // ══════════ STATE ══════════
 let picks = {};
@@ -1165,71 +2406,40 @@ function showPage(id, btn) {
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ══════════ TICKETS ══════════
-function calcTicketPts(p) {
-  if (p.pos === 'G') return (p.wins * 2) + (p.shutouts * 2);
-  return p.goals + p.assists;
+// ══════════ SCORING ENGINE ══════════
+// Full scoring rules — all values locked
+const SCORING = {
+  F: { goal:1, assist:1, sog:0.11, hatTrickBonus:3 },
+  D: { goal:1, assist:1, sog:0.11, hatTrickBonus:3, pim:0.25 },
+  G: { win:3, loss:1, otl:1.5, shutout:2, save:0.02 }
+};
+
+function calcPts(p) {
+  const r = SCORING[p.pos] || SCORING.F;
+  if (p.pos === 'G') {
+    return roundPts(
+      (p.wins   || 0) * r.win     +
+      (p.losses || 0) * r.loss    +
+      (p.otl    || 0) * r.otl     +
+      (p.shutouts||0) * r.shutout +
+      (p.saves  || 0) * r.save
+    );
+  }
+  const htBonus = isHatTrick(p) ? r.hatTrickBonus : 0;
+  const pimPts  = p.pos === 'D' ? (p.pim || 0) * r.pim : 0;
+  return roundPts(
+    (p.goals   || 0) * r.goal   +
+    (p.assists || 0) * r.assist +
+    (p.sog     || 0) * r.sog   +
+    htBonus + pimPts
+  );
 }
 
-function pillsHTML(p) {
-  let h = '';
-  if (p.goals > 0)    h += `<span class="tp-pill pill-g">${p.goals}G</span>`;
-  if (p.assists > 0)  h += `<span class="tp-pill pill-a">${p.assists}A</span>`;
-  if (p.wins > 0)     h += `<span class="tp-pill pill-w">${p.wins}W</span>`;
-  if (p.shutouts > 0) h += `<span class="tp-pill pill-so">SO</span>`;
-  return h;
-}
+function roundPts(n) { return Math.round(n * 100) / 100; }
 
-function makeBarcode() {
-  const widths = [2,3,1,4,2,1,3,2,4,1,2,3,1,2,4,3,1,2];
-  return widths.map(w =>
-    `<div class="bc-bar" style="width:${w}px;height:${8+Math.floor(Math.random()*14)}px"></div>`
-  ).join('');
-}
 
-function buildTickets() {
-  const rail = document.getElementById('ticket-rail');
-  rail.innerHTML = LAST_NIGHT.map(game => {
-    const poolPlayers = game.players.filter(p => calcTicketPts(p) > 0);
-    const rows = game.players.map(p => {
-      const pts = calcTicketPts(p);
-      return `
-        <div class="tp-row">
-          <div>
-            <div class="tp-name">${p.name}</div>
-            <div class="tp-team-tag">${p.team} · ${p.pos}</div>
-          </div>
-          <div class="tp-stat">
-            ${pillsHTML(p)}
-            <div class="tp-pts">+${pts}</div>
-          </div>
-        </div>`;
-    }).join('');
+function isHatTrick(p) { return p.pos !== 'G' && (p.goals || 0) >= 3; }
 
-    const ref = 'AAHL-' + game.home + game.away + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
-
-    return `
-      <div class="ticket">
-        <div class="ticket-top">
-          <div class="ticket-date">${game.date} · NHL Regular Season</div>
-          <div class="ticket-matchup">
-            <div class="ticket-team">${game.away}</div>
-            <div class="ticket-score">${game.awayScore}–${game.homeScore}</div>
-            <div class="ticket-team">${game.home}</div>
-          </div>
-        </div>
-        <div class="ticket-perf"><div class="ticket-dash"></div></div>
-        <div class="ticket-body">
-          <div style="font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:1px;margin-bottom:8px;text-transform:uppercase">Pool scorers</div>
-          <div class="ticket-players">${rows}</div>
-          <div class="ticket-barcode">
-            <div class="barcode-lines">${makeBarcode()}</div>
-            <div class="ticket-ref">${ref}</div>
-          </div>
-        </div>
-      </div>`;
-  }).join('');
-}
 
 // ══════════ LEADERBOARD ══════════
 function initials(n) { return n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
@@ -1239,6 +2449,11 @@ function lbRowHTML(e, i) {
   const t = e.trend;
   const tCls = t.startsWith('+')?'trend-up':t.startsWith('-')?'trend-dn':'trend-eq';
   const tLbl = t.startsWith('+')?'▲'+t.slice(1):t.startsWith('-')?'▼'+t.slice(1):'—';
+  // find hat tricks belonging to this entry's owner
+  const htCount = HAT_TRICKS.filter(h => h.owner === e.name).reduce((s,h) => s + h.count, 0);
+  const htBadge = htCount > 0
+    ? `<span title="${htCount} hat trick(s) this season" style="font-size:13px;margin-right:4px">${'🎩'.repeat(Math.min(htCount,3))}</span>`
+    : '';
   return `<div class="lb-row ${cls}">
     <div class="lb-pos">${i+1}</div>
     <div class="lb-av">${initials(e.name)}</div>
@@ -1246,26 +2461,50 @@ function lbRowHTML(e, i) {
       <div class="lb-name">${e.name}</div>
       <div class="lb-team">${e.team}</div>
     </div>
+    ${htBadge}
     <span class="lb-trend ${tCls}">${tLbl}</span>
     <div class="lb-pts">${e.pts.toLocaleString()}</div>
   </div>`;
 }
 
+function buildHatTrickHall() {
+  const sorted = [...HAT_TRICKS].sort((a,b) => b.count - a.count || a.player.localeCompare(b.player));
+  const total = sorted.reduce((s,h) => s + h.count, 0);
+  document.getElementById('ht-total-badge').textContent = total + ' this season';
+
+  if (sorted.length === 0) {
+    document.getElementById('ht-hall-rows').innerHTML =
+      `<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">No hat tricks yet this season.</div>`;
+    return;
+  }
+
+  document.getElementById('ht-hall-rows').innerHTML = sorted.map((h, i) => {
+    const hats = '🎩'.repeat(h.count);
+    const dateStr = h.dates.join(' · ');
+    return `<div class="ht-row">
+      <div class="ht-num">${i+1}</div>
+      <div class="ht-av">${h.player.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>
+      <div class="ht-info">
+        <div class="ht-player">${h.player}</div>
+        <div class="ht-meta">${h.team} · ${h.pos} · Drafted by ${h.owner}</div>
+        <div class="ht-entry-owner">${h.ownerTeam}</div>
+        <div style="font-size:10px;color:var(--muted2);font-family:'DM Mono',monospace;margin-top:3px">${dateStr}</div>
+      </div>
+      <div class="ht-hats">${hats}</div>
+      <div class="ht-goals-col">${h.count}×</div>
+    </div>`;
+  }).join('');
+}
+
 function buildBoards() {
-  document.getElementById('lb-preview').innerHTML = MOCK_BOARD.slice(0,5).map((e,i)=>lbRowHTML(e,i)).join('');
   document.getElementById('full-lb').innerHTML = MOCK_BOARD.map((e,i)=>lbRowHTML(e,i)).join('');
   document.getElementById('bd-count').textContent = MOCK_BOARD.length + ' entries';
 }
-
 // ══════════ PAYOUTS ══════════
 function updatePayouts() {
   const prize = totalEntries * 10 * 0.5;
   document.getElementById('h-entries').textContent = totalEntries;
   document.getElementById('h-pot').textContent = '$' + Math.round(prize);
-  document.getElementById('h-charity').textContent = '$' + Math.round(prize);
-  document.getElementById('p1').textContent = '$' + Math.round(prize * 0.5);
-  document.getElementById('p2').textContent = '$' + Math.round(prize * 0.3);
-  document.getElementById('p3').textContent = '$' + Math.round(prize * 0.2);
 }
 
 // ══════════ DRAFT ══════════
@@ -1306,9 +2545,9 @@ function pick(boxId, name, radio) {
   });
   radio.closest('.popt').classList.add('sel');
   document.getElementById('bx-'+boxId).classList.add('done');
-  document.getElementById('chk-'+boxId).style.background = 'var(--accent)';
-  document.getElementById('chk-'+boxId).style.borderColor = 'var(--accent)';
-  document.getElementById('chk-'+boxId).style.color = 'var(--bg)';
+  document.getElementById('chk-'+boxId).style.background = 'var(--burgundy)';
+  document.getElementById('chk-'+boxId).style.borderColor = 'var(--burgundy)';
+  document.getElementById('chk-'+boxId).style.color = '#fff';
   renderChips();
   const n = Object.keys(picks).length;
   document.getElementById('pc').textContent = n;
@@ -1360,10 +2599,30 @@ function toast(title, body) {
   setTimeout(()=>t.classList.remove('show'),4200);
 }
 
+// ══════════ PAYOUT TABLE ══════════
+function buildPayoutTable() {
+  const tbody = document.getElementById('payout-tbody');
+  if (!tbody) return;
+  const entries = [10, 20, 30, 40, 50, 75, 100];
+  tbody.innerHTML = entries.map((n, i) => {
+    const prize = n * 10 * 0.5;
+    const bg = i % 2 === 0 ? '' : 'style="background:var(--surface2)"';
+    return `<tr ${bg}>
+      <td style="font-family:'DM Mono',monospace;font-weight:600">${n}</td>
+      <td style="text-align:right;font-family:'DM Mono',monospace;font-weight:700;color:var(--gold)">$${Math.round(prize * 0.5)}</td>
+      <td style="text-align:right;font-family:'DM Mono',monospace;font-weight:700;color:#9ca3af">$${Math.round(prize * 0.3)}</td>
+      <td style="text-align:right;font-family:'DM Mono',monospace;font-weight:700;color:#cd7f32">$${Math.round(prize * 0.2)}</td>
+    </tr>`;
+  }).join('');
+}
+
 // ══════════ INIT ══════════
-buildTickets();
+buildTicker();
+buildHomeStandings();
 buildBoards();
+buildHatTrickHall();
 buildDraft();
+buildPayoutTable();
 updatePayouts();
 </script>
 </body>
