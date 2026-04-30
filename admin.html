@@ -155,7 +155,40 @@ function agentReady(agentId) {
 }
 function alertCommissioner(subject, body) { MailApp.sendEmail(CONFIG()['CommissionerEmail'], subject, body); }
 function gameAlreadyProcessed(gameId) { return SS.getSheetByName('ProcessedGames').getDataRange().getValues().some(r => String(r[0]) === String(gameId)); }
-function markGameProcessed(gameId, date, home, away) { SS.getSheetByName('ProcessedGames').appendRow([gameId, date, home, away, new Date()]); }</pre>
+function markGameProcessed(gameId, date, home, away) { SS.getSheetByName('ProcessedGames').appendRow([gameId, date, home, away, new Date()]); }
+function getEntries() {
+  const sheet = SS.getSheetByName('Entries');
+  const data = sheet.getDataRange().getValues();
+  const headers = data[0];
+  return data.slice(1).map(row => ({
+    entryId: row[0],
+    firstName: row[1],
+    lastName: row[2],
+    email: row[3],
+    teamName: row[4],
+    paid: row[5] === 'Y',
+    submittedAt: row[6],
+    picks: row.slice(7, 31)
+  })).filter(e => e.entryId);
+}
+function getPlayerMap() {
+  const sheet = SS.getSheetByName('Players');
+  const data = sheet.getDataRange().getValues();
+  const map = {};
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    map[row[0]] = { name: row[0], team: row[1], pos: row[2], goals: row[4]||0, assists: row[5]||0, sog: row[6]||0, pim: row[7]||0, wins: row[8]||0, losses: row[9]||0, otl: row[10]||0, shutouts: row[11]||0, saves: row[12]||0, pts: row[14]||0 };
+  }
+  return map;
+}
+function writeStandings(ranked) {
+  const sheet = SS.getSheetByName('Standings');
+  sheet.clear();
+  sheet.appendRow(['Rank', 'EntryID', 'TeamName', 'OwnerName', 'TotalPts', 'PrevRank', 'RankChange', 'Goals', 'Assists', 'Saves']);
+  ranked.forEach((e, i) => {
+    sheet.appendRow([i + 1, e.entryId, e.teamName, e.firstName + ' ' + e.lastName, e.pts, '', '', e.goals, e.assists, e.saves]);
+  });
+}</pre>
   </div>
 
   <div class="card" style="margin-bottom:14px">
