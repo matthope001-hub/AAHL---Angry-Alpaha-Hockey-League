@@ -817,7 +817,7 @@ async function submitEntry() {
   btn.innerHTML = '⏳ Submitting…'; btn.disabled = true; btn.style.opacity = '0.7';
   try {
     const response = await fetch(WEBAPP_URL, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ firstName: f, lastName: l, email: e, phone: ph, teamName: team, picks: picksArray, divisionPicks })
     });
     const result = await response.json();
