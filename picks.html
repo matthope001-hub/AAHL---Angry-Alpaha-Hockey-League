@@ -1,137 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Picks — AAHL</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-</head>
-<body>
-
-<header>
-  <div class="header-inner">
-    <div class="wordmark" onclick="window.location.href='index.html'">
-      <img src="aahl-logo.png" alt="AAHL Logo" style="height:48px;width:auto;margin-right:12px;">
-      <div class="wordmark-text">AAHL <span>/</span> Angry Alpaca</div>
-    </div>
-    <nav>
-      <button class="nav-btn" onclick="window.location.href='index.html'">Home</button>
-      <button class="nav-btn active">My Picks</button>
-      <button class="nav-btn" onclick="window.location.href='standings.html'">Standings</button>
-      <button class="nav-btn" onclick="window.location.href='rules.html'">Rules</button>
-      <button class="nav-btn" onclick="window.location.href='admin.html'">Admin</button>
-    </nav>
-  </div>
-</header>
-
-<!-- SPORTS TICKER -->
-<div class="ticker-wrap">
-  <div class="ticker-tag">Last Night</div>
-  <div class="ticker-viewport">
-    <div class="ticker-reel" id="ticker-reel"></div>
-  </div>
-</div>
-
-<div class="page on">
-<div class="wrap">
-
-  <div style="padding-top:8px;margin-bottom:28px">
-    <div class="eyebrow">Entry form</div>
-    <div style="font-size:26px;font-weight:800">Make Your Picks</div>
-  </div>
-
-  <!-- Your Info -->
-  <div class="card" style="margin-bottom:24px">
-    <div class="card-head"><span class="card-title">Your Info</span></div>
-    <div class="card-body">
-      <div class="form-row">
-        <div class="field"><label>First name</label><input type="text" id="ff" placeholder="First"></div>
-        <div class="field"><label>Last name</label><input type="text" id="fl" placeholder="Last"></div>
-      </div>
-      <div class="form-row">
-        <div class="field"><label>Email</label><input type="email" id="fe" placeholder="you@email.com"></div>
-        <div class="field"><label>Phone</label><input type="tel" id="fp" placeholder="416-555-0100"></div>
-      </div>
-      <div class="field"><label>Team name</label><input type="text" id="ft" placeholder="Your team name"></div>
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;font-size:13px;color:var(--muted)">
-        E-transfer <span style="color:var(--text);font-weight:600">$10 per entry</span> to <span style="color:var(--accent);font-family:'DM Mono',monospace">matt.hope@rocketmail.com</span> — include your full name in the memo.
-      </div>
-    </div>
-  </div>
-
-  <!-- Progress -->
-  <div class="picks-bar">
-    <div class="big" id="pc">0</div>
-    <div class="picks-bar-right">
-      <div class="lbl">of 24 boxes filled</div>
-      <div class="prog-wrap"><div class="prog-fill" id="pbar" style="width:0%"></div></div>
-      <div class="chips" id="chips"></div>
-    </div>
-  </div>
-
-  <!-- Player Draft Grid -->
-  <div class="draft-grid" id="draft"></div>
-
-  <!-- Division Picks -->
-  <div class="div-picks-card" style="margin-top:32px">
-    <div class="div-picks-head">
-      <div class="div-picks-title">
-        <span style="font-size:20px">🏒</span>
-        Division Winner Picks
-        <span class="div-bonus-badge">+10 pts each</span>
-      </div>
-      <span style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace">Pick 1st place team per division at season end</span>
-    </div>
-    <div class="div-grid" id="div-grid"></div>
-    <div class="div-picks-footer">
-      <div class="div-picks-count"><strong id="div-pick-count">0</strong> of 4 divisions picked · +<strong id="div-bonus-total">0</strong> potential bonus pts</div>
-      <span style="font-size:11px;color:var(--muted2);font-family:'DM Mono',monospace">10 pts per correct division winner</span>
-    </div>
-  </div>
-
-  <!-- Submit -->
-  <div style="text-align:center;margin-top:32px">
-    <button class="btn btn-gold" style="font-size:16px;padding:14px 40px" onclick="submitEntry()">
-      Submit Entry →
-    </button>
-    <div style="margin-top:10px;font-size:12px;color:var(--muted2)">Picks lock September 29, 2026 · No trades after submission</div>
-  </div>
-
-</div>
-</div>
-
-<!-- PLAYER INFO MODAL -->
-<div class="player-modal-overlay" id="player-modal-overlay" onclick="closePlayerModal(event)">
-  <div class="player-modal" id="player-modal">
-    <div class="pm-head">
-      <div><div class="pm-name" id="pm-name"></div>
-        <div class="pm-team-row"><span class="pm-nhl" id="pm-nhl"></span><span class="pm-pos-badge" id="pm-pos-badge"></span></div>
-      </div>
-      <button class="pm-close" onclick="closePlayerModal()">✕</button>
-    </div>
-    <div class="pm-season-label">2025–26 Season Stats (Prior Year)</div>
-    <div class="pm-stats-grid" id="pm-stats-grid"></div>
-    <div class="pm-pts-section">
-      <div class="pm-pts-title">Pool Points Breakdown</div>
-      <div class="pm-pts-breakdown" id="pm-pts-breakdown"></div>
-    </div>
-    <div class="pm-total-pts">
-      <div><div class="pm-total-label">Prior season pool points</div><div class="pm-total-note">Based on 2025-26 stats</div></div>
-      <div class="pm-total-val" id="pm-total-pts"></div>
-    </div>
-    <button class="pm-pick-btn" id="pm-pick-btn" onclick="pickFromModal()"></button>
-  </div>
-</div>
-
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <div class="toast-title" id="toast-t"></div>
-  <div class="toast-body" id="toast-b"></div>
-</div>
-
-<script src="main.js"></script>
-<script>
 // ═══════════════════════════════════════════════════════════════
 // PICKS.HTML — FULL SCRIPT SECTION
 // Replace everything inside <script>...</script> at the bottom
@@ -539,7 +405,7 @@ async function submitEntry() {
   };
 
   try {
-    const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL'; // ← paste your deployed script URL here
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqqijpX3BoRCDXMH5ZzWCkN2ZlALGJd_HBHMetPlXCir7_ue_WfEtqvo3NM0Z-xMhKUA/exec';
     const res = await fetch(SCRIPT_URL, {
       method: 'POST',
       body: JSON.stringify(data),
@@ -578,6 +444,3 @@ document.addEventListener('DOMContentLoaded', () => {
   buildDraft();
   loadDivisionTeams();
 });
-</script>
-</body>
-</html>
