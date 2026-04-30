@@ -100,7 +100,7 @@
 </div>
 </div>
 
-<!-- TEAM MODAL -->
+<!-- TEAM MODAL — uses main.js openTeamPanel() / renderRoster() -->
 <div class="modal-overlay" id="modal-overlay" onclick="overlayClick(event)">
   <div class="modal-card" id="modal-card">
     <div class="tp-header">
@@ -111,8 +111,20 @@
       <div class="tp-meta" id="tp-meta"></div>
       <button class="tp-close-btn" onclick="closeTeamPanel()">✕</button>
     </div>
+    <div class="tp-tabs">
+      <div class="tp-tab active" onclick="filterRoster('ALL',this)">All Players</div>
+      <div class="tp-tab" onclick="filterRoster('F',this)">Forwards</div>
+      <div class="tp-tab" onclick="filterRoster('D',this)">Defense</div>
+      <div class="tp-tab" onclick="filterRoster('G',this)">Goalies</div>
+    </div>
     <div class="tp-scroll">
       <table class="tp-table" id="tp-table">
+        <thead><tr>
+          <th style="width:26px"></th><th>Player</th><th>NHL</th><th>Box</th>
+          <th class="ra">G</th><th class="ra">A</th><th class="ra">SOG</th><th class="ra">PIM</th>
+          <th class="ra">W</th><th class="ra">L</th><th class="ra">OTL</th><th class="ra">SO</th><th class="ra">SV</th>
+          <th class="ra">🎩</th><th class="ra">Pts</th>
+        </tr></thead>
         <tbody id="tp-tbody"></tbody>
         <tfoot id="tp-tfoot"></tfoot>
       </table>
@@ -128,12 +140,14 @@
 
 <script src="main.js"></script>
 <script>
+// ══════════════════════════════════════════════════════
+// INDEX.HTML ONLY — live standings fetch from Google Sheets
+// Everything else (ticker, toast, team panel) is in main.js
+// ══════════════════════════════════════════════════════
 
-// ══════════ LIVE STANDINGS FROM GOOGLE SHEETS ══════════
 const STANDINGS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1410587271&single=true&output=csv';
 
 let LIVE_BOARD = [];
-let totalEntries = 0;
 
 function parseStandingsCSV(csv) {
   const lines = csv.trim().split('\n');
@@ -163,87 +177,14 @@ async function fetchStandings() {
     const res = await fetch(STANDINGS_CSV);
     const csv = await res.text();
     LIVE_BOARD = parseStandingsCSV(csv);
-    totalEntries = LIVE_BOARD.length;
+    totalEntries = LIVE_BOARD.length; // totalEntries declared in main.js
   } catch(err) {
     console.warn('Standings fetch failed:', err);
     LIVE_BOARD = [];
-    totalEntries = 0;
   }
 }
 
-// ══════════ NIGHTLY STATS ══════════
-const NIGHTLY_STATS = [
-  {name:'Auston Matthews', team:'TOR', pos:'F', game:'TOR 4 · BOS 2', goals:2, assists:1, sog:6,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'Mitch Marner',    team:'TOR', pos:'F', game:'TOR 4 · BOS 2', goals:0, assists:2, sog:3,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'William Nylander',team:'TOR', pos:'F', game:'TOR 4 · BOS 2', goals:1, assists:0, sog:4,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'Brad Marchand',   team:'BOS', pos:'F', game:'TOR 4 · BOS 2', goals:1, assists:1, sog:3,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'Jeremy Swayman',  team:'BOS', pos:'G', game:'TOR 4 · BOS 2', goals:0, assists:0, sog:0,  wins:0,losses:1,otl:0,shutouts:0,saves:28,pim:0},
-  {name:'Leon Draisaitl',  team:'EDM', pos:'F', game:'EDM 6 · CGY 1', goals:3, assists:2, sog:8,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'Connor McDavid',  team:'EDM', pos:'F', game:'EDM 6 · CGY 1', goals:1, assists:3, sog:5,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'Stuart Skinner',  team:'EDM', pos:'G', game:'EDM 6 · CGY 1', goals:0, assists:0, sog:0,  wins:1,losses:0,otl:0,shutouts:0,saves:22,pim:0},
-  {name:'Evan Bouchard',   team:'EDM', pos:'D', game:'EDM 6 · CGY 1', goals:0, assists:2, sog:4,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:4},
-  {name:'Artemi Panarin',  team:'NYR', pos:'F', game:'NYR 3 · NJ 2',  goals:1, assists:1, sog:4,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'Jacob Trouba',    team:'NYR', pos:'D', game:'NYR 3 · NJ 2',  goals:0, assists:1, sog:3,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:7},
-  {name:'Jack Hughes',     team:'NJ',  pos:'F', game:'NYR 3 · NJ 2',  goals:1, assists:0, sog:5,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'Luke Hughes',     team:'NJ',  pos:'D', game:'NYR 3 · NJ 2',  goals:0, assists:1, sog:2,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:2},
-  {name:'Quinn Hughes',    team:'VAN', pos:'D', game:'VAN 2 · VGK 1 OT', goals:1, assists:1, sog:5, wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'Thatcher Demko',  team:'VAN', pos:'G', game:'VAN 2 · VGK 1 OT', goals:0, assists:0, sog:0, wins:1,losses:0,otl:0,shutouts:1,saves:31,pim:0},
-  {name:'Elias Pettersson',team:'VAN', pos:'F', game:'VAN 2 · VGK 1 OT', goals:0, assists:1, sog:3, wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'Shea Theodore',   team:'VGK', pos:'D', game:'VAN 2 · VGK 1 OT', goals:1, assists:0, sog:4, wins:0,losses:0,otl:1,shutouts:0,saves:0, pim:2},
-];
-
-// ══════════ TICKER ══════════
-function roundPts(n) { return Math.round(n * 100) / 100; }
-
-function nightlyPts(p) {
-  if (p.pos === 'G') return roundPts(p.wins*3 + p.losses*1 + p.otl*1.5 + p.shutouts*2 + p.saves*0.02);
-  const ht = (p.goals >= 3) ? 3 : 0;
-  const pimPts = (p.pos === 'D') ? p.pim * 0.25 : 0;
-  return roundPts(p.goals*1 + p.assists*1 + p.sog*0.11 + ht + pimPts);
-}
-
-function tickerStatChips(p) {
-  let chips = '';
-  const isHT = p.pos !== 'G' && p.goals >= 3;
-  if (isHT) chips += `<span class="t-stat ts-ht">🎩 HAT TRICK</span>`;
-  else if (p.goals)   chips += `<span class="t-stat ts-g">${p.goals}G</span>`;
-  if (p.assists)      chips += `<span class="t-stat ts-a">${p.assists}A</span>`;
-  if (p.sog)          chips += `<span class="t-stat ts-sog">${p.sog}SOG</span>`;
-  if (p.wins)         chips += `<span class="t-stat ts-w">${p.wins}W</span>`;
-  if (p.losses)       chips += `<span class="t-stat ts-l">${p.losses}L</span>`;
-  if (p.otl)          chips += `<span class="t-stat ts-otl">${p.otl}OTL</span>`;
-  if (p.shutouts)     chips += `<span class="t-stat ts-so">SO</span>`;
-  if (p.saves)        chips += `<span class="t-stat ts-sv">${p.saves}SV</span>`;
-  if (p.pos==='D' && p.pim) chips += `<span class="t-stat ts-pim">${p.pim}PIM</span>`;
-  return chips;
-}
-
-function buildTicker() {
-  const reel = document.getElementById('ticker-reel');
-  if (!reel) return;
-  const scorers = NIGHTLY_STATS.filter(p => nightlyPts(p) > 0);
-  const itemHTML = p => {
-    const pts = nightlyPts(p);
-    return `<div class="t-item">
-      <span class="t-game">${p.game}</span>
-      <span class="t-sep">·</span>
-      <span class="t-name">${p.name}</span>
-      <span class="t-team">${p.team}&nbsp;${p.pos}</span>
-      <span class="t-sep">|</span>
-      ${tickerStatChips(p)}
-      <span class="t-pts">+${pts}pts</span>
-    </div>`;
-  };
-  const mid = Math.ceil(scorers.length / 2);
-  const makeRow = (items, cls) => {
-    const inner = items.map(itemHTML).join('');
-    return `<div class="t-row ${cls}">${inner}${inner}</div>`;
-  };
-  reel.innerHTML = makeRow(scorers.slice(0, mid), 't-row1') + makeRow(scorers.slice(mid), 't-row2');
-}
-
-// ══════════ HOME STANDINGS ══════════
-function buildHomeStandings() {
+function buildLiveStandings() {
   const el = document.getElementById('home-standings');
   if (!el) return;
   if (!LIVE_BOARD.length) {
@@ -261,7 +202,7 @@ function buildHomeStandings() {
     const mvLbl = t.startsWith('+')?'▲'+t.slice(1):t.startsWith('-')?'▼'+t.slice(1):'—';
     const htCell = e.hatTricks > 0 ? '🎩'.repeat(Math.min(e.hatTricks,3)) : '';
     const ini = e.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-    return `<div class="sc-row ${rowCls}" onclick="openTeamPanel('${e.name}')" style="cursor:pointer" title="View ${e.team}">
+    return `<div class="sc-row ${rowCls}" onclick="openLiveTeamPanel('${e.name}')" style="cursor:pointer">
       <div class="sc-pos">${pos}</div>
       <div class="sc-av">${ini}</div>
       <div class="sc-info">
@@ -275,17 +216,8 @@ function buildHomeStandings() {
   }).join('');
 }
 
-// ══════════ PAYOUTS ══════════
-function updatePayouts() {
-  const prize = totalEntries * 10 * 0.5;
-  const entriesEl = document.getElementById('h-entries');
-  const potEl = document.getElementById('h-pot');
-  if (entriesEl) entriesEl.textContent = totalEntries;
-  if (potEl) potEl.textContent = '$' + Math.round(prize);
-}
-
-// ══════════ TEAM PANEL ══════════
-function openTeamPanel(ownerName) {
+// Live team panel — uses LIVE_BOARD instead of MOCK_BOARD
+function openLiveTeamPanel(ownerName) {
   const entry = LIVE_BOARD.find(e => e.name === ownerName);
   if (!entry) return;
   const ini = ownerName.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
@@ -295,51 +227,34 @@ function openTeamPanel(ownerName) {
   document.getElementById('tp-meta').innerHTML = `
     <div class="tp-stat-pill"><div class="spv burg">${entry.pts}</div><div class="spl">Total Pts</div></div>
     <div class="tp-stat-pill"><div class="spv blue">${entry.rank}</div><div class="spl">Rank</div></div>
-    <div class="tp-stat-pill"><div class="spv">${entry.hatTricks > 0 ? '🎩'.repeat(entry.hatTricks) : '0'}</div><div class="spl">Hat Tricks</div></div>
+    <div class="tp-stat-pill"><div class="spv">${entry.hatTricks > 0 ? '🎩'.repeat(Math.min(entry.hatTricks,3)) : '0'}</div><div class="spl">Hat Tricks</div></div>
   `;
   document.getElementById('tp-tbody').innerHTML =
     `<tr><td colspan="15" style="text-align:center;padding:30px;color:var(--muted);font-size:13px">
       Full roster view available once the season begins and stats are live.
     </td></tr>`;
   document.getElementById('tp-tfoot').innerHTML = '';
+  document.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector('.tp-tab').classList.add('active');
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
-function closeTeamPanel() {
-  document.getElementById('modal-overlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-function overlayClick(e) {
-  if (e.target === document.getElementById('modal-overlay')) closeTeamPanel();
-}
-
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTeamPanel(); });
-
-function filterRoster(pos, tab) {
-  document.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active'));
-  tab.classList.add('active');
-}
-
-// ══════════ TOAST ══════════
-function toast(title, body) {
-  const t = document.getElementById('toast');
-  if (!t) return;
-  document.getElementById('toast-t').textContent = title;
-  document.getElementById('toast-b').textContent = body;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),4200);
+function updateLivePayouts() {
+  const prize = totalEntries * 10 * 0.5;
+  const he = document.getElementById('h-entries');
+  const hp = document.getElementById('h-pot');
+  if (he) he.textContent = totalEntries;
+  if (hp) hp.textContent = '$' + Math.round(prize);
 }
 
 // ══════════ INIT ══════════
-buildTicker();
+buildTicker(); // from main.js
 
 fetchStandings().then(() => {
-  buildHomeStandings();
-  updatePayouts();
+  buildLiveStandings();
+  updateLivePayouts();
 });
-
 </script>
 </body>
 </html>
