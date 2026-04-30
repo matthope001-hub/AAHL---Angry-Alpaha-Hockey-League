@@ -60,8 +60,21 @@
     </div>
   </div>
 
+  <!-- Progress -->
+  <div class="picks-bar">
+    <div class="big" id="pc">0</div>
+    <div class="picks-bar-right">
+      <div class="lbl">of 24 boxes filled</div>
+      <div class="prog-wrap"><div class="prog-fill" id="pbar" style="width:0%"></div></div>
+      <div class="chips" id="chips"></div>
+    </div>
+  </div>
+
+  <!-- Player Draft Grid -->
+  <div class="draft-grid" id="draft"></div>
+
   <!-- Division Picks -->
-  <div class="div-picks-card">
+  <div class="div-picks-card" style="margin-top:32px">
     <div class="div-picks-head">
       <div class="div-picks-title">
         <span style="font-size:20px">🏒</span>
@@ -77,18 +90,7 @@
     </div>
   </div>
 
-  <!-- Progress -->
-  <div class="picks-bar">
-    <div class="big" id="pc">0</div>
-    <div class="picks-bar-right">
-      <div class="lbl">of 24 boxes filled</div>
-      <div class="prog-wrap"><div class="prog-fill" id="pbar" style="width:0%"></div></div>
-      <div class="chips" id="chips"></div>
-    </div>
-  </div>
-
-  <div class="draft-grid" id="draft"></div>
-
+  <!-- Submit -->
   <div style="text-align:center;margin-top:32px">
     <button class="btn btn-gold" style="font-size:16px;padding:14px 40px" onclick="submitEntry()">
       Submit Entry →
