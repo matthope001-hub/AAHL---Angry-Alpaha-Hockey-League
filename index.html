@@ -158,9 +158,454 @@
 
 <script src="main.js"></script>
 <script>
+// ═══════════════════════════════════════════════════════════════
+// INDEX.HTML — SCRIPT SECTION CHANGES
+// Replace the entire <script>...</script> block at the bottom
+// of index.html with this. Everything above <script> stays the same.
+// ═══════════════════════════════════════════════════════════════
+
+// ══════════ LIVE STANDINGS FROM GOOGLE SHEETS ══════════
+const STANDINGS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1410587271&single=true&output=csv';
+
+let LIVE_BOARD = [];
+
+function parseStandingsCSV(csv) {
+  const lines = csv.trim().split('\n');
+  return lines.slice(1).map(line => {
+    // Handle quoted commas in team names
+    const cols = [];
+    let cur = '', inQ = false;
+    for (const ch of line) {
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+      else { cur += ch; }
+    }
+    cols.push(cur.trim());
+
+    // Columns: A=Rank, B=EntryID, C=TeamName, D=OwnerName, E=TotalPts,
+    //          F=PrevRank, G=RankChange, H=Goals, I=Assists, J=Saves, K=HatTricks, L=LastUpdated
+    const rank      = parseInt(cols[0])   || 0;
+    const entryId   = cols[1]             || '';
+    const team      = cols[2]             || '';
+    const owner     = cols[3]             || '';
+    const pts       = parseFloat(cols[4]) || 0;
+    const change    = parseInt(cols[6])   || 0;
+    const hatTricks = parseInt(cols[10])  || 0;
+
+    const trend = change > 0 ? `+${change}` : change < 0 ? `${change}` : '=';
+    return { rank, entryId, team, name: owner, pts, trend, hatTricks };
+  }).filter(e => e.team && e.name);
+}
+
+async function fetchStandings() {
+  try {
+    const res = await fetch(STANDINGS_CSV);
+    const csv = await res.text();
+    LIVE_BOARD = parseStandingsCSV(csv);
+    totalEntries = LIVE_BOARD.length;
+  } catch(err) {
+    console.warn('Standings fetch failed:', err);
+    LIVE_BOARD = [];
+  }
+}
+
+// ══════════ HAT TRICKS (still hardcoded until HatTricks sheet is published) ══════════
+// Replace with live fetch once HatTricks tab is published to CSV
+const HAT_TRICKS = [];
+
+// ══════════ PRIOR SEASON STATS ══════════
+// Used in player info modal on picks page — prior season actuals
+const PRIOR_SEASON = {
+  'Leon Draisaitl':        {g:52,a:67,sog:294,pim:42, pos:'F'},
+  'Nikita Kucherov':       {g:44,a:100,sog:263,pim:36, pos:'F'},
+  'Nathan MacKinnon':      {g:51,a:89,sog:319,pim:44, pos:'F'},
+  'Connor McDavid':        {g:32,a:100,sog:244,pim:30, pos:'F'},
+  'Artemi Panarin':        {g:49,a:71,sog:233,pim:28, pos:'F'},
+  'Mitch Marner':          {g:26,a:81,sog:214,pim:18, pos:'F'},
+  'Auston Matthews':       {g:69,a:38,sog:319,pim:24, pos:'F'},
+  'Elias Pettersson':      {g:42,a:60,sog:252,pim:26, pos:'F'},
+  'Mikko Rantanen':        {g:55,a:49,sog:281,pim:30, pos:'F'},
+  'Jason Robertson':       {g:46,a:63,sog:257,pim:20, pos:'F'},
+  'Jack Hughes':           {g:43,a:49,sog:228,pim:36, pos:'F'},
+  'Kirill Kaprizov':       {g:47,a:49,sog:272,pim:26, pos:'F'},
+  'J.T. Miller':           {g:29,a:71,sog:178,pim:34, pos:'F'},
+  'William Nylander':      {g:40,a:52,sog:224,pim:22, pos:'F'},
+  'Brayden Point':         {g:33,a:49,sog:196,pim:26, pos:'F'},
+  'Sebastian Aho':         {g:38,a:52,sog:219,pim:30, pos:'F'},
+  'Jesper Bratt':          {g:28,a:55,sog:176,pim:18, pos:'F'},
+  'Sidney Crosby':         {g:42,a:52,sog:209,pim:28, pos:'F'},
+  'Jake Guentzel':         {g:35,a:42,sog:188,pim:24, pos:'F'},
+  'Clayton Keller':        {g:29,a:47,sog:193,pim:22, pos:'F'},
+  'Aleksander Barkov':     {g:31,a:55,sog:221,pim:20, pos:'F'},
+  'Ryan Nugent-Hopkins':   {g:27,a:56,sog:168,pim:22, pos:'F'},
+  'Matt Boldy':            {g:28,a:35,sog:179,pim:14, pos:'F'},
+  'Cole Caufield':         {g:32,a:50,sog:198,pim:18, pos:'F'},
+  'Jordan Kyrou':          {g:28,a:54,sog:192,pim:16, pos:'F'},
+  'Wyatt Johnston':        {g:29,a:37,sog:167,pim:22, pos:'F'},
+  'Anze Kopitar':          {g:22,a:47,sog:141,pim:12, pos:'F'},
+  'John Tavares':          {g:27,a:55,sog:171,pim:14, pos:'F'},
+  'Bo Horvat':             {g:31,a:31,sog:192,pim:22, pos:'F'},
+  'Chris Kreider':         {g:39,a:27,sog:189,pim:38, pos:'F'},
+  'Quinton Byfield':       {g:28,a:52,sog:178,pim:28, pos:'F'},
+  'Matt Duchene':          {g:34,a:38,sog:177,pim:14, pos:'F'},
+  'Brad Marchand':         {g:28,a:48,sog:172,pim:56, pos:'F'},
+  'Alex Ovechkin':         {g:36,a:28,sog:295,pim:26, pos:'F'},
+  'Andrei Svechnikov':     {g:22,a:33,sog:148,pim:36, pos:'F'},
+  'Evgeni Malkin':         {g:28,a:54,sog:177,pim:48, pos:'F'},
+  'Quinn Hughes':          {g:16,a:66,sog:189,pim:22, pos:'D'},
+  'Josh Morrissey':        {g:18,a:64,sog:196,pim:38, pos:'D'},
+  'Victor Hedman':         {g:10,a:68,sog:171,pim:28, pos:'D'},
+  'Shea Theodore':         {g:16,a:66,sog:196,pim:20, pos:'D'},
+  'Zach Werenski':         {g:14,a:57,sog:188,pim:18, pos:'D'},
+  'Adam Fox':              {g:14,a:52,sog:187,pim:20, pos:'D'},
+  'Noah Dobson':           {g:15,a:45,sog:178,pim:30, pos:'D'},
+  'Charlie McAvoy':        {g:11,a:48,sog:178,pim:32, pos:'D'},
+  'Luke Hughes':           {g:16,a:51,sog:147,pim:30, pos:'D'},
+  'Thomas Harley':         {g:14,a:52,sog:166,pim:24, pos:'D'},
+  'MacKenzie Weegar':      {g:11,a:41,sog:165,pim:32, pos:'D'},
+  'Travis Sanheim':        {g:12,a:37,sog:143,pim:38, pos:'D'},
+  'Morgan Rielly':         {g:12,a:45,sog:156,pim:22, pos:'D'},
+  'Evan Bouchard':         {g:18,a:58,sog:211,pim:36, pos:'D'},
+  'Jacob Trouba':          {g:8, a:33,sog:144,pim:66, pos:'D'},
+  'Connor Hellebuyck':     {w:37,l:18,otl:4,so:6,sv:1502, pos:'G'},
+  'Thatcher Demko':        {w:28,l:14,otl:4,so:4,sv:1188, pos:'G'},
+  'Jake Oettinger':        {w:33,l:17,otl:4,so:3,sv:1244, pos:'G'},
+  'Juuse Saros':           {w:31,l:18,otl:5,so:4,sv:1322, pos:'G'},
+  'Stuart Skinner':        {w:30,l:14,otl:6,so:2,sv:1188, pos:'G'},
+  'Ilya Sorokin':          {w:28,l:22,otl:5,so:3,sv:1244, pos:'G'},
+  'Igor Shesterkin':       {w:38,l:13,otl:4,so:6,sv:1455, pos:'G'},
+  'Jeremy Swayman':        {w:31,l:16,otl:4,so:4,sv:1233, pos:'G'},
+  'Andrei Vasilevskiy':    {w:34,l:14,otl:4,so:3,sv:1277, pos:'G'},
+  'Filip Gustavsson':      {w:29,l:16,otl:4,so:5,sv:1198, pos:'G'},
+  'Linus Ullmark':         {w:24,l:14,otl:4,so:4,sv:988,  pos:'G'},
+  'Sergei Bobrovsky':      {w:34,l:15,otl:3,so:4,sv:1222, pos:'G'},
+};
+
+// ══════════ DIVISIONS (2026-27 NHL) ══════════
+const DIVISIONS = {
+  'Atlantic': {
+    conf: 'Eastern',
+    teams: ['Boston Bruins','Buffalo Sabres','Detroit Red Wings','Florida Panthers',
+            'Montreal Canadiens','Ottawa Senators','Tampa Bay Lightning','Toronto Maple Leafs']
+  },
+  'Metropolitan': {
+    conf: 'Eastern',
+    teams: ['Carolina Hurricanes','Columbus Blue Jackets','New Jersey Devils','New York Islanders',
+            'New York Rangers','Philadelphia Flyers','Pittsburgh Penguins','Washington Capitals']
+  },
+  'Central': {
+    conf: 'Western',
+    teams: ['Arizona Coyotes','Chicago Blackhawks','Colorado Avalanche','Dallas Stars',
+            'Minnesota Wild','Nashville Predators','St. Louis Blues','Winnipeg Jets']
+  },
+  'Pacific': {
+    conf: 'Western',
+    teams: ['Anaheim Ducks','Calgary Flames','Edmonton Oilers','Los Angeles Kings',
+            'San Jose Sharks','Seattle Kraken','Utah Hockey Club','Vancouver Canucks']
+  },
+};
+
+// ══════════ NIGHTLY STATS (populated by AGT-004 — update nightly) ══════════
+// This array should come from your published NightlyStats tab once set up.
+// For now it shows last night's sample data from the ticker.
+const NIGHTLY_STATS = [
+  {name:'Auston Matthews', team:'TOR', pos:'F', game:'TOR 4 · BOS 2', goals:2, assists:1, sog:6,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'Mitch Marner',    team:'TOR', pos:'F', game:'TOR 4 · BOS 2', goals:0, assists:2, sog:3,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'William Nylander',team:'TOR', pos:'F', game:'TOR 4 · BOS 2', goals:1, assists:0, sog:4,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'Brad Marchand',   team:'BOS', pos:'F', game:'TOR 4 · BOS 2', goals:1, assists:1, sog:3,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'Jeremy Swayman',  team:'BOS', pos:'G', game:'TOR 4 · BOS 2', goals:0, assists:0, sog:0,  wins:0,losses:1,otl:0,shutouts:0,saves:28,pim:0},
+  {name:'Leon Draisaitl',  team:'EDM', pos:'F', game:'EDM 6 · CGY 1', goals:3, assists:2, sog:8,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'Connor McDavid',  team:'EDM', pos:'F', game:'EDM 6 · CGY 1', goals:1, assists:3, sog:5,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'Stuart Skinner',  team:'EDM', pos:'G', game:'EDM 6 · CGY 1', goals:0, assists:0, sog:0,  wins:1,losses:0,otl:0,shutouts:0,saves:22,pim:0},
+  {name:'Evan Bouchard',   team:'EDM', pos:'D', game:'EDM 6 · CGY 1', goals:0, assists:2, sog:4,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:4},
+  {name:'Artemi Panarin',  team:'NYR', pos:'F', game:'NYR 3 · NJ 2',  goals:1, assists:1, sog:4,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'Jacob Trouba',    team:'NYR', pos:'D', game:'NYR 3 · NJ 2',  goals:0, assists:1, sog:3,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:7},
+  {name:'Jack Hughes',     team:'NJ',  pos:'F', game:'NYR 3 · NJ 2',  goals:1, assists:0, sog:5,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'Luke Hughes',     team:'NJ',  pos:'D', game:'NYR 3 · NJ 2',  goals:0, assists:1, sog:2,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:2},
+  {name:'Quinn Hughes',    team:'VAN', pos:'D', game:'VAN 2 · VGK 1 OT', goals:1, assists:1, sog:5, wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'Thatcher Demko',  team:'VAN', pos:'G', game:'VAN 2 · VGK 1 OT', goals:0, assists:0, sog:0, wins:1,losses:0,otl:0,shutouts:1,saves:31,pim:0},
+  {name:'Elias Pettersson',team:'VAN', pos:'F', game:'VAN 2 · VGK 1 OT', goals:0, assists:1, sog:3, wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
+  {name:'Shea Theodore',   team:'VGK', pos:'D', game:'VAN 2 · VGK 1 OT', goals:1, assists:0, sog:4, wins:0,losses:0,otl:1,shutouts:0,saves:0, pim:2},
+];
+
+// ══════════ TICKER ══════════
+function nightlyPts(p) {
+  if (p.pos === 'G') return roundPts(p.wins*3 + p.losses*1 + p.otl*1.5 + p.shutouts*2 + p.saves*0.02);
+  const ht = (p.goals >= 3) ? 3 : 0;
+  const pimPts = (p.pos === 'D') ? p.pim * 0.25 : 0;
+  return roundPts(p.goals*1 + p.assists*1 + p.sog*0.11 + ht + pimPts);
+}
+
+function tickerStatChips(p) {
+  let chips = '';
+  const isHT = p.pos !== 'G' && p.goals >= 3;
+  if (isHT) chips += `<span class="t-stat ts-ht">🎩 HAT TRICK</span>`;
+  else if (p.goals)   chips += `<span class="t-stat ts-g">${p.goals}G</span>`;
+  if (p.assists)      chips += `<span class="t-stat ts-a">${p.assists}A</span>`;
+  if (p.sog)          chips += `<span class="t-stat ts-sog">${p.sog}SOG</span>`;
+  if (p.wins)         chips += `<span class="t-stat ts-w">${p.wins}W</span>`;
+  if (p.losses)       chips += `<span class="t-stat ts-l">${p.losses}L</span>`;
+  if (p.otl)          chips += `<span class="t-stat ts-otl">${p.otl}OTL</span>`;
+  if (p.shutouts)     chips += `<span class="t-stat ts-so">SO</span>`;
+  if (p.saves)        chips += `<span class="t-stat ts-sv">${p.saves}SV</span>`;
+  if (p.pos==='D' && p.pim) chips += `<span class="t-stat ts-pim">${p.pim}PIM</span>`;
+  return chips;
+}
+
+function buildTicker() {
+  const reel = document.getElementById('ticker-reel');
+  const scorers = NIGHTLY_STATS.filter(p => nightlyPts(p) > 0);
+  const itemHTML = p => {
+    const pts = nightlyPts(p);
+    return `<div class="t-item">
+      <span class="t-game">${p.game}</span>
+      <span class="t-sep">·</span>
+      <span class="t-name">${p.name}</span>
+      <span class="t-team">${p.team}&nbsp;${p.pos}</span>
+      <span class="t-sep">|</span>
+      ${tickerStatChips(p)}
+      <span class="t-pts">+${pts}pts</span>
+    </div>`;
+  };
+  const mid = Math.ceil(scorers.length / 2);
+  const makeRow = (items, cls) => {
+    const inner = items.map(itemHTML).join('');
+    return `<div class="t-row ${cls}">${inner}${inner}</div>`;
+  };
+  reel.innerHTML = makeRow(scorers.slice(0, mid), 't-row1') + makeRow(scorers.slice(mid), 't-row2');
+}
+
+// ══════════ HOME STANDINGS (live) ══════════
+function buildHomeStandings() {
+  const el = document.getElementById('home-standings');
+  if (!LIVE_BOARD.length) {
+    el.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">Loading standings…</div>`;
+    return;
+  }
+  const last = LIVE_BOARD.length - 1;
+  el.innerHTML = LIVE_BOARD.map((e, i) => {
+    const rowCls = i===0?'r1':i===1?'r2':i===2?'r3':i===last?'rl':'';
+    const pos = i===last
+      ? `<span style="font-size:9px;letter-spacing:0px">LAST</span>`
+      : (i+1);
+    const t = e.trend;
+    const mvCls = t.startsWith('+')?'up':t.startsWith('-')?'dn':'eq';
+    const mvLbl = t.startsWith('+')?'▲'+t.slice(1):t.startsWith('-')?'▼'+t.slice(1):'—';
+    const htCell = e.hatTricks > 0 ? '🎩'.repeat(Math.min(e.hatTricks,3)) : '';
+    const ini = e.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+    return `<div class="sc-row ${rowCls}" onclick="openTeamPanel('${e.name}')" style="cursor:pointer" title="View ${e.team} roster">
+      <div class="sc-pos">${pos}</div>
+      <div class="sc-av">${ini}</div>
+      <div class="sc-info">
+        <div class="sc-name">${e.team}</div>
+        <div class="sc-team">${e.name}</div>
+      </div>
+      <div class="sc-ht">${htCell}</div>
+      <div class="sc-mv ${mvCls}">${mvLbl}</div>
+      <div class="sc-pts">${e.pts.toLocaleString()}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════ STATE ══════════
+let picks = {};
+let totalEntries = 1;
+
+// ══════════ NAV ══════════
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('on');
+  if (btn && btn.classList) btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ══════════ SCORING ENGINE ══════════
+const SCORING = {
+  F: { goal:1, assist:1, sog:0.11, hatTrickBonus:3 },
+  D: { goal:1, assist:1, sog:0.11, hatTrickBonus:3, pim:0.25 },
+  G: { win:3, loss:1, otl:1.5, shutout:2, save:0.02 }
+};
+
+function calcPts(p) {
+  const r = SCORING[p.pos] || SCORING.F;
+  if (p.pos === 'G') {
+    return roundPts((p.wins||0)*r.win + (p.losses||0)*r.loss + (p.otl||0)*r.otl + (p.shutouts||0)*r.shutout + (p.saves||0)*r.save);
+  }
+  const htBonus = isHatTrick(p) ? r.hatTrickBonus : 0;
+  const pimPts  = p.pos === 'D' ? (p.pim||0) * r.pim : 0;
+  return roundPts((p.goals||0)*r.goal + (p.assists||0)*r.assist + (p.sog||0)*r.sog + htBonus + pimPts);
+}
+
+function roundPts(n) { return Math.round(n * 100) / 100; }
+function isHatTrick(p) { return p.pos !== 'G' && (p.goals || 0) >= 3; }
+
+// ══════════ LEADERBOARD ══════════
+function initials(n) { return n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
+
+function lbRowHTML(e, i) {
+  const cls = i===0?'p1':i===1?'p2':i===2?'p3':'';
+  const t = e.trend;
+  const tCls = t.startsWith('+')?'trend-up':t.startsWith('-')?'trend-dn':'trend-eq';
+  const tLbl = t.startsWith('+')?'▲'+t.slice(1):t.startsWith('-')?'▼'+t.slice(1):'—';
+  const htBadge = e.hatTricks > 0
+    ? `<span title="${e.hatTricks} hat trick(s)" style="font-size:13px;margin-right:4px">${'🎩'.repeat(Math.min(e.hatTricks,3))}</span>`
+    : '';
+  return `<div class="lb-row ${cls}">
+    <div class="lb-pos">${i+1}</div>
+    <div class="lb-av">${initials(e.name)}</div>
+    <div class="lb-info">
+      <div class="lb-name">${e.name}</div>
+      <div class="lb-team">${e.team}</div>
+    </div>
+    ${htBadge}
+    <span class="lb-trend ${tCls}">${tLbl}</span>
+    <div class="lb-pts">${e.pts.toLocaleString()}</div>
+  </div>`;
+}
+
+function buildBoards() {
+  if (!LIVE_BOARD.length) return;
+  document.getElementById('full-lb').innerHTML = LIVE_BOARD.map((e,i)=>lbRowHTML(e,i)).join('');
+  document.getElementById('bd-count').textContent = LIVE_BOARD.length + ' entries';
+}
+
+function buildHatTrickHall() {
+  const sorted = [...HAT_TRICKS].sort((a,b) => b.count - a.count || a.player.localeCompare(b.player));
+  const total = sorted.reduce((s,h) => s + h.count, 0);
+  document.getElementById('ht-total-badge').textContent = total + ' this season';
+  if (sorted.length === 0) {
+    document.getElementById('ht-hall-rows').innerHTML =
+      `<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">No hat tricks yet this season.</div>`;
+    return;
+  }
+  document.getElementById('ht-hall-rows').innerHTML = sorted.map((h, i) => {
+    return `<div class="ht-row">
+      <div class="ht-num">${i+1}</div>
+      <div class="ht-av">${h.player.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>
+      <div class="ht-info">
+        <div class="ht-player">${h.player}</div>
+        <div class="ht-meta">${h.team} · ${h.pos} · Drafted by ${h.owner}</div>
+        <div class="ht-entry-owner">${h.ownerTeam}</div>
+        <div style="font-size:10px;color:var(--muted2);font-family:'DM Mono',monospace;margin-top:3px">${h.dates.join(' · ')}</div>
+      </div>
+      <div class="ht-hats">${'🎩'.repeat(h.count)}</div>
+      <div class="ht-goals-col">${h.count}×</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════ TEAM PANEL ══════════
+let currentFilter = 'ALL';
+let currentRoster = [];
+
+function openTeamPanel(ownerName) {
+  const entry = LIVE_BOARD.find(e => e.name === ownerName);
+  if (!entry) return;
+  const ini = ownerName.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('tp-av').textContent = ini;
+  document.getElementById('tp-tname').textContent = entry.team;
+  document.getElementById('tp-owner').textContent = ownerName;
+  document.getElementById('tp-meta').innerHTML = `
+    <div class="tp-stat-pill"><div class="spv burg">${entry.pts}</div><div class="spl">Total Pts</div></div>
+    <div class="tp-stat-pill"><div class="spv blue">${entry.rank}</div><div class="spl">Rank</div></div>
+    <div class="tp-stat-pill"><div class="spv">${entry.hatTricks > 0 ? '🎩'.repeat(entry.hatTricks) : '0'}</div><div class="spl">Hat Tricks</div></div>
+  `;
+  document.getElementById('tp-tbody').innerHTML =
+    `<tr><td colspan="12" style="text-align:center;padding:30px;color:var(--muted);font-size:13px">
+      Full roster view coming once Apps Script is live and Players sheet is published.
+    </td></tr>`;
+  document.getElementById('tp-tfoot').innerHTML = '';
+  document.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector('.tp-tab').classList.add('active');
+  currentFilter = 'ALL';
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeTeamPanel() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function overlayClick(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeTeamPanel();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeTeamPanel(); });
+
+function filterRoster(pos, tab) {
+  currentFilter = pos;
+  document.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+  renderRoster(currentRoster, pos);
+}
+
+// ══════════ PAYOUTS ══════════
+function updatePayouts() {
+  const prize = totalEntries * 10 * 0.5;
+  document.getElementById('h-entries').textContent = totalEntries;
+  document.getElementById('h-pot').textContent = '$' + Math.round(prize);
+}
+
+// ══════════ DIVISION PICKS (on picks page) ══════════
+function buildDivisionPicks() {
+  const grid = document.getElementById('div-grid');
+  if (!grid) return;
+  grid.innerHTML = Object.entries(DIVISIONS).map(([divName, div]) => {
+    const options = div.teams.map(t => `<option value="${t}">${t}</option>`).join('');
+    return `<div class="div-card">
+      <div class="div-head">
+        <span class="div-conf">${div.conf}</span>
+        <span class="div-name">${divName}</span>
+      </div>
+      <select class="div-select" id="div-${divName.toLowerCase()}" onchange="picks['div_${divName}'] = this.value">
+        <option value="">— Pick division winner —</option>
+        ${options}
+      </select>
+      <div class="div-bonus">+10 pts while in 1st · updates nightly</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════ TOAST ══════════
+function toast(title, body) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-t').textContent = title;
+  document.getElementById('toast-b').textContent = body;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),4200);
+}
+
+// ══════════ PAYOUT TABLE ══════════
+function buildPayoutTable() {
+  const tbody = document.getElementById('payout-tbody');
+  if (!tbody) return;
+  const entries = [10, 20, 30, 40, 50, 75, 100];
+  tbody.innerHTML = entries.map((n, i) => {
+    const prize = n * 10 * 0.5;
+    const bg = i % 2 === 0 ? '' : 'style="background:var(--surface2)"';
+    return `<tr ${bg}>
+      <td style="font-family:'DM Mono',monospace;font-weight:600">${n}</td>
+      <td style="text-align:right;font-family:'DM Mono',monospace;font-weight:700;color:var(--gold)">$${Math.round(prize * 0.5)}</td>
+      <td style="text-align:right;font-family:'DM Mono',monospace;font-weight:700;color:#9ca3af">$${Math.round(prize * 0.3)}</td>
+      <td style="text-align:right;font-family:'DM Mono',monospace;font-weight:700;color:#cd7f32">$${Math.round(prize * 0.2)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ══════════ INIT ══════════
 buildTicker();
-buildHomeStandings();
-updatePayouts();
+buildHatTrickHall();
+buildDivisionPicks();
+buildPayoutTable();
+
+// Fetch live standings then render
+fetchStandings().then(() => {
+  buildHomeStandings();
+  buildBoards();
+  updatePayouts();
+});
 </script>
 </body>
 </html>
