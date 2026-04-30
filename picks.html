@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Picks - AAHL</title>
+<title>My Picks — AAHL</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -24,259 +25,114 @@
   </div>
 </header>
 
-<div class="wrap" style="padding-top:40px;max-width:1200px;">
-  
-  <div style="margin-bottom:32px">
+<!-- SPORTS TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-tag">Last Night</div>
+  <div class="ticker-viewport">
+    <div class="ticker-reel" id="ticker-reel"></div>
+  </div>
+</div>
+
+<div class="page on">
+<div class="wrap">
+
+  <div style="padding-top:8px;margin-bottom:28px">
     <div class="eyebrow">Entry form</div>
-    <h1 style="font-size:36px;margin:0">Make Your Picks</h1>
+    <div style="font-size:26px;font-weight:800">Make Your Picks</div>
   </div>
 
-  <!-- SUCCESS MESSAGE (hidden by default) -->
-  <div id="success-message" style="display:none;background:rgba(34,197,94,0.1);border:2px solid rgb(34,197,94);border-radius:12px;padding:24px;margin-bottom:32px;text-align:center;">
-    <div style="font-size:48px;margin-bottom:12px;">✅</div>
-    <h2 style="margin:0 0 8px 0;color:rgb(34,197,94);">Entry Submitted!</h2>
-    <p style="margin:0 0 20px 0;color:var(--text);">Your team has been saved. Want to enter another team?</p>
-    <button onclick="resetForm()" style="background:var(--burgundy);color:white;border:none;padding:14px 32px;border-radius:8px;font-size:16px;font-weight:600;cursor:pointer;">
-      Submit Another Entry
+  <!-- Your Info -->
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-head"><span class="card-title">Your Info</span></div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="field"><label>First name</label><input type="text" id="ff" placeholder="First"></div>
+        <div class="field"><label>Last name</label><input type="text" id="fl" placeholder="Last"></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Email</label><input type="email" id="fe" placeholder="you@email.com"></div>
+        <div class="field"><label>Phone</label><input type="tel" id="fp" placeholder="416-555-0100"></div>
+      </div>
+      <div class="field"><label>Team name</label><input type="text" id="ft" placeholder="Your team name"></div>
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;font-size:13px;color:var(--muted)">
+        E-transfer <span style="color:var(--text);font-weight:600">$10 per entry</span> to <span style="color:var(--accent);font-family:'DM Mono',monospace">matt.hope@rocketmail.com</span> — include your full name in the memo.
+      </div>
+    </div>
+  </div>
+
+  <!-- Division Picks -->
+  <div class="div-picks-card">
+    <div class="div-picks-head">
+      <div class="div-picks-title">
+        <span style="font-size:20px">🏒</span>
+        Division Winner Picks
+        <span class="div-bonus-badge">+10 pts each</span>
+      </div>
+      <span style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace">Pick 1st place team per division at season end</span>
+    </div>
+    <div class="div-grid" id="div-grid"></div>
+    <div class="div-picks-footer">
+      <div class="div-picks-count"><strong id="div-pick-count">0</strong> of 4 divisions picked · +<strong id="div-bonus-total">0</strong> potential bonus pts</div>
+      <span style="font-size:11px;color:var(--muted2);font-family:'DM Mono',monospace">10 pts per correct division winner</span>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="picks-bar">
+    <div class="big" id="pc">0</div>
+    <div class="picks-bar-right">
+      <div class="lbl">of 24 boxes filled</div>
+      <div class="prog-wrap"><div class="prog-fill" id="pbar" style="width:0%"></div></div>
+      <div class="chips" id="chips"></div>
+    </div>
+  </div>
+
+  <div class="draft-grid" id="draft"></div>
+
+  <div style="text-align:center;margin-top:32px">
+    <button class="btn btn-gold" style="font-size:16px;padding:14px 40px" onclick="submitEntry()">
+      Submit Entry →
     </button>
+    <div style="margin-top:10px;font-size:12px;color:var(--muted2)">Picks lock September 29, 2026 · No trades after submission</div>
   </div>
 
-  <!-- ENTRY FORM -->
-  <div id="entry-form">
-    
-    <!-- YOUR INFO -->
-    <div class="card" style="margin-bottom:24px;">
-      <div class="card-head"><span class="card-title">Your Info</span></div>
-      <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:24px;">
-        <div>
-          <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted2);margin-bottom:8px;">First Name</label>
-          <input type="text" id="firstName" placeholder="First" style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text);font-size:15px;">
-        </div>
-        <div>
-          <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted2);margin-bottom:8px;">Last Name</label>
-          <input type="text" id="lastName" placeholder="Last" style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text);font-size:15px;">
-        </div>
-        <div>
-          <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted2);margin-bottom:8px;">Email</label>
-          <input type="email" id="email" placeholder="you@email.com" style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text);font-size:15px;">
-        </div>
-        <div>
-          <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted2);margin-bottom:8px;">Phone</label>
-          <input type="tel" id="phone" placeholder="416-555-0100" style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text);font-size:15px;">
-        </div>
-        <div style="grid-column:1/-1;">
-          <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted2);margin-bottom:8px;">Team Name</label>
-          <input type="text" id="teamName" placeholder="Your team name" style="width:100%;padding:12px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text);font-size:15px;">
-        </div>
-        <div style="grid-column:1/-1;padding:12px;background:rgba(111,38,61,0.08);border-radius:8px;font-size:14px;color:var(--muted);">
-          E-transfer: <strong style="color:var(--burgundy);">$10 per entry</strong> to <a href="mailto:matt.hope@rocketmail.com" style="color:var(--burgundy);text-decoration:none;">matt.hope@rocketmail.com</a> — include your full name in the memo.
-        </div>
+</div>
+</div>
+
+<!-- PLAYER INFO MODAL -->
+<div class="player-modal-overlay" id="player-modal-overlay" onclick="closePlayerModal(event)">
+  <div class="player-modal" id="player-modal">
+    <div class="pm-head">
+      <div><div class="pm-name" id="pm-name"></div>
+        <div class="pm-team-row"><span class="pm-nhl" id="pm-nhl"></span><span class="pm-pos-badge" id="pm-pos-badge"></span></div>
       </div>
+      <button class="pm-close" onclick="closePlayerModal()">✕</button>
     </div>
-
-    <!-- PLAYER PICKS (24 boxes) -->
-    <div class="card" style="margin-bottom:24px;">
-      <div class="card-head"><span class="card-title">Player Picks</span><span style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;">Pick 1 player per box (24 total)</span></div>
-      <div id="player-picks-grid" style="padding:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
-        <!-- Player boxes will be inserted here by JavaScript -->
-      </div>
+    <div class="pm-season-label">2025–26 Season Stats (Prior Year)</div>
+    <div class="pm-stats-grid" id="pm-stats-grid"></div>
+    <div class="pm-pts-section">
+      <div class="pm-pts-title">Pool Points Breakdown</div>
+      <div class="pm-pts-breakdown" id="pm-pts-breakdown"></div>
     </div>
-
-    <!-- DIVISION WINNER PICKS (moved after players) -->
-    <div class="card" style="margin-bottom:24px;">
-      <div class="card-head">
-        <span class="card-title">🏆 Division Winner Picks</span>
-        <span style="font-size:12px;color:var(--gold);font-family:'DM Mono',monospace;">+18 pts each</span>
-      </div>
-      <div style="padding:20px;font-size:13px;color:var(--muted);margin-bottom:16px;">
-        Pick 1st place team per division at season end
-      </div>
-      <div style="padding:0 20px 20px;display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-        
-        <!-- Atlantic -->
-        <div>
-          <label style="display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:8px;">Eastern Conference</label>
-          <label style="display:block;font-size:11px;font-weight:600;color:var(--text);margin-bottom:6px;">Atlantic Division</label>
-          <select id="atlantic" style="width:100%;padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text);font-size:14px;">
-            <option value="">— Pick division winner —</option>
-          </select>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">+18 pts if correct at season end</div>
-        </div>
-
-        <!-- Metropolitan -->
-        <div>
-          <label style="display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:8px;">Eastern Conference</label>
-          <label style="display:block;font-size:11px;font-weight:600;color:var(--text);margin-bottom:6px;">Metropolitan Division</label>
-          <select id="metropolitan" style="width:100%;padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text);font-size:14px;">
-            <option value="">— Pick division winner —</option>
-          </select>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">+18 pts if correct at season end</div>
-        </div>
-
-        <!-- Central -->
-        <div>
-          <label style="display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:8px;">Western Conference</label>
-          <label style="display:block;font-size:11px;font-weight:600;color:var(--text);margin-bottom:6px;">Central Division</label>
-          <select id="central" style="width:100%;padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text);font-size:14px;">
-            <option value="">— Pick division winner —</option>
-          </select>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">+18 pts if correct at season end</div>
-        </div>
-
-        <!-- Pacific -->
-        <div>
-          <label style="display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:8px;">Western Conference</label>
-          <label style="display:block;font-size:11px;font-weight:600;color:var(--text);margin-bottom:6px;">Pacific Division</label>
-          <select id="pacific" style="width:100%;padding:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:6px;color:var(--text);font-size:14px;">
-            <option value="">— Pick division winner —</option>
-          </select>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px;">+18 pts if correct at season end</div>
-        </div>
-
-      </div>
+    <div class="pm-total-pts">
+      <div><div class="pm-total-label">Prior season pool points</div><div class="pm-total-note">Based on 2025-26 stats</div></div>
+      <div class="pm-total-val" id="pm-total-pts"></div>
     </div>
-
-    <!-- SUBMIT BUTTON (moved to bottom) -->
-    <div style="text-align:center;padding:32px 0;">
-      <button onclick="submitEntry()" style="background:var(--burgundy);color:white;border:none;padding:18px 48px;border-radius:12px;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(111,38,61,0.3);">
-        Submit Entry →
-      </button>
-      <div style="margin-top:12px;font-size:13px;color:var(--muted);">
-        Picks lock September 29, 2026 - No trades after submission
-      </div>
-    </div>
-
+    <button class="pm-pick-btn" id="pm-pick-btn" onclick="pickFromModal()"></button>
   </div>
+</div>
 
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-title" id="toast-t"></div>
+  <div class="toast-body" id="toast-b"></div>
 </div>
 
 <script src="main.js"></script>
 <script>
-// Initialize player pick boxes on page load
-document.addEventListener('DOMContentLoaded', () => {
-  loadPlayerBoxes();
-  loadDivisionTeams();
-});
-
-function loadPlayerBoxes() {
-  // This will be populated from your player data
-  // For now, showing structure - you'll need to connect to your data source
-  const grid = document.getElementById('player-picks-grid');
-  
-  // Example: Create 24 boxes (Forwards 1-12, Defense 1-6, Goalies 1-6)
-  const boxes = [
-    ...Array(12).fill('F').map((p,i) => ({type:'Forward', num:i+1, label:`Forwards ${i+1}`})),
-    ...Array(6).fill('D').map((p,i) => ({type:'Defense', num:i+1, label:`Defense ${i+1}`})),
-    ...Array(6).fill('G').map((p,i) => ({type:'Goalie', num:i+1, label:`Goalie ${i+1}`}))
-  ];
-
-  boxes.forEach((box, idx) => {
-    const div = document.createElement('div');
-    div.innerHTML = `
-      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;">
-        <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted2);margin-bottom:8px;">${box.label}</div>
-        <select id="pick${idx+1}" style="width:100%;padding:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:4px;color:var(--text);font-size:13px;">
-          <option value="">— Pick player —</option>
-          <!-- Players will be loaded here -->
-        </select>
-      </div>
-    `;
-    grid.appendChild(div);
-  });
-}
-
-function loadDivisionTeams() {
-  const divisions = {
-    atlantic: ['Boston Bruins', 'Buffalo Sabres', 'Detroit Red Wings', 'Florida Panthers', 'Montreal Canadiens', 'Ottawa Senators', 'Tampa Bay Lightning', 'Toronto Maple Leafs'],
-    metropolitan: ['Carolina Hurricanes', 'Columbus Blue Jackets', 'New Jersey Devils', 'New York Islanders', 'New York Rangers', 'Philadelphia Flyers', 'Pittsburgh Penguins', 'Washington Capitals'],
-    central: ['Arizona Coyotes', 'Chicago Blackhawks', 'Colorado Avalanche', 'Dallas Stars', 'Minnesota Wild', 'Nashville Predators', 'St. Louis Blues', 'Winnipeg Jets'],
-    pacific: ['Anaheim Ducks', 'Calgary Flames', 'Edmonton Oilers', 'Los Angeles Kings', 'San Jose Sharks', 'Seattle Kraken', 'Vancouver Canucks', 'Vegas Golden Knights']
-  };
-
-  Object.keys(divisions).forEach(div => {
-    const select = document.getElementById(div);
-    divisions[div].forEach(team => {
-      const option = document.createElement('option');
-      option.value = team;
-      option.textContent = team;
-      select.appendChild(option);
-    });
-  });
-}
-
-async function submitEntry() {
-  // Collect all form data
-  const data = {
-    firstName: document.getElementById('firstName').value,
-    lastName: document.getElementById('lastName').value,
-    email: document.getElementById('email').value,
-    phone: document.getElementById('phone').value,
-    teamName: document.getElementById('teamName').value,
-    picks: [],
-    divisions: {
-      atlantic: document.getElementById('atlantic').value,
-      metropolitan: document.getElementById('metropolitan').value,
-      central: document.getElementById('central').value,
-      pacific: document.getElementById('pacific').value
-    }
-  };
-
-  // Collect all 24 player picks
-  for (let i = 1; i <= 24; i++) {
-    data.picks.push(document.getElementById(`pick${i}`).value);
-  }
-
-  // Validate
-  if (!data.firstName || !data.lastName || !data.email || !data.teamName) {
-    alert('Please fill in all your info fields');
-    return;
-  }
-
-  // Submit to Google Apps Script
-  try {
-    const response = await fetch('YOUR_GOOGLE_APPS_SCRIPT_URL', {
-      method: 'POST',
-      body: JSON.stringify(data)
-    });
-
-    const result = await response.json();
-    
-    if (result.success) {
-      // Show success message
-      document.getElementById('entry-form').style.display = 'none';
-      document.getElementById('success-message').style.display = 'block';
-      window.scrollTo(0,0);
-    } else {
-      alert('Error: ' + result.error);
-    }
-  } catch (err) {
-    alert('Submission failed: ' + err.message);
-  }
-}
-
-function resetForm() {
-  // Clear all fields
-  document.getElementById('firstName').value = '';
-  document.getElementById('lastName').value = '';
-  document.getElementById('email').value = '';
-  document.getElementById('phone').value = '';
-  document.getElementById('teamName').value = '';
-  
-  for (let i = 1; i <= 24; i++) {
-    document.getElementById(`pick${i}`).value = '';
-  }
-  
-  document.getElementById('atlantic').value = '';
-  document.getElementById('metropolitan').value = '';
-  document.getElementById('central').value = '';
-  document.getElementById('pacific').value = '';
-
-  // Hide success, show form
-  document.getElementById('success-message').style.display = 'none';
-  document.getElementById('entry-form').style.display = 'block';
-  window.scrollTo(0,0);
-}
+buildTicker();
+buildDraft();
+buildDivisionPicks();
 </script>
-
 </body>
 </html>
