@@ -249,9 +249,8 @@ function updateLivePayouts() {
 }
 
 // ══════════ INIT ══════════
-buildTicker(); // from main.js
-
-fetchStandings().then(() => {
+Promise.all([fetchNightlyStats(), fetchStandings()]).then(() => {
+  buildTicker();
   buildLiveStandings();
   updateLivePayouts();
 });
