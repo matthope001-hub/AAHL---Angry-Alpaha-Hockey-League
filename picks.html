@@ -41,39 +41,39 @@
     <div style="font-size:26px;font-weight:800">Make Your Picks</div>
   </div>
 
-  <!-- Your Info -->
+  <!-- Your Info — IDs match main.js submitEntry() -->
   <div class="card" style="margin-bottom:24px">
     <div class="card-head"><span class="card-title">Your Info</span></div>
     <div class="card-body">
       <div class="form-row">
-        <div class="field"><label>First name</label><input type="text" id="firstName" placeholder="First"></div>
-        <div class="field"><label>Last name</label><input type="text" id="lastName" placeholder="Last"></div>
+        <div class="field"><label>First name</label><input type="text" id="ff" placeholder="First"></div>
+        <div class="field"><label>Last name</label><input type="text" id="fl" placeholder="Last"></div>
       </div>
       <div class="form-row">
-        <div class="field"><label>Email</label><input type="email" id="email" placeholder="you@email.com"></div>
-        <div class="field"><label>Phone</label><input type="tel" id="phone" placeholder="416-555-0100"></div>
+        <div class="field"><label>Email</label><input type="email" id="fe" placeholder="you@email.com"></div>
+        <div class="field"><label>Phone</label><input type="tel" id="fp" placeholder="416-555-0100"></div>
       </div>
-      <div class="field"><label>Team name</label><input type="text" id="teamName" placeholder="Your team name"></div>
+      <div class="field"><label>Team name</label><input type="text" id="ft" placeholder="Your team name"></div>
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;font-size:13px;color:var(--muted);margin-top:12px">
         E-transfer <span style="color:var(--text);font-weight:600">$10 per entry</span> to <span style="color:var(--accent);font-family:'DM Mono',monospace">matt.hope@rocketmail.com</span> — include your full name in the memo.
       </div>
     </div>
   </div>
 
-  <!-- Progress -->
+  <!-- Progress — IDs match main.js pick() -->
   <div class="picks-bar">
-    <div class="big" id="picks-count">0</div>
+    <div class="big" id="pc">0</div>
     <div class="picks-bar-right">
-      <div class="lbl">of 24 boxes filled · <span id="picks-remaining">24</span> remaining</div>
+      <div class="lbl">of 24 boxes filled</div>
       <div class="prog-wrap"><div class="prog-fill" id="pbar" style="width:0%"></div></div>
       <div class="chips" id="chips"></div>
     </div>
   </div>
 
-  <!-- Player Draft Grid -->
-  <div class="draft-grid" id="draft-grid"></div>
+  <!-- Player Draft Grid — id="draft" matches main.js buildDraft() -->
+  <div class="draft-grid" id="draft"></div>
 
-  <!-- Division Picks -->
+  <!-- Division Picks — id="div-grid" matches main.js buildDivisionPicks() -->
   <div class="div-picks-card" style="margin-top:32px">
     <div class="div-picks-head">
       <div class="div-picks-title">
@@ -101,43 +101,26 @@
 </div>
 </div>
 
-<!-- PICK MODAL -->
-<div class="player-modal-overlay" id="pick-modal" onclick="closePickModal(event)">
+<!-- PLAYER INFO MODAL -->
+<div class="player-modal-overlay" id="player-modal-overlay" onclick="closePlayerModal(event)">
   <div class="player-modal" id="player-modal">
     <div class="pm-head">
-      <div>
-        <div class="pm-box-title" id="pm-box-title"></div>
-        <div class="pm-name" id="pm-name"></div>
-        <div class="pm-team-row">
-          <span class="pm-nhl" id="pm-team-pos"></span>
-          <span class="pm-pos-badge" id="pm-pos-badge"></span>
-        </div>
+      <div><div class="pm-name" id="pm-name"></div>
+        <div class="pm-team-row"><span class="pm-nhl" id="pm-nhl"></span><span class="pm-pos-badge" id="pm-pos-badge"></span></div>
       </div>
-      <button class="pm-close" onclick="closePickModal()">✕</button>
+      <button class="pm-close" onclick="closePlayerModal()">✕</button>
     </div>
-
-    <div style="display:grid;grid-template-columns:180px 1fr;gap:0;min-height:320px">
-      <!-- Player list -->
-      <div class="pm-player-list" id="pm-player-list" style="border-right:1px solid var(--border);overflow-y:auto"></div>
-
-      <!-- Player detail -->
-      <div style="padding:16px">
-        <div class="pm-season-label">2025–26 Season Stats (Prior Year)</div>
-        <div class="pm-stats-grid" id="pm-stats-grid"></div>
-        <div class="pm-pts-section">
-          <div class="pm-pts-title">Pool Points Breakdown</div>
-          <div class="pm-pts-breakdown" id="pm-pts-breakdown"></div>
-        </div>
-        <div class="pm-total-pts">
-          <div><div class="pm-total-label">Prior season pool points</div><div class="pm-total-note">Based on 2025-26 stats</div></div>
-          <div class="pm-total-val" id="pm-total-pts"></div>
-        </div>
-      </div>
+    <div class="pm-season-label">2025–26 Season Stats (Prior Year)</div>
+    <div class="pm-stats-grid" id="pm-stats-grid"></div>
+    <div class="pm-pts-section">
+      <div class="pm-pts-title">Pool Points Breakdown</div>
+      <div class="pm-pts-breakdown" id="pm-pts-breakdown"></div>
     </div>
-
-    <div style="padding:14px 16px;border-top:1px solid var(--border)">
-      <button class="pm-pick-btn" id="pm-pick-btn"></button>
+    <div class="pm-total-pts">
+      <div><div class="pm-total-label">Prior season pool points</div><div class="pm-total-note">Based on 2025-26 stats</div></div>
+      <div class="pm-total-val" id="pm-total-pts"></div>
     </div>
+    <button class="pm-pick-btn" id="pm-pick-btn" onclick="pickFromModal()"></button>
   </div>
 </div>
 
@@ -149,462 +132,10 @@
 
 <script src="main.js"></script>
 <script>
-
-// ══════════ BOXES DEFINITION ══════════
-const BOXES = [
-  {id:1,  label:'Forward 1',  type:'F', players:[
-    {name:'Leon Draisaitl',       team:'EDM'},{name:'Nikita Kucherov',     team:'TBL'},
-    {name:'Nathan MacKinnon',     team:'COL'},{name:'Connor McDavid',      team:'EDM'},
-    {name:'Artemi Panarin',       team:'NYR'}]},
-  {id:2,  label:'Forward 2',  type:'F', players:[
-    {name:'Mitch Marner',         team:'TOR'},{name:'Auston Matthews',     team:'TOR'},
-    {name:'Elias Pettersson',     team:'VAN'},{name:'Mikko Rantanen',      team:'COL'},
-    {name:'Jason Robertson',      team:'DAL'}]},
-  {id:3,  label:'Forward 3',  type:'F', players:[
-    {name:'Jack Hughes',          team:'NJD'},{name:'Kirill Kaprizov',     team:'MIN'},
-    {name:'J.T. Miller',          team:'VAN'},{name:'William Nylander',    team:'TOR'},
-    {name:'Brayden Point',        team:'TBL'}]},
-  {id:4,  label:'Forward 4',  type:'F', players:[
-    {name:'Sebastian Aho',        team:'CAR'},{name:'Jesper Bratt',        team:'NJD'},
-    {name:'Sidney Crosby',        team:'PIT'},{name:'Jake Guentzel',       team:'TBL'},
-    {name:'Clayton Keller',       team:'ARI'}]},
-  {id:5,  label:'Forward 5',  type:'F', players:[
-    {name:'Aleksander Barkov',    team:'FLA'},{name:'Ryan Nugent-Hopkins', team:'EDM'},
-    {name:'Matt Boldy',           team:'MIN'},{name:'Cole Caufield',       team:'MTL'},
-    {name:'Jordan Kyrou',         team:'STL'}]},
-  {id:6,  label:'Forward 6',  type:'F', players:[
-    {name:'Wyatt Johnston',       team:'DAL'},{name:'Anze Kopitar',        team:'LAK'},
-    {name:'John Tavares',         team:'TOR'},{name:'Bo Horvat',           team:'NYI'},
-    {name:'Chris Kreider',        team:'NYR'}]},
-  {id:7,  label:'Forward 7',  type:'F', players:[
-    {name:'Quinton Byfield',      team:'LAK'},{name:'Matt Duchene',        team:'NSH'},
-    {name:'Brad Marchand',        team:'BOS'},{name:'Alex Ovechkin',       team:'WSH'},
-    {name:'Andrei Svechnikov',    team:'CAR'}]},
-  {id:8,  label:'Forward 8',  type:'F', players:[
-    {name:'Evgeni Malkin',        team:'PIT'},{name:'Brock Nelson',        team:'NYI'},
-    {name:'Filip Forsberg',       team:'NSH'},{name:'Jonathan Huberdeau',  team:'CGY'},
-    {name:'Alex DeBrincat',       team:'DET'}]},
-  {id:9,  label:'Forward 9',  type:'F', players:[
-    {name:'Roope Hintz',          team:'DAL'},{name:'Tage Thompson',       team:'BUF'},
-    {name:'Nick Suzuki',          team:'MTL'},{name:'Troy Terry',          team:'ANA'},
-    {name:'Sam Reinhart',         team:'FLA'}]},
-  {id:10, label:'Forward 10', type:'F', players:[
-    {name:'Ryan O\'Reilly',       team:'NSH'},{name:'Mark Scheifele',      team:'WPG'},
-    {name:'Rickard Rakell',       team:'PIT'},{name:'Michael Bunting',     team:'CAR'},
-    {name:'Connor Bedard',        team:'CHI'}]},
-  {id:11, label:'Forward 11', type:'F', players:[
-    {name:'Patrick Kane',         team:'DET'},{name:'Max Pacioretty',      team:'WSH'},
-    {name:'Dylan Larkin',         team:'DET'},{name:'Tomas Hertl',         team:'VGK'},
-    {name:'Sam Bennett',          team:'FLA'}]},
-  {id:12, label:'Forward 12', type:'F', players:[
-    {name:'David Pastrnak',       team:'BOS'},{name:'Nazem Kadri',         team:'CGY'},
-    {name:'Jonathan Marchessault',team:'VGK'},{name:'Sean Monahan',        team:'MTL'},
-    {name:'Drake Batherson',      team:'OTT'}]},
-  {id:13, label:'Defense 1',  type:'D', players:[
-    {name:'Quinn Hughes',         team:'VAN'},{name:'Josh Morrissey',      team:'WPG'},
-    {name:'Victor Hedman',        team:'TBL'},{name:'Shea Theodore',       team:'VGK'},
-    {name:'Zach Werenski',        team:'CBJ'}]},
-  {id:14, label:'Defense 2',  type:'D', players:[
-    {name:'Adam Fox',             team:'NYR'},{name:'Noah Dobson',         team:'NYI'},
-    {name:'Charlie McAvoy',       team:'BOS'},{name:'Luke Hughes',         team:'NJD'},
-    {name:'Thomas Harley',        team:'DAL'}]},
-  {id:15, label:'Defense 3',  type:'D', players:[
-    {name:'MacKenzie Weegar',     team:'CGY'},{name:'Travis Sanheim',      team:'PHI'},
-    {name:'Morgan Rielly',        team:'TOR'},{name:'Evan Bouchard',       team:'EDM'},
-    {name:'Jacob Trouba',         team:'NYR'}]},
-  {id:16, label:'Defense 4',  type:'D', players:[
-    {name:'Devon Toews',          team:'COL'},{name:'Dougie Hamilton',     team:'NJD'},
-    {name:'Rasmus Dahlin',        team:'BUF'},{name:'Darnell Nurse',       team:'EDM'},
-    {name:'Ryan Graves',          team:'PIT'}]},
-  {id:17, label:'Defense 5',  type:'D', players:[
-    {name:'Seth Jones',           team:'CHI'},{name:'Alex Pietrangelo',    team:'VGK'},
-    {name:'Miro Heiskanen',       team:'DAL'},{name:'Sean Walker',         team:'PHI'},
-    {name:'Colton Parayko',       team:'STL'}]},
-  {id:18, label:'Defense 6',  type:'D', players:[
-    {name:'Hampus Lindholm',      team:'BOS'},{name:'Jakob Chychrun',      team:'OTT'},
-    {name:'Tyson Barrie',         team:'NSH'},{name:'Brent Burns',         team:'CAR'},
-    {name:'Ivan Provorov',        team:'CBJ'}]},
-  {id:19, label:'Goalie 1',   type:'G', players:[
-    {name:'Connor Hellebuyck',    team:'WPG'},{name:'Thatcher Demko',      team:'VAN'},
-    {name:'Jake Oettinger',       team:'DAL'},{name:'Juuse Saros',         team:'NSH'},
-    {name:'Stuart Skinner',       team:'EDM'}]},
-  {id:20, label:'Goalie 2',   type:'G', players:[
-    {name:'Ilya Sorokin',         team:'NYI'},{name:'Igor Shesterkin',     team:'NYR'},
-    {name:'Jeremy Swayman',       team:'BOS'},{name:'Andrei Vasilevskiy',  team:'TBL'},
-    {name:'Filip Gustavsson',     team:'MIN'}]},
-  {id:21, label:'Goalie 3',   type:'G', players:[
-    {name:'Linus Ullmark',        team:'OTT'},{name:'Sergei Bobrovsky',    team:'FLA'},
-    {name:'Cam Talbot',           team:'LAK'},{name:'Tristan Jarry',       team:'PIT'},
-    {name:'Spencer Knight',       team:'FLA'}]},
-  {id:22, label:'Goalie 4',   type:'G', players:[
-    {name:'Ville Husso',          team:'DET'},{name:'Martin Jones',        team:'SEA'},
-    {name:'Alexandar Georgiev',   team:'COL'},{name:'Adin Hill',           team:'VGK'},
-    {name:'Logan Thompson',       team:'VGK'}]},
-  {id:23, label:'Goalie 5',   type:'G', players:[
-    {name:'Joonas Korpisalo',     team:'CBJ'},{name:'Erik Kallgren',       team:'TOR'},
-    {name:'Mackenzie Blackwood',  team:'VAN'},{name:'Pheonix Copley',      team:'LAK'},
-    {name:'Jordan Binnington',    team:'STL'}]},
-  {id:24, label:'Goalie 6',   type:'G', players:[
-    {name:'Charlie Lindgren',     team:'WSH'},{name:'Mackenzie Blackwood', team:'VAN'},
-    {name:'Alex Lyon',            team:'FLA'},{name:'Tristan Jarry',       team:'PIT'},
-    {name:'Jonathan Quick',       team:'TOR'}]},
-];
-
-// ══════════ PRIOR SEASON STATS ══════════
-const PRIOR_SEASON = {
-  'Leon Draisaitl':        {g:52,a:67,sog:294,pim:42, pos:'F'},
-  'Nikita Kucherov':       {g:44,a:100,sog:263,pim:36, pos:'F'},
-  'Nathan MacKinnon':      {g:51,a:89,sog:319,pim:44, pos:'F'},
-  'Connor McDavid':        {g:32,a:100,sog:244,pim:30, pos:'F'},
-  'Artemi Panarin':        {g:49,a:71,sog:233,pim:28, pos:'F'},
-  'Mitch Marner':          {g:26,a:81,sog:214,pim:18, pos:'F'},
-  'Auston Matthews':       {g:69,a:38,sog:319,pim:24, pos:'F'},
-  'Elias Pettersson':      {g:42,a:60,sog:252,pim:26, pos:'F'},
-  'Mikko Rantanen':        {g:55,a:49,sog:281,pim:30, pos:'F'},
-  'Jason Robertson':       {g:46,a:63,sog:257,pim:20, pos:'F'},
-  'Jack Hughes':           {g:43,a:49,sog:228,pim:36, pos:'F'},
-  'Kirill Kaprizov':       {g:47,a:49,sog:272,pim:26, pos:'F'},
-  'J.T. Miller':           {g:29,a:71,sog:178,pim:34, pos:'F'},
-  'William Nylander':      {g:40,a:52,sog:224,pim:22, pos:'F'},
-  'Brayden Point':         {g:33,a:49,sog:196,pim:26, pos:'F'},
-  'Sebastian Aho':         {g:38,a:52,sog:219,pim:30, pos:'F'},
-  'Jesper Bratt':          {g:28,a:55,sog:176,pim:18, pos:'F'},
-  'Sidney Crosby':         {g:42,a:52,sog:209,pim:28, pos:'F'},
-  'Jake Guentzel':         {g:35,a:42,sog:188,pim:24, pos:'F'},
-  'Clayton Keller':        {g:29,a:47,sog:193,pim:22, pos:'F'},
-  'Aleksander Barkov':     {g:31,a:55,sog:221,pim:20, pos:'F'},
-  'Ryan Nugent-Hopkins':   {g:27,a:56,sog:168,pim:22, pos:'F'},
-  'Matt Boldy':            {g:28,a:35,sog:179,pim:14, pos:'F'},
-  'Cole Caufield':         {g:32,a:50,sog:198,pim:18, pos:'F'},
-  'Jordan Kyrou':          {g:28,a:54,sog:192,pim:16, pos:'F'},
-  'Wyatt Johnston':        {g:29,a:37,sog:167,pim:22, pos:'F'},
-  'Anze Kopitar':          {g:22,a:47,sog:141,pim:12, pos:'F'},
-  'John Tavares':          {g:27,a:55,sog:171,pim:14, pos:'F'},
-  'Bo Horvat':             {g:31,a:31,sog:192,pim:22, pos:'F'},
-  'Chris Kreider':         {g:39,a:27,sog:189,pim:38, pos:'F'},
-  'Quinton Byfield':       {g:28,a:52,sog:178,pim:28, pos:'F'},
-  'Matt Duchene':          {g:34,a:38,sog:177,pim:14, pos:'F'},
-  'Brad Marchand':         {g:28,a:48,sog:172,pim:56, pos:'F'},
-  'Alex Ovechkin':         {g:36,a:28,sog:295,pim:26, pos:'F'},
-  'Andrei Svechnikov':     {g:22,a:33,sog:148,pim:36, pos:'F'},
-  'Evgeni Malkin':         {g:28,a:54,sog:177,pim:48, pos:'F'},
-  'Brock Nelson':          {g:28,a:31,sog:168,pim:18, pos:'F'},
-  'Filip Forsberg':        {g:38,a:48,sog:233,pim:22, pos:'F'},
-  'Jonathan Huberdeau':    {g:22,a:52,sog:154,pim:18, pos:'F'},
-  'Alex DeBrincat':        {g:30,a:33,sog:199,pim:12, pos:'F'},
-  'Roope Hintz':           {g:36,a:32,sog:196,pim:28, pos:'F'},
-  'Tage Thompson':         {g:47,a:47,sog:253,pim:44, pos:'F'},
-  'Nick Suzuki':           {g:26,a:54,sog:188,pim:22, pos:'F'},
-  'Troy Terry':            {g:28,a:38,sog:177,pim:14, pos:'F'},
-  'Sam Reinhart':          {g:57,a:38,sog:248,pim:20, pos:'F'},
-  'Mark Scheifele':        {g:37,a:44,sog:211,pim:30, pos:'F'},
-  'Connor Bedard':         {g:22,a:37,sog:189,pim:28, pos:'F'},
-  'Dylan Larkin':          {g:32,a:44,sog:218,pim:38, pos:'F'},
-  'Tomas Hertl':           {g:29,a:35,sog:188,pim:24, pos:'F'},
-  'Sam Bennett':           {g:33,a:34,sog:182,pim:66, pos:'F'},
-  'David Pastrnak':        {g:47,a:63,sog:252,pim:28, pos:'F'},
-  'Nazem Kadri':           {g:30,a:44,sog:182,pim:44, pos:'F'},
-  'Jonathan Marchessault': {g:42,a:37,sog:215,pim:36, pos:'F'},
-  'Drake Batherson':       {g:28,a:42,sog:177,pim:20, pos:'F'},
-  'Quinn Hughes':          {g:16,a:66,sog:189,pim:22, pos:'D'},
-  'Josh Morrissey':        {g:18,a:64,sog:196,pim:38, pos:'D'},
-  'Victor Hedman':         {g:10,a:68,sog:171,pim:28, pos:'D'},
-  'Shea Theodore':         {g:16,a:66,sog:196,pim:20, pos:'D'},
-  'Zach Werenski':         {g:14,a:57,sog:188,pim:18, pos:'D'},
-  'Adam Fox':              {g:14,a:52,sog:187,pim:20, pos:'D'},
-  'Noah Dobson':           {g:15,a:45,sog:178,pim:30, pos:'D'},
-  'Charlie McAvoy':        {g:11,a:48,sog:178,pim:32, pos:'D'},
-  'Luke Hughes':           {g:16,a:51,sog:147,pim:30, pos:'D'},
-  'Thomas Harley':         {g:14,a:52,sog:166,pim:24, pos:'D'},
-  'MacKenzie Weegar':      {g:11,a:41,sog:165,pim:32, pos:'D'},
-  'Travis Sanheim':        {g:12,a:37,sog:143,pim:38, pos:'D'},
-  'Morgan Rielly':         {g:12,a:45,sog:156,pim:22, pos:'D'},
-  'Evan Bouchard':         {g:18,a:58,sog:211,pim:36, pos:'D'},
-  'Jacob Trouba':          {g:8, a:33,sog:144,pim:66, pos:'D'},
-  'Devon Toews':           {g:11,a:42,sog:155,pim:20, pos:'D'},
-  'Dougie Hamilton':       {g:12,a:44,sog:166,pim:34, pos:'D'},
-  'Rasmus Dahlin':         {g:14,a:55,sog:188,pim:22, pos:'D'},
-  'Darnell Nurse':         {g:12,a:34,sog:155,pim:52, pos:'D'},
-  'Seth Jones':            {g:10,a:38,sog:178,pim:36, pos:'D'},
-  'Alex Pietrangelo':      {g:9, a:36,sog:148,pim:28, pos:'D'},
-  'Miro Heiskanen':        {g:11,a:48,sog:188,pim:22, pos:'D'},
-  'Hampus Lindholm':       {g:8, a:38,sog:144,pim:24, pos:'D'},
-  'Jakob Chychrun':        {g:10,a:32,sog:155,pim:30, pos:'D'},
-  'Brent Burns':           {g:8, a:32,sog:166,pim:44, pos:'D'},
-  'Connor Hellebuyck':     {w:37,l:18,otl:4,so:6,sv:1502, pos:'G'},
-  'Thatcher Demko':        {w:28,l:14,otl:4,so:4,sv:1188, pos:'G'},
-  'Jake Oettinger':        {w:33,l:17,otl:4,so:3,sv:1244, pos:'G'},
-  'Juuse Saros':           {w:31,l:18,otl:5,so:4,sv:1322, pos:'G'},
-  'Stuart Skinner':        {w:30,l:14,otl:6,so:2,sv:1188, pos:'G'},
-  'Ilya Sorokin':          {w:28,l:22,otl:5,so:3,sv:1244, pos:'G'},
-  'Igor Shesterkin':       {w:38,l:13,otl:4,so:6,sv:1455, pos:'G'},
-  'Jeremy Swayman':        {w:31,l:16,otl:4,so:4,sv:1233, pos:'G'},
-  'Andrei Vasilevskiy':    {w:34,l:14,otl:4,so:3,sv:1277, pos:'G'},
-  'Filip Gustavsson':      {w:29,l:16,otl:4,so:5,sv:1198, pos:'G'},
-  'Linus Ullmark':         {w:24,l:14,otl:4,so:4,sv:988,  pos:'G'},
-  'Sergei Bobrovsky':      {w:34,l:15,otl:3,so:4,sv:1222, pos:'G'},
-  'Jordan Binnington':     {w:24,l:18,otl:4,so:2,sv:988,  pos:'G'},
-  'Adin Hill':             {w:22,l:14,otl:3,so:3,sv:922,  pos:'G'},
-  'Logan Thompson':        {w:21,l:16,otl:4,so:2,sv:966,  pos:'G'},
-};
-
-// ══════════ DIVISIONS ══════════
-const DIVISIONS = {
-  Atlantic:     ['Boston Bruins','Buffalo Sabres','Detroit Red Wings','Florida Panthers','Montreal Canadiens','Ottawa Senators','Tampa Bay Lightning','Toronto Maple Leafs'],
-  Metropolitan: ['Carolina Hurricanes','Columbus Blue Jackets','New Jersey Devils','New York Islanders','New York Rangers','Philadelphia Flyers','Pittsburgh Penguins','Washington Capitals'],
-  Central:      ['Arizona Coyotes','Chicago Blackhawks','Colorado Avalanche','Dallas Stars','Minnesota Wild','Nashville Predators','St. Louis Blues','Winnipeg Jets'],
-  Pacific:      ['Anaheim Ducks','Calgary Flames','Edmonton Oilers','Los Angeles Kings','San Jose Sharks','Seattle Kraken','Utah Hockey Club','Vancouver Canucks'],
-};
-
-// ══════════ STATE ══════════
-let picks = {};
-let activeBox = null;
-let activePlayer = null;
-
-// ══════════ SCORING CALC ══════════
-function roundPts(n) { return Math.round(n * 100) / 100; }
-
-function calcPrevPts(s) {
-  if (!s || !s.pos) return 0;
-  if (s.pos === 'G') return roundPts((s.w||0)*3 + (s.l||0)*1 + (s.otl||0)*1.5 + (s.so||0)*2 + (s.sv||0)*0.02);
-  const pimPts = s.pos === 'D' ? (s.pim||0) * 0.25 : 0;
-  return roundPts((s.g||0)*1 + (s.a||0)*1 + (s.sog||0)*0.11 + pimPts);
-}
-
-// ══════════ PROGRESS ══════════
-function updateProgress() {
-  const count = Object.keys(picks).length;
-  document.getElementById('picks-count').textContent = count;
-  document.getElementById('picks-remaining').textContent = 24 - count;
-  document.getElementById('pbar').style.width = (count / 24 * 100) + '%';
-}
-
-// ══════════ BUILD DRAFT GRID ══════════
-function buildDraft() {
-  const grid = document.getElementById('draft-grid');
-  if (!grid) return;
-  grid.innerHTML = BOXES.map(box => {
-    const posCls = `pos-${box.type}`;
-    return `<div class="draft-box" id="box-${box.id}" onclick="openBox(${box.id})">
-      <div class="db-head">
-        <span class="db-label">${box.label}</span>
-        <span class="db-pos ${posCls}">${box.type}</span>
-      </div>
-      <div class="db-pick" id="db-pick-${box.id}">Click to pick</div>
-    </div>`;
-  }).join('');
-}
-
-// ══════════ OPEN BOX MODAL ══════════
-function openBox(boxId) {
-  activeBox = boxId;
-  const box = BOXES.find(b => b.id === boxId);
-  if (!box) return;
-
-  document.getElementById('pm-box-title').textContent = box.label;
-  document.getElementById('pm-name').textContent = '';
-  document.getElementById('pm-team-pos').textContent = '';
-  document.getElementById('pm-stats-grid').innerHTML = '';
-  document.getElementById('pm-pts-breakdown').innerHTML = '';
-  document.getElementById('pm-total-pts').textContent = '';
-  document.getElementById('pm-pick-btn').textContent = '';
-
-  document.getElementById('pm-player-list').innerHTML = box.players.map(p => {
-    const s = PRIOR_SEASON[p.name] || {};
-    const pts = calcPrevPts(s);
-    const isPicked = picks[boxId] === p.name;
-    return `<div class="pm-player ${isPicked ? 'pm-picked' : ''}" id="pml-${boxId}-${p.name.replace(/\s/g,'_')}" onclick="selectPlayer(${boxId}, '${p.name.replace(/'/g,"\\'")}', this)">
-      <div class="pm-pname">${p.name}</div>
-      <div class="pm-pmeta">${p.team} · ${s.pos || box.type} · ${pts}pts</div>
-    </div>`;
-  }).join('');
-
-  // Auto-select first player
-  if (box.players.length) selectPlayer(boxId, box.players[0].name, document.querySelector(`#pml-${boxId}-${box.players[0].name.replace(/\s/g,'_')}`));
-
-  document.getElementById('pick-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function selectPlayer(boxId, playerName, el) {
-  activePlayer = playerName;
-  document.querySelectorAll('.pm-player').forEach(e => e.classList.remove('active'));
-  if (el) el.classList.add('active');
-
-  const box = BOXES.find(b => b.id === boxId);
-  const s = PRIOR_SEASON[playerName] || {};
-  const pos = s.pos || box?.type || 'F';
-
-  document.getElementById('pm-name').textContent = playerName;
-  document.getElementById('pm-team-pos').textContent = `${s.team || (box?.players.find(p=>p.name===playerName)?.team || '')} · ${pos}`;
-
-  const statsGrid = document.getElementById('pm-stats-grid');
-  if (pos === 'G') {
-    statsGrid.innerHTML = `
-      <div class="pm-stat"><div class="pm-stat-val">${s.w||0}</div><div class="pm-stat-lbl">Wins</div></div>
-      <div class="pm-stat"><div class="pm-stat-val">${s.l||0}</div><div class="pm-stat-lbl">Losses</div></div>
-      <div class="pm-stat"><div class="pm-stat-val">${s.otl||0}</div><div class="pm-stat-lbl">OT Loss</div></div>
-      <div class="pm-stat"><div class="pm-stat-val">${s.so||0}</div><div class="pm-stat-lbl">Shutouts</div></div>
-      <div class="pm-stat" style="grid-column:1/3"><div class="pm-stat-val">${(s.sv||0).toLocaleString()}</div><div class="pm-stat-lbl">Saves</div></div>
-      <div class="pm-stat" style="grid-column:3/5"><div class="pm-stat-val" style="color:var(--accent)">${roundPts((s.sv||0)*0.02)}</div><div class="pm-stat-lbl">Save pts</div></div>`;
-    document.getElementById('pm-pts-breakdown').innerHTML = `
-      <div class="pm-pts-item"><div class="pv">${(s.w||0)*3}</div><div class="pl">${s.w||0}W × 3</div></div>
-      <div class="pm-pts-item"><div class="pv">${s.l||0}</div><div class="pl">${s.l||0}L × 1</div></div>
-      <div class="pm-pts-item"><div class="pv">${roundPts((s.otl||0)*1.5)}</div><div class="pl">${s.otl||0}OTL × 1.5</div></div>
-      <div class="pm-pts-item"><div class="pv">${(s.so||0)*2}</div><div class="pl">${s.so||0}SO × 2</div></div>
-      <div class="pm-pts-item"><div class="pv">${roundPts((s.sv||0)*0.02)}</div><div class="pl">${(s.sv||0).toLocaleString()}SV × 0.02</div></div>`;
-  } else {
-    statsGrid.innerHTML = `
-      <div class="pm-stat"><div class="pm-stat-val">${s.g||0}</div><div class="pm-stat-lbl">Goals</div></div>
-      <div class="pm-stat"><div class="pm-stat-val">${s.a||0}</div><div class="pm-stat-lbl">Assists</div></div>
-      <div class="pm-stat"><div class="pm-stat-val">${s.sog||0}</div><div class="pm-stat-lbl">SOG</div></div>
-      <div class="pm-stat"><div class="pm-stat-val">${pos==='D'?(s.pim||0):'—'}</div><div class="pm-stat-lbl">PIM</div></div>`;
-    const pimPts = pos === 'D' ? roundPts((s.pim||0)*0.25) : 0;
-    let bd = `
-      <div class="pm-pts-item"><div class="pv">${s.g||0}</div><div class="pl">${s.g||0}G × 1</div></div>
-      <div class="pm-pts-item"><div class="pv">${s.a||0}</div><div class="pl">${s.a||0}A × 1</div></div>
-      <div class="pm-pts-item"><div class="pv">${roundPts((s.sog||0)*0.11)}</div><div class="pl">${s.sog||0}SOG × 0.11</div></div>`;
-    if (pos === 'D') bd += `<div class="pm-pts-item"><div class="pv">${pimPts}</div><div class="pl">${s.pim||0}PIM × 0.25</div></div>`;
-    document.getElementById('pm-pts-breakdown').innerHTML = bd;
-  }
-
-  document.getElementById('pm-total-pts').textContent = calcPrevPts(s);
-
-  const btn = document.getElementById('pm-pick-btn');
-  const alreadyPicked = picks[boxId] === playerName;
-  btn.textContent = alreadyPicked ? '✓ Already Picked' : 'Pick This Player';
-  btn.disabled = alreadyPicked;
-  btn.onclick = () => confirmPick(boxId, playerName);
-}
-
-function confirmPick(boxId, playerName) {
-  picks[boxId] = playerName;
-  const el = document.getElementById('db-pick-' + boxId);
-  if (el) el.textContent = playerName;
-  const box = document.getElementById('box-' + boxId);
-  if (box) box.classList.add('picked');
-  updateProgress();
-  closePickModal();
-}
-
-function closePickModal(e) {
-  if (e && e.target !== document.getElementById('pick-modal')) return;
-  document.getElementById('pick-modal').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-// ══════════ DIVISION PICKS ══════════
-function loadDivisionTeams() {
-  const grid = document.getElementById('div-grid');
-  if (!grid) return;
-  grid.innerHTML = Object.entries(DIVISIONS).map(([div, teams]) => {
-    const opts = teams.map(t => `<option value="${t}">${t}</option>`).join('');
-    return `<div class="div-card">
-      <div class="div-name">${div}</div>
-      <select id="${div.toLowerCase()}" onchange="updateDivCount()">
-        <option value="">— Pick division winner —</option>
-        ${opts}
-      </select>
-    </div>`;
-  }).join('');
-}
-
-function updateDivCount() {
-  const picked = ['atlantic','metropolitan','central','pacific'].filter(d => {
-    const el = document.getElementById(d);
-    return el && el.value;
-  }).length;
-  document.getElementById('div-pick-count').textContent = picked;
-  document.getElementById('div-bonus-total').textContent = picked * 10;
-}
-
-// ══════════ SUBMIT ══════════
-async function submitEntry() {
-  const btn = document.querySelector('.btn.btn-gold');
-  const originalText = btn.innerHTML;
-
-  const firstName = document.getElementById('firstName').value.trim();
-  const lastName  = document.getElementById('lastName').value.trim();
-  const email     = document.getElementById('email').value.trim();
-  const teamName  = document.getElementById('teamName').value.trim();
-
-  if (!firstName || !lastName || !email || !teamName) {
-    toast('Missing info', 'Please fill in your name, email, and team name.');
-    return;
-  }
-
-  const picksArr = BOXES.map(b => picks[b.id] || '');
-  const missing = picksArr.filter(p => !p).length;
-  if (missing > 0) {
-    toast('Picks incomplete', `You still need to pick ${missing} player(s).`);
-    return;
-  }
-
-  const divAtlantic     = document.getElementById('atlantic')?.value     || '';
-  const divMetropolitan = document.getElementById('metropolitan')?.value || '';
-  const divCentral      = document.getElementById('central')?.value      || '';
-  const divPacific      = document.getElementById('pacific')?.value      || '';
-
-  if (!divAtlantic || !divMetropolitan || !divCentral || !divPacific) {
-    toast('Division picks missing', 'Please pick a winner for all 4 divisions.');
-    return;
-  }
-
-  btn.innerHTML = 'Submitting…';
-  btn.disabled = true;
-  btn.style.opacity = '0.7';
-
-  const data = {
-    firstName, lastName, email,
-    phone:    document.getElementById('phone')?.value.trim() || '',
-    teamName,
-    picks:    picksArr,
-    divisions: { atlantic: divAtlantic, metropolitan: divMetropolitan, central: divCentral, pacific: divPacific }
-  };
-
-  try {
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqqijpX3BoRCDXMH5ZzWCkN2ZlALGJd_HBHMetPlXCir7_ue_WfEtqvo3NM0Z-xMhKUA/exec';
-    const res = await fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify(data) });
-    const result = await res.json();
-    if (result.success) {
-      document.querySelector('.page').innerHTML = `
-        <div class="wrap" style="text-align:center;padding:80px 0">
-          <div style="font-size:48px;margin-bottom:16px">🎉</div>
-          <div style="font-size:28px;font-weight:800;margin-bottom:8px">You're in, ${firstName}!</div>
-          <div style="color:var(--muted);font-size:15px;margin-bottom:24px">Entry received for <strong>${teamName}</strong>. Watch for a confirmation email.</div>
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:16px;max-width:380px;margin:0 auto;font-size:13px">
-            Don't forget to send <strong>$10</strong> via e-transfer to <span style="color:var(--accent);font-family:'DM Mono',monospace">matt.hope@rocketmail.com</span> with your name in the memo.
-          </div>
-        </div>`;
-      window.scrollTo(0, 0);
-    } else {
-      toast('Submission error', result.error || 'Something went wrong. Try again.');
-    }
-  } catch (err) {
-    toast('Connection error', 'Could not reach the server. Check your connection and try again.');
-    console.error('AAHL submit error:', err);
-  } finally {
-    btn.innerHTML = originalText;
-    btn.disabled = false;
-    btn.style.opacity = '1';
-  }
-}
-
-// ══════════ TOAST ══════════
-function toast(title, body) {
-  const t = document.getElementById('toast');
-  if (!t) { alert(title + ': ' + body); return; }
-  document.getElementById('toast-t').textContent = title;
-  document.getElementById('toast-b').textContent = body;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 4200);
-}
-
-// ══════════ INIT ══════════
-document.addEventListener('DOMContentLoaded', () => {
-  buildDraft();
-  loadDivisionTeams();
-});
+// main.js has all data + functions. Just call what this page needs.
+buildTicker();
+buildDraft();
+buildDivisionPicks();
 </script>
 </body>
 </html>
