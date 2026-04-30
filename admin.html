@@ -219,8 +219,61 @@ function markGameProcessed(gameId, date, home, away) { SS.getSheetByName('Proces
   <div class="card" style="margin-bottom:14px">
     <div class="card-head"><span class="card-title">AGT-007 — Comms Agent</span><span class="agent-badge agt7">Monday digest + on-demand</span></div>
     <pre style="margin:0;border-radius:0">function sendEntryConfirmation(entry) {
-  MailApp.sendEmail({ to: entry.email, subject: '🏒 AAHL Entry Confirmed — ' + entry.teamName,
-    htmlBody: `&lt;h2&gt;You're in, ${entry.firstName}!&lt;/h2&gt;&lt;p&gt;Your entry &lt;strong&gt;${entry.teamName}&lt;/strong&gt; has been received.&lt;/p&gt;&lt;p&gt;Send $10 to matt.hope@rocketmail.com. Picks lock September 29, 2026.&lt;/p&gt;` });
+  agentLog('AGT-007', '⏳', `Sending confirmation to ${entry.email}`);
+
+  // Build picks table rows (24 player picks, grouped by position)
+  const boxLabels = [
+    'Forwards 1','Forwards 2','Forwards 3','Forwards 4','Forwards 5','Forwards 6',
+    'Forwards 7','Forwards 8','Forwards 9','Forwards 10','Forwards 11','Forwards 12',
+    'Defense 1','Defense 2','Defense 3','Defense 4','Defense 5','Defense 6',
+    'Goalie 1','Goalie 2','Goalie 3','Goalie 4','Goalie 5','Goalie 6'
+  ];
+  const picksRows = (entry.picks || []).map((name, i) =>
+    `&lt;tr style="background:${i%2===0?'#f9f9f9':'#fff'}"&gt;
+      &lt;td style="padding:6px 12px;color:#888;font-size:12px"&gt;${boxLabels[i] || 'Box '+(i+1)}&lt;/td&gt;
+      &lt;td style="padding:6px 12px;font-weight:600"&gt;${name || '—'}&lt;/td&gt;
+    &lt;/tr&gt;`
+  ).join('');
+
+  // Division picks
+  const divPicks = entry.divisionPicks || {};
+  const divRows = Object.entries(divPicks).filter(([,v])=>v).map(([div, team]) =>
+    `&lt;tr&gt;&lt;td style="padding:6px 12px;color:#888;font-size:12px"&gt;${div}&lt;/td&gt;&lt;td style="padding:6px 12px;font-weight:600"&gt;${team}&lt;/td&gt;&lt;/tr&gt;`
+  ).join('');
+
+  MailApp.sendEmail({
+    to: entry.email,
+    subject: '🏒 AAHL Entry Confirmed — ' + entry.teamName,
+    htmlBody: `
+      &lt;div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#222"&gt;
+        &lt;h2 style="color:#6F263D"&gt;You're in, ${entry.firstName}!&lt;/h2&gt;
+        &lt;p&gt;Your entry &lt;strong&gt;${entry.teamName}&lt;/strong&gt; has been received.&lt;/p&gt;
+        &lt;p&gt;Please send &lt;strong&gt;$10&lt;/strong&gt; via e-transfer to &lt;strong&gt;matt.hope@rocketmail.com&lt;/strong&gt;
+           with your name in the memo to confirm your spot.&lt;/p&gt;
+        &lt;p style="color:#888;font-size:13px"&gt;Picks lock September 29, 2026. No changes after that.&lt;/p&gt;
+
+        &lt;h3 style="margin-top:28px;border-bottom:2px solid #6F263D;padding-bottom:6px"&gt;Your 24 Player Picks&lt;/h3&gt;
+        &lt;table style="width:100%;border-collapse:collapse;font-size:14px"&gt;
+          &lt;thead&gt;&lt;tr style="background:#6F263D;color:#fff"&gt;
+            &lt;th style="padding:8px 12px;text-align:left"&gt;Box&lt;/th&gt;
+            &lt;th style="padding:8px 12px;text-align:left"&gt;Player&lt;/th&gt;
+          &lt;/tr&gt;&lt;/thead&gt;
+          &lt;tbody&gt;${picksRows}&lt;/tbody&gt;
+        &lt;/table&gt;
+
+        ${divRows ? `
+        &lt;h3 style="margin-top:28px;border-bottom:2px solid #A2AAAD;padding-bottom:6px"&gt;Division Winner Picks&lt;/h3&gt;
+        &lt;table style="width:100%;border-collapse:collapse;font-size:14px"&gt;
+          &lt;thead&gt;&lt;tr style="background:#A2AAAD;color:#fff"&gt;
+            &lt;th style="padding:8px 12px;text-align:left"&gt;Division&lt;/th&gt;
+            &lt;th style="padding:8px 12px;text-align:left"&gt;Picked Winner&lt;/th&gt;
+          &lt;/tr&gt;&lt;/thead&gt;
+          &lt;tbody&gt;${divRows}&lt;/tbody&gt;
+        &lt;/table&gt;` : ''}
+
+        &lt;p style="margin-top:24px;font-size:12px;color:#aaa"&gt;Good luck! 🦙&lt;/p&gt;
+      &lt;/div&gt;`
+  });
   agentLog('AGT-007','✅',`Confirmation sent to ${entry.email}`);
 }
 function sendWeeklyDigest(standings) {
