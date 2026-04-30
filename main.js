@@ -408,6 +408,7 @@ function initials(n) { return n.split(' ').map(w=>w[0]).join('').toUpperCase().s
 // ══════════ TOAST ══════════
 function toast(title, body) {
   const t = document.getElementById('toast');
+  if (!t) return;
   document.getElementById('toast-t').textContent = title;
   document.getElementById('toast-b').textContent = body;
   t.classList.add('show');
@@ -556,7 +557,7 @@ function buildDivisionPicks() {
       <select class="div-team-select" id="div-${divName}" onchange="pickDivision('${divName}', this)">
         <option value="">— Pick division winner —</option>${options}
       </select>
-      <div class="div-pts-note">+10 pts if correct at season end</div>
+      <div class="div-pts-note">+10 pts while your team leads their division</div>
     </div>`;
   }).join('');
 }
@@ -811,14 +812,34 @@ async function submitEntry() {
   if (!f || !l) { toast('Missing name', 'Enter your first and last name.'); return; }
   if (!e)       { toast('Missing email', 'Enter your email address.'); return; }
   if (n < 24)   { toast('Incomplete picks', `${n}/24 boxes filled — select all players.`); return; }
+
+  // Validate division picks
+  const divsFilled = Object.values(divisionPicks).filter(Boolean).length;
+  if (divsFilled < 4) { toast('Division picks missing', 'Please pick a winner for all 4 divisions.'); return; }
+
   const picksArray = Array.from({length: 24}, (_, i) => picks[i + 1] || '');
   const btn = document.querySelector('.btn-gold');
   const originalText = btn.innerHTML;
   btn.innerHTML = '⏳ Submitting…'; btn.disabled = true; btn.style.opacity = '0.7';
+
   try {
     const response = await fetch(WEBAPP_URL, {
-      method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ firstName: f, lastName: l, email: e, phone: ph, teamName: team, picks: picksArray, divisionPicks })
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        firstName: f,
+        lastName:  l,
+        email:     e,
+        phone:     ph,
+        teamName:  team,
+        picks:     picksArray,
+        divisions: {
+          atlantic:     divisionPicks['Atlantic']     || '',
+          metropolitan: divisionPicks['Metropolitan'] || '',
+          central:      divisionPicks['Central']      || '',
+          pacific:      divisionPicks['Pacific']      || '',
+        }
+      })
     });
     const result = await response.json();
     if (result.success) {
