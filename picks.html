@@ -133,7 +133,7 @@
 <script src="main.js"></script>
 <script>
 // main.js has all data + functions. Just call what this page needs.
-buildTicker();
+fetchNightlyStats().then(() => buildTicker());
 buildDraft();
 buildDivisionPicks();
 </script>
