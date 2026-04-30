@@ -333,8 +333,7 @@ function getDefaultRoster(entryName) {
     const p = box.players[idx % box.players.length];
     const isG = box.type==='G', isD = box.type==='D';
     return {
-      box: box.label, pos: box.type,
-      name: p.name, nhl: p.team,
+      box: box.label, pos: box.type, name: p.name, nhl: p.team,
       g:  isG?0:Math.floor(p.pts*0.35), a: isG?0:Math.floor(p.pts*0.55),
       sog:isG?0:Math.floor(p.pts*1.8),  pim:isD?Math.floor(Math.random()*40+10):0,
       w:  isG?Math.floor(p.pts*0.52):0, l:isG?Math.floor(p.pts*0.28):0,
@@ -344,25 +343,43 @@ function getDefaultRoster(entryName) {
   });
 }
 
-const NIGHTLY_STATS = [
-  {name:'Auston Matthews', team:'TOR', pos:'F', game:'TOR 4 · BOS 2 — Oct 2026', goals:2, assists:1, sog:6,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'Mitch Marner',    team:'TOR', pos:'F', game:'TOR 4 · BOS 2 — Oct 2026', goals:0, assists:2, sog:3,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'William Nylander',team:'TOR', pos:'F', game:'TOR 4 · BOS 2 — Oct 2026', goals:1, assists:0, sog:4,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'Brad Marchand',   team:'BOS', pos:'F', game:'TOR 4 · BOS 2 — Oct 2026', goals:1, assists:1, sog:3,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'Jeremy Swayman',  team:'BOS', pos:'G', game:'TOR 4 · BOS 2 — Oct 2026', goals:0, assists:0, sog:0,  wins:0,losses:1,otl:0,shutouts:0,saves:28,pim:0},
-  {name:'Leon Draisaitl',  team:'EDM', pos:'F', game:'EDM 6 · CGY 1', goals:3, assists:2, sog:8,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'Connor McDavid',  team:'EDM', pos:'F', game:'EDM 6 · CGY 1', goals:1, assists:3, sog:5,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'Stuart Skinner',  team:'EDM', pos:'G', game:'EDM 6 · CGY 1', goals:0, assists:0, sog:0,  wins:1,losses:0,otl:0,shutouts:0,saves:22,pim:0},
-  {name:'Evan Bouchard',   team:'EDM', pos:'D', game:'EDM 6 · CGY 1', goals:0, assists:2, sog:4,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:4},
-  {name:'Artemi Panarin',  team:'NYR', pos:'F', game:'NYR 3 · NJ 2',  goals:1, assists:1, sog:4,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'Jacob Trouba',    team:'NYR', pos:'D', game:'NYR 3 · NJ 2',  goals:0, assists:1, sog:3,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:7},
-  {name:'Jack Hughes',     team:'NJ',  pos:'F', game:'NYR 3 · NJ 2',  goals:1, assists:0, sog:5,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'Luke Hughes',     team:'NJ',  pos:'D', game:'NYR 3 · NJ 2',  goals:0, assists:1, sog:2,  wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:2},
-  {name:'Quinn Hughes',      team:'VAN', pos:'D', game:'VAN 2 · VGK 1 OT', goals:1, assists:1, sog:5, wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'Thatcher Demko',    team:'VAN', pos:'G', game:'VAN 2 · VGK 1 OT', goals:0, assists:0, sog:0, wins:1,losses:0,otl:0,shutouts:1,saves:31,pim:0},
-  {name:'Elias Pettersson',  team:'VAN', pos:'F', game:'VAN 2 · VGK 1 OT', goals:0, assists:1, sog:3, wins:0,losses:0,otl:0,shutouts:0,saves:0, pim:0},
-  {name:'Shea Theodore',     team:'VGK', pos:'D', game:'VAN 2 · VGK 1 OT', goals:1, assists:0, sog:4, wins:0,losses:0,otl:1,shutouts:0,saves:0, pim:2},
-];
+// ══════════ NIGHTLY STATS — live from NightlyStats sheet ══════════
+const NIGHTLY_STATS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=615464608&single=true&output=csv';
+
+let NIGHTLY_STATS = [];
+
+function parseNightlyCSV(csv) {
+  const lines = csv.trim().split('\n');
+  return lines.slice(1).map(line => {
+    const cols = line.split(',');
+    return {
+      name:     (cols[0] || '').trim(),
+      team:     (cols[1] || '').trim(),
+      pos:      (cols[2] || '').trim(),
+      game:     (cols[3] || '').trim(),
+      goals:    parseInt(cols[4])  || 0,
+      assists:  parseInt(cols[5])  || 0,
+      sog:      parseInt(cols[6])  || 0,
+      pim:      parseInt(cols[7])  || 0,
+      wins:     parseInt(cols[8])  || 0,
+      losses:   parseInt(cols[9])  || 0,
+      otl:      parseInt(cols[10]) || 0,
+      shutouts: parseInt(cols[11]) || 0,
+      saves:    parseInt(cols[12]) || 0,
+    };
+  }).filter(p => p.name);
+}
+
+async function fetchNightlyStats() {
+  try {
+    const res = await fetch(NIGHTLY_STATS_CSV);
+    const csv = await res.text();
+    NIGHTLY_STATS = parseNightlyCSV(csv);
+  } catch(err) {
+    console.warn('NightlyStats fetch failed:', err);
+    NIGHTLY_STATS = [];
+  }
+}
 
 // ══════════ SCORING ══════════
 function roundPts(n) { return Math.round(n * 100) / 100; }
@@ -435,7 +452,18 @@ function tickerStatChips(p) {
 function buildTicker() {
   const reel = document.getElementById('ticker-reel');
   if (!reel) return;
+
+  if (!NIGHTLY_STATS.length) {
+    reel.innerHTML = `<div class="t-row t-row1"><div class="t-item"><span class="t-game">No pool player stats yet for last night</span></div></div>`;
+    return;
+  }
+
   const scorers = NIGHTLY_STATS.filter(p => nightlyPts(p) > 0);
+  if (!scorers.length) {
+    reel.innerHTML = `<div class="t-row t-row1"><div class="t-item"><span class="t-game">No scoring pool players last night</span></div></div>`;
+    return;
+  }
+
   const itemHTML = p => `<div class="t-item">
     <span class="t-game">${p.game}</span><span class="t-sep">·</span>
     <span class="t-name">${p.name}</span><span class="t-team">${p.team}&nbsp;${p.pos}</span>
@@ -813,7 +841,6 @@ async function submitEntry() {
   if (!e)       { toast('Missing email', 'Enter your email address.'); return; }
   if (n < 24)   { toast('Incomplete picks', `${n}/24 boxes filled — select all players.`); return; }
 
-  // Validate division picks
   const divsFilled = Object.values(divisionPicks).filter(Boolean).length;
   if (divsFilled < 4) { toast('Division picks missing', 'Please pick a winner for all 4 divisions.'); return; }
 
@@ -827,12 +854,8 @@ async function submitEntry() {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({
-        firstName: f,
-        lastName:  l,
-        email:     e,
-        phone:     ph,
-        teamName:  team,
-        picks:     picksArray,
+        firstName: f, lastName: l, email: e, phone: ph, teamName: team,
+        picks: picksArray,
         divisions: {
           atlantic:     divisionPicks['Atlantic']     || '',
           metropolitan: divisionPicks['Metropolitan'] || '',
