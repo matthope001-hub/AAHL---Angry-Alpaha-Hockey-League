@@ -1,1 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Standings — AAHL</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
 
+<header>
+  <div class="header-inner">
+    <div class="wordmark" onclick="window.location.href='index.html'">
+      <img src="aahl-logo.png" alt="AAHL Logo" style="height:48px;width:auto;margin-right:12px;">
+      <div class="wordmark-text">AAHL <span>/</span> Angry Alpaca</div>
+    </div>
+    <nav>
+      <button class="nav-btn" onclick="window.location.href='index.html'">Home</button>
+      <button class="nav-btn" onclick="window.location.href='picks.html'">My Picks</button>
+      <button class="nav-btn active">Standings</button>
+      <button class="nav-btn" onclick="window.location.href='rules.html'">Rules</button>
+      <button class="nav-btn" onclick="window.location.href='admin.html'">Admin</button>
+    </nav>
+  </div>
+</header>
+
+<!-- SPORTS TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-tag">Last Night</div>
+  <div class="ticker-viewport">
+    <div class="ticker-reel" id="ticker-reel"></div>
+  </div>
+</div>
+
+<div class="page on">
+<div class="wrap">
+
+  <div style="padding-top:8px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div class="eyebrow">2026–27 season</div>
+      <div style="font-size:26px;font-weight:800">Standings</div>
+    </div>
+    <span class="live-dot">UPDATED NIGHTLY</span>
+  </div>
+
+  <!-- Hat Trick Hall -->
+  <div class="ht-hall">
+    <div class="ht-hall-head">
+      <div class="ht-hall-title">
+        <span style="font-size:22px">🎩</span>
+        Hat Trick Hall
+        <span class="ht-count-badge" id="ht-total-badge">0 this season</span>
+      </div>
+      <span style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace">Tracked separately · No bonus pts</span>
+    </div>
+    <div id="ht-hall-rows"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">All Entries</span>
+      <span style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace" id="bd-count">— entries</span>
+    </div>
+    <div id="full-lb"></div>
+  </div>
+
+</div>
+</div>
+
+<!-- TEAM MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="overlayClick(event)">
+  <div class="modal-card" id="modal-card">
+    <div class="tp-header">
+      <div class="tp-header-left">
+        <div class="tp-av" id="tp-av"></div>
+        <div><div class="tp-team-name" id="tp-tname"></div><div class="tp-owner" id="tp-owner"></div></div>
+      </div>
+      <div class="tp-meta" id="tp-meta"></div>
+      <button class="tp-close-btn" onclick="closeTeamPanel()">✕</button>
+    </div>
+    <div class="tp-tabs">
+      <div class="tp-tab active" onclick="filterRoster('ALL',this)">All Players</div>
+      <div class="tp-tab" onclick="filterRoster('F',this)">Forwards</div>
+      <div class="tp-tab" onclick="filterRoster('D',this)">Defense</div>
+      <div class="tp-tab" onclick="filterRoster('G',this)">Goalies</div>
+    </div>
+    <div class="tp-scroll">
+      <table class="tp-table" id="tp-table">
+        <thead><tr>
+          <th style="width:26px"></th><th>Player</th><th>NHL</th><th>Box</th>
+          <th class="ra">G</th><th class="ra">A</th><th class="ra">SOG</th><th class="ra">PIM</th>
+          <th class="ra">W</th><th class="ra">L</th><th class="ra">OTL</th><th class="ra">SO</th><th class="ra">SV</th>
+          <th class="ra">🎩</th><th class="ra">Pts</th>
+        </tr></thead>
+        <tbody id="tp-tbody"></tbody>
+        <tfoot id="tp-tfoot"></tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-title" id="toast-t"></div>
+  <div class="toast-body" id="toast-b"></div>
+</div>
+
+<script src="main.js"></script>
+<script>
+buildTicker();
+buildBoards();
+buildHatTrickHall();
+</script>
+</body>
+</html>
