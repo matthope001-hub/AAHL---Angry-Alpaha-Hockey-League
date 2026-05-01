@@ -918,3 +918,38 @@ function adminAdd() {
   document.getElementById('apts').value='';
   toast('Points added',`+${pts} pts added to ${p}`);
 }
+// ══════════ PIXEL ALPACA RUNNER ══════════
+(function() {
+  function initAlpaca() {
+    var el = document.querySelector('.alpaca-runner');
+    if (!el) return;
+    var x = 170, dir = 1, paused = false, bobT = 0, last = null;
+    var MIN_X = 170, MAX_X = 320, SPEED = 60;
+    el.style.left = x + 'px';
+    el.style.transform = 'translateY(-50%) scaleX(1)';
+    function frame(ts) {
+      if (!last) last = ts;
+      var dt = Math.min((ts - last) / 1000, 0.05); last = ts;
+      if (!paused) {
+        x += dir * SPEED * dt; bobT += dt;
+        el.style.top = 'calc(50% + ' + (Math.sin(bobT * Math.PI * 2 / 0.3) * 3) + 'px)';
+        el.style.left = Math.round(x) + 'px';
+        if (dir === 1 && x >= MAX_X) {
+          x = MAX_X; paused = true;
+          setTimeout(function() { dir = -1; el.style.transform = 'translateY(-50%) scaleX(-1)'; paused = false; }, 1000);
+        }
+        if (dir === -1 && x <= MIN_X) {
+          x = MIN_X; paused = true;
+          setTimeout(function() { dir = 1; el.style.transform = 'translateY(-50%) scaleX(1)'; paused = false; }, 1000);
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAlpaca);
+  } else {
+    initAlpaca();
+  }
+})();
