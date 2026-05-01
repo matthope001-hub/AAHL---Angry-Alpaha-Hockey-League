@@ -801,7 +801,9 @@ function pick(boxId, name, radio) {
   picks[boxId] = name;
   document.querySelectorAll(`[name=b${boxId}]`).forEach(r => r.closest('.popt').classList.remove('sel'));
   radio.closest('.popt').classList.add('sel');
-  document.getElementById('bx-'+boxId).classList.add('done');
+  const box = document.getElementById('bx-'+boxId);
+  box.classList.add('done');
+  box.classList.remove('error'); // clear error highlight when picked
   const chk = document.getElementById('chk-'+boxId);
   chk.style.background = 'var(--burgundy)'; chk.style.borderColor = 'var(--burgundy)'; chk.style.color = '#fff';
   renderChips();
@@ -853,7 +855,17 @@ async function submitEntry() {
   const n    = Object.keys(picks).length;
   if (!f || !l) { toast('Missing name', 'Enter your first and last name.'); return; }
   if (!e)       { toast('Missing email', 'Enter your email address.'); return; }
-  if (n < 24)   { toast('Incomplete picks', `${n}/24 boxes filled — select all players.`); return; }
+  // Clear previous error highlights
+  document.querySelectorAll('.box-wrap').forEach(el => el.classList.remove('error'));
+
+  const missingBoxes = BOXES.filter(b => !picks[b.id]);
+  if (missingBoxes.length > 0) {
+    missingBoxes.forEach(b => { const el = document.getElementById('bx-' + b.id); if (el) el.classList.add('error'); });
+    const first = document.getElementById('bx-' + missingBoxes[0].id);
+    if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    toast('Picks incomplete', 'Missing: ' + missingBoxes.map(b => b.label).join(', '));
+    return;
+  }
 
   const divsFilled = Object.values(divisionPicks).filter(Boolean).length;
   if (divsFilled < 4) { toast('Division picks missing', 'Please pick a winner for all 4 divisions.'); return; }
