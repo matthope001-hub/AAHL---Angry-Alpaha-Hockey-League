@@ -3,10 +3,167 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Standings — AAHL</title>
+<title>Stats — AAHL</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" type="image/png" href="aahl-logo.png">
+<style>
+/* ── PAGE TABS ── */
+.page-tabs {
+  display: flex; gap: 4px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--r2); padding: 4px;
+  margin-bottom: 24px;
+}
+.page-tab {
+  flex: 1; padding: 10px 16px; border-radius: 8px;
+  font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--muted); cursor: pointer; transition: all 0.15s;
+  text-align: center; border: none; background: none;
+}
+.page-tab:hover { color: var(--text); background: var(--surface3); }
+.page-tab.active { background: var(--burgundy); color: #fff; }
+
+/* ── TAB PANELS ── */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── STATS SECTION ── */
+.stats-section { margin-top: 24px; }
+.stats-controls {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+}
+.pos-tabs {
+  display: flex; gap: 3px;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 3px;
+}
+.pos-tab {
+  padding: 6px 16px; border-radius: 6px;
+  font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: var(--muted); cursor: pointer; transition: all 0.12s;
+  border: none; background: none;
+}
+.pos-tab:hover { color: var(--text); }
+.pos-tab.active { background: var(--surface3); color: var(--text); border: 1px solid var(--border2); }
+.pos-tab.active.skater { background: rgba(111,38,61,0.2); color: var(--burgundy2); border-color: rgba(111,38,61,0.3); }
+.pos-tab.active.goalie { background: rgba(35,97,146,0.2); color: var(--accent); border-color: rgba(35,97,146,0.3); }
+
+.stats-search {
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: var(--r); padding: 7px 12px;
+  font-family: 'Outfit', sans-serif; font-size: 13px;
+  color: var(--text); outline: none; width: 200px;
+  transition: border-color 0.15s;
+}
+.stats-search:focus { border-color: var(--burgundy); }
+.stats-search::placeholder { color: var(--muted); }
+
+/* ── STATS TABLE ── */
+.stats-table-wrap {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--r2); overflow: hidden;
+}
+.stats-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px;
+}
+.stats-table thead tr {
+  background: var(--surface2);
+  border-bottom: 2px solid var(--border2);
+}
+.stats-table th {
+  padding: 10px 14px;
+  font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500;
+  color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase;
+  text-align: left; white-space: nowrap;
+  cursor: pointer; user-select: none;
+  transition: color 0.12s;
+}
+.stats-table th:hover { color: var(--text); }
+.stats-table th.sorted { color: var(--burgundy2); }
+.stats-table th.ra { text-align: right; }
+.stats-table th .sort-arrow { margin-left: 4px; opacity: 0.4; font-size: 8px; }
+.stats-table th.sorted .sort-arrow { opacity: 1; color: var(--burgundy2); }
+
+.stats-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+.stats-table tbody tr:last-child { border-bottom: none; }
+.stats-table tbody tr:hover { background: var(--surface2); }
+.stats-table tbody tr.ht-row { background: rgba(111,38,61,0.04); }
+
+.stats-table td {
+  padding: 10px 14px; white-space: nowrap;
+}
+.st-rank {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--muted); width: 32px; text-align: center;
+}
+.st-rank.r1 { color: var(--gold); font-weight: 700; }
+.st-rank.r2 { color: #9ca3af; font-weight: 700; }
+.st-rank.r3 { color: #cd7f32; font-weight: 700; }
+.st-name { font-weight: 700; color: var(--text); }
+.st-sub { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 1px; }
+.st-pos-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 4px;
+  font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.pos-F { background: var(--surface3); color: var(--muted); }
+.pos-D { background: var(--burgundy); }
+.pos-G { background: var(--accent); }
+.st-num {
+  font-family: 'DM Mono', monospace; font-size: 13px;
+  text-align: right; color: var(--muted);
+}
+.st-num.highlight { color: var(--text); font-weight: 600; }
+.st-pts {
+  font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 800;
+  text-align: right; color: var(--burgundy2);
+}
+.st-box {
+  font-family: 'DM Mono', monospace; font-size: 10px;
+  color: var(--muted2); text-align: center;
+}
+.st-ht { text-align: center; font-size: 12px; }
+
+/* ── LOADING/EMPTY STATE ── */
+.stats-empty {
+  padding: 40px; text-align: center;
+  color: var(--muted); font-size: 13px; font-family: 'DM Mono', monospace;
+}
+
+/* ── STANDINGS COMPACT ── */
+.lb-compact { }
+.lb-compact-row {
+  display: grid;
+  grid-template-columns: 32px 36px 1fr auto auto;
+  gap: 8px; align-items: center;
+  padding: 10px 18px; border-bottom: 1px solid var(--border);
+  transition: background 0.1s; cursor: pointer;
+}
+.lb-compact-row:last-child { border-bottom: none; }
+.lb-compact-row:hover { background: var(--surface2); }
+.lb-compact-row.r1 { background: linear-gradient(90deg,rgba(111,38,61,0.1),transparent 55%); }
+.lb-compact-row.r2 { background: linear-gradient(90deg,rgba(162,170,173,0.05),transparent 55%); }
+.lb-compact-row.r3 { background: linear-gradient(90deg,rgba(35,97,146,0.06),transparent 55%); }
+.lb-compact-row.rl { background: linear-gradient(90deg,rgba(192,57,43,0.05),transparent 55%); }
+
+/* ── MOBILE ── */
+@media(max-width:640px) {
+  .stats-controls { flex-direction: column; align-items: flex-start; }
+  .stats-search { width: 100%; }
+  .stats-table th, .stats-table td { padding: 8px 10px; font-size: 11px; }
+  .stats-table .hide-mob { display: none; }
+  .page-tab { font-size: 10px; padding: 8px 10px; }
+}
+</style>
 </head>
 <body>
 
@@ -19,7 +176,7 @@
     <nav>
       <button class="nav-btn" onclick="window.location.href='index.html'">Home</button>
       <button class="nav-btn" onclick="window.location.href='picks.html'">My Picks</button>
-      <button class="nav-btn active">Standings</button>
+      <button class="nav-btn active">Stats</button>
       <button class="nav-btn" onclick="window.location.href='rules.html'">Rules</button>
       <button class="nav-btn" onclick="window.location.href='admin.html'">Admin</button>
     </nav>
@@ -37,33 +194,110 @@
 <div class="page on">
 <div class="wrap">
 
-  <div style="padding-top:8px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between">
+  <div style="padding-top:8px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
     <div>
       <div class="eyebrow">2026–27 season</div>
-      <div style="font-size:26px;font-weight:800">Standings</div>
+      <div style="font-size:26px;font-weight:800">Stats &amp; Standings</div>
     </div>
     <span class="live-dot">UPDATED NIGHTLY</span>
   </div>
 
-  <!-- Hat Trick Hall -->
-  <div class="ht-hall">
-    <div class="ht-hall-head">
-      <div class="ht-hall-title">
-        <span style="font-size:22px">🎩</span>
-        Hat Trick Hall
-        <span class="ht-count-badge" id="ht-total-badge">0 this season</span>
-      </div>
-      <span style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace">Tracked separately · No bonus pts</span>
-    </div>
-    <div id="ht-hall-rows"></div>
+  <!-- PAGE TABS -->
+  <div class="page-tabs">
+    <button class="page-tab active" onclick="switchTab('standings', this)">🏆 Standings</button>
+    <button class="page-tab" onclick="switchTab('skaters', this)">⛸ Skaters</button>
+    <button class="page-tab" onclick="switchTab('goalies', this)">🥅 Goalies</button>
   </div>
 
-  <div class="card">
-    <div class="card-head">
-      <span class="card-title">All Entries</span>
-      <span style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace" id="bd-count">— entries</span>
+  <!-- ══ TAB: STANDINGS ══ -->
+  <div class="tab-panel active" id="tab-standings">
+
+    <!-- Hat Trick Hall -->
+    <div class="ht-hall" style="margin-bottom:20px">
+      <div class="ht-hall-head">
+        <div class="ht-hall-title">
+          <span style="font-size:22px">🎩</span>
+          Hat Trick Hall
+          <span class="ht-count-badge" id="ht-total-badge">0 this season</span>
+        </div>
+        <span style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace">+3 bonus pts each</span>
+      </div>
+      <div id="ht-hall-rows"></div>
     </div>
-    <div id="full-lb"></div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">All Entries</span>
+        <span style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace" id="bd-count">— entries</span>
+      </div>
+      <div id="full-lb"></div>
+    </div>
+
+  </div>
+
+  <!-- ══ TAB: SKATERS ══ -->
+  <div class="tab-panel" id="tab-skaters">
+    <div class="stats-controls">
+      <div class="pos-tabs">
+        <button class="pos-tab active skater" onclick="filterSkaterPos('ALL', this)">All</button>
+        <button class="pos-tab" onclick="filterSkaterPos('F', this)">Forwards</button>
+        <button class="pos-tab" onclick="filterSkaterPos('D', this)">Defense</button>
+      </div>
+      <input class="stats-search" id="skater-search" placeholder="Search player…" oninput="renderSkaters()">
+    </div>
+    <div class="stats-table-wrap">
+      <table class="stats-table" id="skater-table">
+        <thead>
+          <tr>
+            <th style="width:32px;text-align:center">#</th>
+            <th onclick="sortSkaters('name')">Player <span class="sort-arrow">↕</span></th>
+            <th class="hide-mob" onclick="sortSkaters('team')">Team <span class="sort-arrow">↕</span></th>
+            <th style="width:36px;text-align:center">Pos</th>
+            <th class="ra hide-mob" onclick="sortSkaters('box')">Box <span class="sort-arrow">↕</span></th>
+            <th class="ra" onclick="sortSkaters('goals')">G <span class="sort-arrow">↕</span></th>
+            <th class="ra" onclick="sortSkaters('assists')">A <span class="sort-arrow">↕</span></th>
+            <th class="ra hide-mob" onclick="sortSkaters('sog')">SOG <span class="sort-arrow">↕</span></th>
+            <th class="ra hide-mob" onclick="sortSkaters('pim')">PIM <span class="sort-arrow">↕</span></th>
+            <th class="ra" onclick="sortSkaters('hatTricks')">🎩 <span class="sort-arrow">↕</span></th>
+            <th class="ra sorted" onclick="sortSkaters('pts')">Pts <span class="sort-arrow">↓</span></th>
+          </tr>
+        </thead>
+        <tbody id="skater-tbody">
+          <tr><td colspan="11" class="stats-empty">Loading player stats…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ TAB: GOALIES ══ -->
+  <div class="tab-panel" id="tab-goalies">
+    <div class="stats-controls">
+      <div style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace">
+        Scoring: W×3 · L×1 · OTL×1.5 · SO×2 · SV×0.02
+      </div>
+      <input class="stats-search" id="goalie-search" placeholder="Search goalie…" oninput="renderGoalies()">
+    </div>
+    <div class="stats-table-wrap">
+      <table class="stats-table" id="goalie-table">
+        <thead>
+          <tr>
+            <th style="width:32px;text-align:center">#</th>
+            <th onclick="sortGoalies('name')">Player <span class="sort-arrow">↕</span></th>
+            <th class="hide-mob" onclick="sortGoalies('team')">Team <span class="sort-arrow">↕</span></th>
+            <th class="ra hide-mob" onclick="sortGoalies('box')">Box <span class="sort-arrow">↕</span></th>
+            <th class="ra" onclick="sortGoalies('wins')">W <span class="sort-arrow">↕</span></th>
+            <th class="ra" onclick="sortGoalies('losses')">L <span class="sort-arrow">↕</span></th>
+            <th class="ra hide-mob" onclick="sortGoalies('otl')">OTL <span class="sort-arrow">↕</span></th>
+            <th class="ra hide-mob" onclick="sortGoalies('shutouts')">SO <span class="sort-arrow">↕</span></th>
+            <th class="ra" onclick="sortGoalies('saves')">SV <span class="sort-arrow">↕</span></th>
+            <th class="ra sorted" onclick="sortGoalies('pts')">Pts <span class="sort-arrow">↓</span></th>
+          </tr>
+        </thead>
+        <tbody id="goalie-tbody">
+          <tr><td colspan="10" class="stats-empty">Loading goalie stats…</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
 </div>
@@ -109,9 +343,220 @@
 
 <script src="main.js"></script>
 <script>
-buildTicker();
-buildBoards();
-buildHatTrickHall();
+// ══════════════════════════════════════════════
+// STATS PAGE — Players sheet CSV fetch + sortable tables
+// ══════════════════════════════════════════════
+
+const PLAYERS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1949508708&single=true&output=csv';
+
+let ALL_PLAYERS = [];
+let skaterSort  = { col: 'pts', dir: -1 };
+let goalieSort  = { col: 'pts', dir: -1 };
+let skaterPos   = 'ALL';
+
+// ── Parse Players CSV ──
+// Columns: A=PlayerName, B=NHLTeam, C=Position, D=BoxNumber,
+//          E=Goals, F=Assists, G=SOG, H=PIM,
+//          I=Wins, J=Losses, K=OTL, L=Shutouts, M=Saves, N=HatTricks, O=TotalPts
+function parsePlayersCSV(csv) {
+  const lines = csv.trim().split('\n');
+  return lines.slice(1).map(line => {
+    const cols = [];
+    let cur = '', inQ = false;
+    for (const ch of line) {
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+      else { cur += ch; }
+    }
+    cols.push(cur.trim());
+    const pos = (cols[2] || '').trim();
+    return {
+      name:      (cols[0] || '').trim(),
+      team:      (cols[1] || '').trim(),
+      pos,
+      box:       parseInt(cols[3])  || 0,
+      goals:     parseInt(cols[4])  || 0,
+      assists:   parseInt(cols[5])  || 0,
+      sog:       parseInt(cols[6])  || 0,
+      pim:       parseInt(cols[7])  || 0,
+      wins:      parseInt(cols[8])  || 0,
+      losses:    parseInt(cols[9])  || 0,
+      otl:       parseInt(cols[10]) || 0,
+      shutouts:  parseInt(cols[11]) || 0,
+      saves:     parseInt(cols[12]) || 0,
+      hatTricks: parseInt(cols[13]) || 0,
+      pts:       parseFloat(cols[14]) || 0,
+    };
+  }).filter(p => p.name && p.pos);
+}
+
+async function fetchPlayers() {
+  try {
+    const res = await fetch(PLAYERS_CSV);
+    const csv = await res.text();
+    ALL_PLAYERS = parsePlayersCSV(csv);
+  } catch(err) {
+    console.warn('Players fetch failed:', err);
+    ALL_PLAYERS = [];
+  }
+}
+
+// ── Tab switching ──
+function switchTab(tab, btn) {
+  document.querySelectorAll('.page-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+}
+
+// ── Skater sort ──
+function sortSkaters(col) {
+  if (skaterSort.col === col) { skaterSort.dir *= -1; }
+  else { skaterSort = { col, dir: col === 'name' || col === 'team' ? 1 : -1 }; }
+  updateSkaterHeaders();
+  renderSkaters();
+}
+
+function updateSkaterHeaders() {
+  document.querySelectorAll('#skater-table th').forEach(th => {
+    th.classList.remove('sorted');
+    const arrow = th.querySelector('.sort-arrow');
+    if (arrow) arrow.textContent = '↕';
+  });
+  const cols = ['name','team',null,'box','goals','assists','sog','pim','hatTricks','pts'];
+  // find by onclick
+  document.querySelectorAll('#skater-table th[onclick]').forEach(th => {
+    const fn = th.getAttribute('onclick');
+    const match = fn.match(/'([^']+)'/);
+    if (match && match[1] === skaterSort.col) {
+      th.classList.add('sorted');
+      const arrow = th.querySelector('.sort-arrow');
+      if (arrow) arrow.textContent = skaterSort.dir === -1 ? '↓' : '↑';
+    }
+  });
+}
+
+function filterSkaterPos(pos, btn) {
+  skaterPos = pos;
+  document.querySelectorAll('.pos-tab').forEach(b => {
+    b.classList.remove('active','skater');
+  });
+  btn.classList.add('active','skater');
+  renderSkaters();
+}
+
+function renderSkaters() {
+  const search = (document.getElementById('skater-search')?.value || '').toLowerCase();
+  let data = ALL_PLAYERS.filter(p => p.pos === 'F' || p.pos === 'D');
+  if (skaterPos !== 'ALL') data = data.filter(p => p.pos === skaterPos);
+  if (search) data = data.filter(p => p.name.toLowerCase().includes(search) || p.team.toLowerCase().includes(search));
+
+  data.sort((a, b) => {
+    const col = skaterSort.col;
+    const av = typeof a[col] === 'string' ? a[col] : (a[col] || 0);
+    const bv = typeof b[col] === 'string' ? b[col] : (b[col] || 0);
+    if (typeof av === 'string') return av.localeCompare(bv) * skaterSort.dir;
+    return (bv - av) * (skaterSort.dir === -1 ? 1 : -1) || a.name.localeCompare(b.name);
+  });
+
+  const tbody = document.getElementById('skater-tbody');
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="11" class="stats-empty">${ALL_PLAYERS.length ? 'No players match' : 'Stats update nightly — check back tomorrow'}</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = data.map((p, i) => {
+    const rankCls = i===0?'r1':i===1?'r2':i===2?'r3':'';
+    const isHT = p.hatTricks > 0;
+    return `<tr class="${isHT?'ht-row':''}">
+      <td class="st-rank ${rankCls}">${i+1}</td>
+      <td>
+        <div class="st-name">${p.name}${isHT?' <span style="font-size:11px">🎩</span>':''}</div>
+        <div class="st-sub">${p.team}</div>
+      </td>
+      <td class="hide-mob"><span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">${p.team}</span></td>
+      <td style="text-align:center"><span class="st-pos-badge pos-${p.pos}">${p.pos}</span></td>
+      <td class="st-box hide-mob">${p.box}</td>
+      <td class="st-num ${p.goals>0?'highlight':''}">${p.goals}</td>
+      <td class="st-num ${p.assists>0?'highlight':''}">${p.assists}</td>
+      <td class="st-num hide-mob">${p.sog}</td>
+      <td class="st-num hide-mob">${p.pos==='D'?p.pim:'—'}</td>
+      <td class="st-ht">${p.hatTricks>0?'🎩'.repeat(Math.min(p.hatTricks,3)):''}</td>
+      <td class="st-pts">${p.pts}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Goalie sort ──
+function sortGoalies(col) {
+  if (goalieSort.col === col) { goalieSort.dir *= -1; }
+  else { goalieSort = { col, dir: col === 'name' || col === 'team' ? 1 : -1 }; }
+  updateGoalieHeaders();
+  renderGoalies();
+}
+
+function updateGoalieHeaders() {
+  document.querySelectorAll('#goalie-table th[onclick]').forEach(th => {
+    th.classList.remove('sorted');
+    const arrow = th.querySelector('.sort-arrow');
+    if (arrow) arrow.textContent = '↕';
+    const fn = th.getAttribute('onclick');
+    const match = fn.match(/'([^']+)'/);
+    if (match && match[1] === goalieSort.col) {
+      th.classList.add('sorted');
+      const arrow2 = th.querySelector('.sort-arrow');
+      if (arrow2) arrow2.textContent = goalieSort.dir === -1 ? '↓' : '↑';
+    }
+  });
+}
+
+function renderGoalies() {
+  const search = (document.getElementById('goalie-search')?.value || '').toLowerCase();
+  let data = ALL_PLAYERS.filter(p => p.pos === 'G');
+  if (search) data = data.filter(p => p.name.toLowerCase().includes(search) || p.team.toLowerCase().includes(search));
+
+  data.sort((a, b) => {
+    const col = goalieSort.col;
+    const av = typeof a[col] === 'string' ? a[col] : (a[col] || 0);
+    const bv = typeof b[col] === 'string' ? b[col] : (b[col] || 0);
+    if (typeof av === 'string') return av.localeCompare(bv) * goalieSort.dir;
+    return (bv - av) * (goalieSort.dir === -1 ? 1 : -1) || a.name.localeCompare(b.name);
+  });
+
+  const tbody = document.getElementById('goalie-tbody');
+  if (!data.length) {
+    tbody.innerHTML = `<tr><td colspan="10" class="stats-empty">${ALL_PLAYERS.length ? 'No goalies match' : 'Stats update nightly — check back tomorrow'}</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = data.map((p, i) => {
+    const rankCls = i===0?'r1':i===1?'r2':i===2?'r3':'';
+    return `<tr>
+      <td class="st-rank ${rankCls}">${i+1}</td>
+      <td>
+        <div class="st-name">${p.name}</div>
+        <div class="st-sub">${p.team}</div>
+      </td>
+      <td class="hide-mob"><span style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">${p.team}</span></td>
+      <td class="st-box hide-mob">${p.box}</td>
+      <td class="st-num ${p.wins>0?'highlight':''}">${p.wins}</td>
+      <td class="st-num">${p.losses}</td>
+      <td class="st-num hide-mob">${p.otl}</td>
+      <td class="st-num hide-mob">${p.shutouts}</td>
+      <td class="st-num ${p.saves>0?'highlight':''}">${p.saves.toLocaleString()}</td>
+      <td class="st-pts">${p.pts}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── INIT ──
+Promise.all([fetchNightlyStats(), fetchPlayers()]).then(() => {
+  buildTicker();
+  buildBoards();
+  buildHatTrickHall();
+  renderSkaters();
+  renderGoalies();
+});
 </script>
 </body>
 </html>
