@@ -827,7 +827,21 @@ function updateProgress() {
   if (pb) pb.style.width = Math.round(n/24*100)+'%';
 }
 
-// ══════════ SUBMIT ══════════
+// ══════════ PHONE FORMAT ══════════
+function formatPhone(input) {
+  const digits = input.value.replace(/\D/g, '').slice(0, 10);
+  let formatted = '';
+  if (digits.length === 0) {
+    formatted = '';
+  } else if (digits.length <= 3) {
+    formatted = '(' + digits;
+  } else if (digits.length <= 6) {
+    formatted = '(' + digits.slice(0,3) + ') ' + digits.slice(3);
+  } else {
+    formatted = '(' + digits.slice(0,3) + ') ' + digits.slice(3,6) + '-' + digits.slice(6);
+  }
+  input.value = formatted;
+}
 const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzqqijpX3BoRCDXMH5ZzWCkN2ZlALGJd_HBHMetPlXCir7_ue_WfEtqvo3NM0Z-xMhKUA/exec';
 
 async function submitEntry() {
