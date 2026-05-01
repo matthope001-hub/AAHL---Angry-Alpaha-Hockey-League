@@ -132,6 +132,8 @@ nav { display: flex; gap: 2px; }
 .draft-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
 .box-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; transition: border-color 0.2s; }
 .box-wrap.done { border-color: rgba(111,38,61,0.5); }
+.box-wrap.error { border-color: #e53e3e; box-shadow: 0 0 0 2px rgba(229,62,62,0.25); animation: shake 0.4s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
 .box-hd { padding: 10px 14px; background: var(--surface2); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
 .box-type { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
 .box-name { font-size: 13px; font-weight: 700; color: var(--text); }
