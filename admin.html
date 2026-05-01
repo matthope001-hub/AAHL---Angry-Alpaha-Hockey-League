@@ -3,10 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AAHL — Angry Alpaca Hockey League</title>
+<title>Admin — AAHL</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
-<link rel="icon" type="image/png" href="aahl-logo.png">
 </head>
 <body>
 
@@ -17,11 +16,11 @@
       <div class="wordmark-text">AAHL <span>/</span> Angry Alpaca</div>
     </div>
     <nav>
-      <button class="nav-btn active" onclick="window.location.href='index.html'">Home</button>
+      <button class="nav-btn" onclick="window.location.href='index.html'">Home</button>
       <button class="nav-btn" onclick="window.location.href='picks.html'">My Picks</button>
       <button class="nav-btn" onclick="window.location.href='standings.html'">Standings</button>
       <button class="nav-btn" onclick="window.location.href='rules.html'">Rules</button>
-      <button class="nav-btn" onclick="window.location.href='admin.html'">Admin</button>
+      <button class="nav-btn active">Admin</button>
     </nav>
   </div>
 </header>
@@ -34,103 +33,326 @@
   </div>
 </div>
 
-<!-- HOME PAGE -->
 <div class="page on">
 <div class="wrap">
 
-  <div class="home-topbar">
-    <div class="home-topbar-left">
-      <div class="eyebrow">NHL 2026–27 Regular Season</div>
-      <h1>AAHL Box Pick<em>'Em</em></h1>
-    </div>
-    <div class="kpi-row">
-      <div class="kpi"><div class="kpi-val blue" id="h-entries">—</div><div class="kpi-lbl">Entries</div></div>
-      <div class="kpi"><div class="kpi-val burg" id="h-pot">—</div><div class="kpi-lbl">Prize Pool</div></div>
-      <div class="kpi"><div class="kpi-val slvr">Sep 29</div><div class="kpi-lbl">Deadline</div></div>
+  <div style="padding-top:8px;margin-bottom:28px">
+    <div class="eyebrow">Commissioner tools</div>
+    <div style="font-size:26px;font-weight:800">Admin &amp; Setup</div>
+  </div>
+
+  <div class="admin-section-title">Step 1 — Create the Google Sheet</div>
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-head"><span class="card-title">Setup Instructions</span><span class="free-tag">FREE · Google Account Required</span></div>
+    <div class="card-body" style="padding:0">
+      <div class="setup-step"><div class="setup-num">1</div><div>Go to <strong>sheets.google.com</strong> → click <strong>Blank spreadsheet</strong> → name it <strong>"AAHL 2026-27"</strong></div></div>
+      <div class="setup-step"><div class="setup-num">2</div><div>Create <strong>7 tabs</strong> at the bottom — right-click Sheet1 → Rename. Add tabs by clicking the <strong>+</strong> button.</div></div>
+      <div class="setup-step"><div class="setup-num">3</div><div>Go to <strong>Extensions → Apps Script</strong>. Delete the default code and paste the full script from Step 2 below.</div></div>
+      <div class="setup-step"><div class="setup-num">4</div><div>In Apps Script: click <strong>Triggers (clock icon)</strong> → Add Trigger → <code>fetchNightlyStats</code> → Time-driven → Day timer → 3am–4am EST.</div></div>
+      <div class="setup-step"><div class="setup-num">5</div><div>Back in Sheets: <strong>File → Share → Publish to web</strong> → Select the <strong>Standings</strong> tab → Publish. Copy the URL — that's your live public standings link.</div></div>
+      <div class="setup-step" style="border-bottom:none"><div class="setup-num">6</div><div>Paste your Sheet URL into the portal's entry form action and the Admin manual entry section so submissions route correctly.</div></div>
     </div>
   </div>
 
-  <div class="home-grid">
-
-    <!-- LEFT — standings -->
-    <div class="standings-card">
-      <div class="sc-head">
-        <span class="sc-title">Current Standings</span>
-        <span class="live-dot" style="font-size:10px">Live</span>
-      </div>
-      <div class="sc-cols">
-        <span></span><span></span>
-        <span>Entry</span>
-        <span class="ra">🎩</span>
-        <span class="ra">Move</span>
-        <span class="ra">Pts</span>
-      </div>
-      <div id="home-standings">
-        <div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">Loading standings…</div>
+  <div class="admin-section-title" style="margin-top:24px">Sheet Tab Structure — 7 Tabs Required</div>
+  <div class="sheets-tabs-grid">
+    <div class="sheet-tab-card">
+      <div class="stc-head stc-entries"><span class="stc-icon">📝</span><div><div class="stc-name">Entries</div><div class="stc-desc">One row per submission</div></div></div>
+      <div class="stc-cols">
+        <div class="stc-col-row"><span class="stc-col">A</span><span>EntryID</span></div>
+        <div class="stc-col-row"><span class="stc-col">B</span><span>FirstName</span></div>
+        <div class="stc-col-row"><span class="stc-col">C</span><span>LastName</span></div>
+        <div class="stc-col-row"><span class="stc-col">D</span><span>Email</span></div>
+        <div class="stc-col-row"><span class="stc-col">E</span><span>TeamName</span></div>
+        <div class="stc-col-row"><span class="stc-col">F</span><span>PaymentReceived (Y/N)</span></div>
+        <div class="stc-col-row"><span class="stc-col">G</span><span>SubmittedAt</span></div>
+        <div class="stc-col-row"><span class="stc-col">H–AE</span><span>Pick_Box1 … Pick_Box24</span></div>
+        <div class="stc-col-row"><span class="stc-col">AF</span><span>TotalPts (formula)</span></div>
+        <div class="stc-col-row"><span class="stc-col">AG</span><span>Rank (formula)</span></div>
       </div>
     </div>
-
-    <!-- RIGHT — scoring ref -->
-    <div class="home-right">
-      <div class="mini-card">
-        <div class="mini-head">Scoring Reference</div>
-        <table class="score-tbl">
-          <thead><tr><th>Stat</th><th style="text-align:right">Pts</th></tr></thead>
-          <tbody>
-            <tr><td colspan="2" class="sec-lbl">Forwards &amp; Defense</td></tr>
-            <tr><td>Goal</td><td class="pts-val" style="text-align:right">1</td></tr>
-            <tr><td>Assist</td><td class="pts-val" style="text-align:right">1</td></tr>
-            <tr><td>Shot on Goal</td><td class="pts-val" style="text-align:right">0.11</td></tr>
-            <tr><td>🎩 Hat Trick bonus</td><td class="pts-val" style="text-align:right">+3</td></tr>
-            <tr><td>PIM / min (D only)</td><td class="pts-val" style="text-align:right">0.25</td></tr>
-            <tr><td colspan="2" class="sec-lbl">Goalies</td></tr>
-            <tr><td>Win</td><td class="pts-val" style="text-align:right">3</td></tr>
-            <tr><td>Loss</td><td class="pts-val" style="text-align:right">1</td></tr>
-            <tr><td>OT Loss</td><td class="pts-val" style="text-align:right">1.5</td></tr>
-            <tr><td>Shutout</td><td class="pts-val" style="text-align:right">2</td></tr>
-            <tr><td>Save</td><td class="pts-val" style="text-align:right">0.02</td></tr>
-            <tr><td colspan="2" class="sec-lbl">Division Bonus</td></tr>
-            <tr><td>Division leader (live)</td><td class="pts-val" style="text-align:right">+10</td></tr>
-          </tbody>
-        </table>
+    <div class="sheet-tab-card">
+      <div class="stc-head stc-players"><span class="stc-icon">🏒</span><div><div class="stc-name">Players</div><div class="stc-desc">Master player stat table</div></div></div>
+      <div class="stc-cols">
+        <div class="stc-col-row"><span class="stc-col">A</span><span>PlayerName</span></div>
+        <div class="stc-col-row"><span class="stc-col">B</span><span>NHLTeam</span></div>
+        <div class="stc-col-row"><span class="stc-col">C</span><span>Position (F/D/G)</span></div>
+        <div class="stc-col-row"><span class="stc-col">D</span><span>BoxNumber</span></div>
+        <div class="stc-col-row"><span class="stc-col">E–N</span><span>Goals, Assists, SOG, PIM, W, L, OTL, SO, SV, HatTricks</span></div>
+        <div class="stc-col-row stc-col-key"><span class="stc-col">O</span><span>TotalPts (formula)</span></div>
       </div>
     </div>
+    <div class="sheet-tab-card">
+      <div class="stc-head stc-standings"><span class="stc-icon">🏆</span><div><div class="stc-name">Standings</div><div class="stc-desc">Live ranked table — publish this tab</div></div></div>
+      <div class="stc-cols">
+        <div class="stc-col-row"><span class="stc-col">A</span><span>Rank</span></div>
+        <div class="stc-col-row"><span class="stc-col">B</span><span>EntryID</span></div>
+        <div class="stc-col-row"><span class="stc-col">C</span><span>TeamName</span></div>
+        <div class="stc-col-row"><span class="stc-col">D</span><span>OwnerName</span></div>
+        <div class="stc-col-row"><span class="stc-col">E</span><span>TotalPts</span></div>
+        <div class="stc-col-row"><span class="stc-col">F–G</span><span>PrevRank, RankChange</span></div>
+        <div class="stc-col-row stc-col-key"><span class="stc-col">J</span><span>TotalSaves (tiebreaker)</span></div>
+      </div>
+    </div>
+    <div class="sheet-tab-card">
+      <div class="stc-head stc-ht"><span class="stc-icon">🎩</span><div><div class="stc-name">HatTricks</div><div class="stc-desc">Every hat trick this season</div></div></div>
+      <div class="stc-cols">
+        <div class="stc-col-row"><span class="stc-col">A</span><span>Date</span></div>
+        <div class="stc-col-row"><span class="stc-col">B</span><span>PlayerName</span></div>
+        <div class="stc-col-row"><span class="stc-col">C–F</span><span>NHLTeam, Position, Goals, GameID</span></div>
+        <div class="stc-col-row stc-col-key"><span class="stc-col">H</span><span>BonusPtsAwarded</span></div>
+      </div>
+    </div>
+    <div class="sheet-tab-card">
+      <div class="stc-head stc-games"><span class="stc-icon">📅</span><div><div class="stc-name">ProcessedGames</div><div class="stc-desc">Duplicate guard</div></div></div>
+      <div class="stc-cols">
+        <div class="stc-col-row"><span class="stc-col">A</span><span>GameID</span></div>
+        <div class="stc-col-row"><span class="stc-col">B</span><span>Date</span></div>
+        <div class="stc-col-row"><span class="stc-col">C–D</span><span>HomeTeam, AwayTeam</span></div>
+        <div class="stc-col-row stc-col-key"><span class="stc-col">E</span><span>ProcessedAt</span></div>
+      </div>
+    </div>
+    <div class="sheet-tab-card">
+      <div class="stc-head stc-status"><span class="stc-icon">📡</span><div><div class="stc-name">AgentStatus</div><div class="stc-desc">Inter-agent communication log</div></div></div>
+      <div class="stc-cols">
+        <div class="stc-col-row"><span class="stc-col">A</span><span>Timestamp</span></div>
+        <div class="stc-col-row"><span class="stc-col">B</span><span>AgentID</span></div>
+        <div class="stc-col-row"><span class="stc-col">C</span><span>Status (✅ ⚠️ ❌ ⏸)</span></div>
+        <div class="stc-col-row"><span class="stc-col">D</span><span>Message</span></div>
+        <div class="stc-col-row stc-col-key"><span class="stc-col">E</span><span>RequiresAction (Y/N)</span></div>
+      </div>
+    </div>
+    <div class="sheet-tab-card">
+      <div class="stc-head stc-config"><span class="stc-icon">⚙️</span><div><div class="stc-name">Config</div><div class="stc-desc">Season settings — edit once</div></div></div>
+      <div class="stc-cols">
+        <div class="stc-col-row"><span class="stc-col">A2</span><span>SeasonYear → 2026-27</span></div>
+        <div class="stc-col-row"><span class="stc-col">A3</span><span>EntryFee → 10</span></div>
+        <div class="stc-col-row"><span class="stc-col">A4</span><span>CommissionerEmail</span></div>
+        <div class="stc-col-row"><span class="stc-col">A5</span><span>DigestDay → MONDAY</span></div>
+        <div class="stc-col-row stc-col-key"><span class="stc-col">A7</span><span>PicksLocked (TRUE/FALSE)</span></div>
+      </div>
+    </div>
+  </div>
 
+  <div class="admin-section-title" style="margin-top:32px">Step 2 — Apps Script</div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-head"><span class="card-title">Shared Utilities</span><span style="font-size:11px;color:var(--muted2);font-family:'DM Mono',monospace">All agents use these</span></div>
+    <pre style="margin:0;border-radius:0">const SS = SpreadsheetApp.getActiveSpreadsheet();
+const CONFIG = () => {
+  const cfg = SS.getSheetByName('Config').getDataRange().getValues();
+  return Object.fromEntries(cfg.map(r => [r[0], r[1]]));
+};
+function agentLog(agentId, status, message, requiresAction = false) {
+  SS.getSheetByName('AgentStatus').appendRow([new Date(), agentId, status, message, requiresAction ? 'Y' : 'N']);
+}
+function agentReady(agentId) {
+  const rows = SS.getSheetByName('AgentStatus').getDataRange().getValues();
+  const today = Utilities.formatDate(new Date(), 'EST', 'yyyy-MM-dd');
+  const todayRows = rows.filter(r => Utilities.formatDate(new Date(r[0]), 'EST', 'yyyy-MM-dd') === today && r[1] === agentId);
+  if (!todayRows.length) return false;
+  return todayRows[todayRows.length - 1][2] === '✅';
+}
+function alertCommissioner(subject, body) { MailApp.sendEmail(CONFIG()['CommissionerEmail'], subject, body); }
+function gameAlreadyProcessed(gameId) { return SS.getSheetByName('ProcessedGames').getDataRange().getValues().some(r => String(r[0]) === String(gameId)); }
+function markGameProcessed(gameId, date, home, away) { SS.getSheetByName('ProcessedGames').appendRow([gameId, date, home, away, new Date()]); }
+function getEntries() {
+  const sheet = SS.getSheetByName('Entries');
+  const data = sheet.getDataRange().getValues();
+  return data.slice(1).map(row => ({
+    entryId: row[0], firstName: row[1], lastName: row[2],
+    email: row[3], teamName: row[4], paid: row[5] === 'Y',
+    submittedAt: row[6], picks: row.slice(7, 31)
+  })).filter(e => e.entryId);
+}
+function getPlayerMap() {
+  const sheet = SS.getSheetByName('Players');
+  const data = sheet.getDataRange().getValues();
+  const map = {};
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    map[row[0]] = { name: row[0], team: row[1], pos: row[2], goals: row[4]||0, assists: row[5]||0, sog: row[6]||0, pim: row[7]||0, wins: row[8]||0, losses: row[9]||0, otl: row[10]||0, shutouts: row[11]||0, saves: row[12]||0, pts: row[14]||0 };
+  }
+  return map;
+}
+function writeStandings(ranked) {
+  const sheet = SS.getSheetByName('Standings');
+  sheet.clear();
+  sheet.appendRow(['Rank', 'EntryID', 'TeamName', 'OwnerName', 'TotalPts', 'PrevRank', 'RankChange', 'Goals', 'Assists', 'Saves']);
+  ranked.forEach((e, i) => {
+    sheet.appendRow([i + 1, e.entryId, e.teamName, e.firstName + ' ' + e.lastName, e.pts, '', '', e.goals, e.assists, e.saves]);
+  });
+}</pre>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-head"><span class="card-title">AGT-001 — Entry Receiver</span><span class="agent-badge agt1">On form submit</span></div>
+    <pre style="margin:0;border-radius:0">function doPost(e) {
+  try {
+    const data = JSON.parse(e.postData.contents), cfg = CONFIG();
+    if (cfg['PicksLocked']===true || cfg['PicksLocked']==='TRUE')
+      return ContentService.createTextOutput(JSON.stringify({success:false,error:'Picks are locked.'})).setMimeType(ContentService.MimeType.JSON);
+    const sheet = SS.getSheetByName('Entries'), id = 'AAHL-'+Date.now();
+    sheet.appendRow([id, data.firstName, data.lastName, data.email, data.teamName, 'N', new Date(), ...data.picks]);
+    agentLog('AGT-001','✅',`New entry: ${data.teamName} by ${data.firstName} ${data.lastName}`);
+    sendEntryConfirmation(data);
+    return ContentService.createTextOutput(JSON.stringify({success:true,entryId:id})).setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    agentLog('AGT-001','❌',err.message,true);
+    return ContentService.createTextOutput(JSON.stringify({success:false,error:err.message})).setMimeType(ContentService.MimeType.JSON);
+  }
+}</pre>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-head"><span class="card-title">AGT-002 — Stat Fetch + Anomaly Detection</span><span class="agent-badge agt2">Nightly 3 AM</span></div>
+    <pre style="margin:0;border-radius:0">function fetchNightlyStats() {
+  agentLog('AGT-002', '⏳', 'Starting nightly stat fetch');
+  const date = Utilities.formatDate(new Date(Date.now() - 86400000), 'EST', 'yyyy-MM-dd');
+  try {
+    const sched = JSON.parse(UrlFetchApp.fetch(`https://api-web.nhle.com/v1/schedule/${date}`).getContentText());
+    const games = sched.gameWeek?.[0]?.games || [];
+    if (!games.length) { agentLog('AGT-002', '✅', `No games on ${date}`); return; }
+    let processed = 0, skipped = 0, anomalies = 0;
+    games.forEach(game => {
+      if (gameAlreadyProcessed(game.id)) { skipped++; return; }
+      const box = JSON.parse(UrlFetchApp.fetch(`https://api-web.nhle.com/v1/gamecenter/${game.id}/boxscore`).getContentText());
+      const homeGoals = box.homeTeam?.score || 0, awayGoals = box.awayTeam?.score || 0;
+      const isOT = ['OT','SO'].includes(box.periodDescriptor?.periodType);
+      ['homeTeam','awayTeam'].forEach(side => {
+        const team = box[side]; if (!team) return;
+        [...(team.forwards||[]), ...(team.defense||[])].forEach(p => {
+          if (!p.toi) return;
+          const stats = { name: p.name?.default||'', team: team.abbrev, pos: team.forwards?.includes(p)?'F':'D', goals: p.goals||0, assists: p.assists||0, sog: p.sog||0, pim: p.pim||0 };
+          // ── ANOMALY DETECTION ──
+          if (stats.goals > 6 || stats.assists > 6) { anomalies++; agentLog('AGT-002','⚠️',`Suspicious: ${stats.name} — ${stats.goals}G ${stats.assists}A`,true); return; }
+          updateSkaterStats(stats);
+          checkHatTrick(stats, game.id, date);
+        });
+        (team.goalies||[]).forEach(g => {
+          if (!g.toi || g.toi==='00:00') return;
+          const teamWon = (side==='homeTeam') ? homeGoals>awayGoals : awayGoals>homeGoals;
+          updateGoalieStats({ name: g.name?.default||'', team: team.abbrev, pos:'G', wins: teamWon&&!isOT?1:0, losses: !teamWon&&!isOT?1:0, otl: !teamWon&&isOT?1:0, shutouts: g.shotsAgainst>0&&g.goalsAgainst===0?1:0, saves: g.saves||0 });
+        });
+      });
+      markGameProcessed(game.id, date, box.homeTeam?.abbrev, box.awayTeam?.abbrev);
+      processed++;
+    });
+    agentLog('AGT-002','✅',`Complete — ${processed} processed, ${skipped} skipped, ${anomalies} anomalies`);
+    if (anomalies > 0) alertCommissioner('AAHL ⚠️ Anomalies', `${anomalies} suspicious stat(s) flagged on ${date}`);
+    calculateStandings();
+  } catch(err) { agentLog('AGT-002','❌',`Fatal: ${err.message}`,true); alertCommissioner('AAHL ❌ Stat Fetch Failed', err.message); }
+}</pre>
+  </div>
+
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-head"><span class="card-title">AGT-003 — Standings Agent</span><span class="agent-badge agt3">Runs after AGT-002</span></div>
+    <pre style="margin:0;border-radius:0">function calculateStandings() {
+  if (!agentReady('AGT-002')) { agentLog('AGT-003','⏸','Waiting — AGT-002 not complete'); return; }
+  agentLog('AGT-003','⏳','Recalculating standings');
+  try {
+    const players = getPlayerMap(), entries = getEntries();
+    const ranked = entries.map(e => {
+      const pts = Math.round(e.picks.reduce((s,n)=>s+(players[n]?.pts||0),0)*100)/100;
+      return { ...e, pts, goals: e.picks.reduce((s,n)=>s+(players[n]?.goals||0),0), assists: e.picks.reduce((s,n)=>s+(players[n]?.assists||0),0), saves: e.picks.reduce((s,n)=>s+(players[n]?.saves||0),0) };
+    }).sort((a,b)=>b.pts-a.pts||(b.goals+b.assists)-(a.goals+a.assists)||b.saves-a.saves);
+    writeStandings(ranked);
+    agentLog('AGT-003','✅',`${ranked.length} entries ranked. Leader: ${ranked[0]?.teamName} (${ranked[0]?.pts} pts)`);
+    if (new Date().getDay()===1) sendWeeklyDigest(ranked);
+  } catch(err) { agentLog('AGT-003','❌',err.message,true); }
+}</pre>
+  </div>
+
+  <div class="card" style="margin-bottom:28px">
+    <div class="card-head"><span class="card-title">AGT-004 — Comms Agent</span><span class="agent-badge agt4">Monday digest + on-demand</span></div>
+    <pre style="margin:0;border-radius:0">function sendEntryConfirmation(entry) {
+  agentLog('AGT-004', '⏳', `Sending confirmation to ${entry.email}`);
+  const boxLabels = [
+    'Forwards 1','Forwards 2','Forwards 3','Forwards 4','Forwards 5','Forwards 6',
+    'Forwards 7','Forwards 8','Forwards 9','Forwards 10','Forwards 11','Forwards 12',
+    'Defense 1','Defense 2','Defense 3','Defense 4','Defense 5','Defense 6',
+    'Goalie 1','Goalie 2','Goalie 3','Goalie 4','Goalie 5','Goalie 6'
+  ];
+  const picksRows = (entry.picks || []).map((name, i) =>
+    `&lt;tr style="background:${i%2===0?'#f9f9f9':'#fff'}"&gt;
+      &lt;td style="padding:6px 12px;color:#888;font-size:12px"&gt;${boxLabels[i] || 'Box '+(i+1)}&lt;/td&gt;
+      &lt;td style="padding:6px 12px;font-weight:600"&gt;${name || '—'}&lt;/td&gt;
+    &lt;/tr&gt;`
+  ).join('');
+  const divPicks = entry.divisionPicks || {};
+  const divRows = Object.entries(divPicks).filter(([,v])=>v).map(([div, team]) =>
+    `&lt;tr&gt;&lt;td style="padding:6px 12px;color:#888;font-size:12px"&gt;${div}&lt;/td&gt;&lt;td style="padding:6px 12px;font-weight:600"&gt;${team}&lt;/td&gt;&lt;/tr&gt;`
+  ).join('');
+  MailApp.sendEmail({
+    to: entry.email,
+    subject: '🏒 AAHL Entry Confirmed — ' + entry.teamName,
+    htmlBody: `
+      &lt;div style="font-family:sans-serif;max-width:560px;margin:0 auto;color:#222"&gt;
+        &lt;h2 style="color:#6F263D"&gt;You're in, ${entry.firstName}!&lt;/h2&gt;
+        &lt;p&gt;Your entry &lt;strong&gt;${entry.teamName}&lt;/strong&gt; has been received.&lt;/p&gt;
+        &lt;p&gt;Please send &lt;strong&gt;$10&lt;/strong&gt; via e-transfer to &lt;strong&gt;matt.hope@rocketmail.com&lt;/strong&gt;
+           with your name in the memo to confirm your spot.&lt;/p&gt;
+        &lt;p style="color:#888;font-size:13px"&gt;Picks lock September 29, 2026. No changes after that.&lt;/p&gt;
+        &lt;h3 style="margin-top:28px;border-bottom:2px solid #6F263D;padding-bottom:6px"&gt;Your 24 Player Picks&lt;/h3&gt;
+        &lt;table style="width:100%;border-collapse:collapse;font-size:14px"&gt;
+          &lt;thead&gt;&lt;tr style="background:#6F263D;color:#fff"&gt;
+            &lt;th style="padding:8px 12px;text-align:left"&gt;Box&lt;/th&gt;
+            &lt;th style="padding:8px 12px;text-align:left"&gt;Player&lt;/th&gt;
+          &lt;/tr&gt;&lt;/thead&gt;
+          &lt;tbody&gt;${picksRows}&lt;/tbody&gt;
+        &lt;/table&gt;
+        ${divRows ? `
+        &lt;h3 style="margin-top:28px;border-bottom:2px solid #A2AAAD;padding-bottom:6px"&gt;Division Winner Picks&lt;/h3&gt;
+        &lt;table style="width:100%;border-collapse:collapse;font-size:14px"&gt;
+          &lt;thead&gt;&lt;tr style="background:#A2AAAD;color:#fff"&gt;
+            &lt;th style="padding:8px 12px;text-align:left"&gt;Division&lt;/th&gt;
+            &lt;th style="padding:8px 12px;text-align:left"&gt;Picked Winner&lt;/th&gt;
+          &lt;/tr&gt;&lt;/thead&gt;
+          &lt;tbody&gt;${divRows}&lt;/tbody&gt;
+        &lt;/table&gt;` : ''}
+        &lt;p style="margin-top:24px;font-size:12px;color:#aaa"&gt;Good luck! 🦙&lt;/p&gt;
+      &lt;/div&gt;`
+  });
+  agentLog('AGT-004','✅',`Confirmation sent to ${entry.email}`);
+}
+function sendWeeklyDigest(standings) {
+  if (!agentReady('AGT-003')) { agentLog('AGT-004','⏸','Holding — AGT-003 not ready'); return; }
+  agentLog('AGT-004','⏳','Building weekly digest');
+  const allEntries = getEntries();
+  const rows = standings.map((e,i)=>`&lt;tr&gt;&lt;td&gt;${i+1}&lt;/td&gt;&lt;td&gt;${e.teamName}&lt;/td&gt;&lt;td&gt;${e.pts}&lt;/td&gt;&lt;/tr&gt;`).join('');
+  allEntries.forEach(e => MailApp.sendEmail({ to: e.email, subject: `🦙 AAHL Weekly Update — ${standings[0].teamName} leads`,
+    htmlBody: `&lt;h2&gt;AAHL Standings&lt;/h2&gt;&lt;table border="1" cellpadding="6" style="border-collapse:collapse"&gt;&lt;tr&gt;&lt;th&gt;#&lt;/th&gt;&lt;th&gt;Team&lt;/th&gt;&lt;th&gt;Pts&lt;/th&gt;&lt;/tr&gt;${rows}&lt;/table&gt;` }));
+  agentLog('AGT-004','✅',`Digest sent to ${allEntries.length} participants`);
+}</pre>
+  </div>
+
+  <div class="admin-section-title">Step 3 — Manual Tools</div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-head"><span class="card-title">Manual Point Entry</span></div>
+      <div class="card-body">
+        <div class="field"><label>Player name</label><input type="text" id="ap" placeholder="e.g. Auston Matthews"></div>
+        <div class="field"><label>Points to add</label><input type="number" id="apts" placeholder="2" min="0" max="30"></div>
+        <button class="btn btn-accent" onclick="adminAdd()" style="width:100%;justify-content:center;margin-bottom:10px">Add Points</button>
+        <div id="alog" style="max-height:100px;overflow-y:auto;font-size:12px;color:var(--muted);font-family:'DM Mono',monospace"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><span class="card-title">Hosting</span></div>
+      <div class="card-body" style="padding:12px 20px">
+        <div class="host-card" style="margin-bottom:10px">
+          <h4>GitHub Pages <span class="free-tag">FREE</span></h4>
+          <p>Push HTML files to a repo → Settings → Pages → Deploy. Done.</p>
+        </div>
+        <div class="host-card">
+          <h4>Netlify Drop <span class="free-tag">FREE</span></h4>
+          <p>Drag folder to netlify.com/drop. Live in 30 seconds.</p>
+        </div>
+      </div>
+    </div>
   </div>
 
 </div>
-</div>
-
-<!-- TEAM MODAL — uses main.js openTeamPanel() / renderRoster() -->
-<div class="modal-overlay" id="modal-overlay" onclick="overlayClick(event)">
-  <div class="modal-card" id="modal-card">
-    <div class="tp-header">
-      <div class="tp-header-left">
-        <div class="tp-av" id="tp-av"></div>
-        <div><div class="tp-team-name" id="tp-tname"></div><div class="tp-owner" id="tp-owner"></div></div>
-      </div>
-      <div class="tp-meta" id="tp-meta"></div>
-      <button class="tp-close-btn" onclick="closeTeamPanel()">✕</button>
-    </div>
-    <div class="tp-tabs">
-      <div class="tp-tab active" onclick="filterRoster('ALL',this)">All Players</div>
-      <div class="tp-tab" onclick="filterRoster('F',this)">Forwards</div>
-      <div class="tp-tab" onclick="filterRoster('D',this)">Defense</div>
-      <div class="tp-tab" onclick="filterRoster('G',this)">Goalies</div>
-    </div>
-    <div class="tp-scroll">
-      <table class="tp-table" id="tp-table">
-        <thead><tr>
-          <th style="width:26px"></th><th>Player</th><th>NHL</th><th>Box</th>
-          <th class="ra">G</th><th class="ra">A</th><th class="ra">SOG</th><th class="ra">PIM</th>
-          <th class="ra">W</th><th class="ra">L</th><th class="ra">OTL</th><th class="ra">SO</th><th class="ra">SV</th>
-          <th class="ra">🎩</th><th class="ra">Pts</th>
-        </tr></thead>
-        <tbody id="tp-tbody"></tbody>
-        <tfoot id="tp-tfoot"></tfoot>
-      </table>
-    </div>
-  </div>
 </div>
 
 <!-- TOAST -->
@@ -141,120 +363,7 @@
 
 <script src="main.js"></script>
 <script>
-// ══════════════════════════════════════════════════════
-// INDEX.HTML ONLY — live standings fetch from Google Sheets
-// Everything else (ticker, toast, team panel) is in main.js
-// ══════════════════════════════════════════════════════
-
-const STANDINGS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1410587271&single=true&output=csv';
-
-let LIVE_BOARD = [];
-
-function parseStandingsCSV(csv) {
-  const lines = csv.trim().split('\n');
-  return lines.slice(1).map(line => {
-    const cols = [];
-    let cur = '', inQ = false;
-    for (const ch of line) {
-      if (ch === '"') { inQ = !inQ; }
-      else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-      else { cur += ch; }
-    }
-    cols.push(cur.trim());
-    const rank      = parseInt(cols[0])   || 0;
-    const entryId   = cols[1]             || '';
-    const team      = cols[2]             || '';
-    const owner     = cols[3]             || '';
-    const pts       = parseFloat(cols[4]) || 0;
-    const change    = parseInt(cols[6])   || 0;
-    const hatTricks = parseInt(cols[10])  || 0;
-    const trend = change > 0 ? `+${change}` : change < 0 ? `${change}` : '=';
-    return { rank, entryId, team, name: owner, pts, trend, hatTricks };
-  }).filter(e => e.team && e.name);
-}
-
-async function fetchStandings() {
-  try {
-    const res = await fetch(STANDINGS_CSV);
-    const csv = await res.text();
-    LIVE_BOARD = parseStandingsCSV(csv);
-    totalEntries = LIVE_BOARD.length; // totalEntries declared in main.js
-  } catch(err) {
-    console.warn('Standings fetch failed:', err);
-    LIVE_BOARD = [];
-  }
-}
-
-function buildLiveStandings() {
-  const el = document.getElementById('home-standings');
-  if (!el) return;
-  if (!LIVE_BOARD.length) {
-    el.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">No entries yet — be the first!</div>`;
-    return;
-  }
-  const last = LIVE_BOARD.length - 1;
-  el.innerHTML = LIVE_BOARD.map((e, i) => {
-    const rowCls = i===0?'r1':i===1?'r2':i===2?'r3':i===last?'rl':'';
-    const pos = i===last
-      ? `<span style="font-size:9px;letter-spacing:0px">LAST</span>`
-      : (i+1);
-    const t = e.trend;
-    const mvCls = t.startsWith('+')?'up':t.startsWith('-')?'dn':'eq';
-    const mvLbl = t.startsWith('+')?'▲'+t.slice(1):t.startsWith('-')?'▼'+t.slice(1):'—';
-    const htCell = e.hatTricks > 0 ? '🎩'.repeat(Math.min(e.hatTricks,3)) : '';
-    const ini = e.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-    return `<div class="sc-row ${rowCls}" onclick="openLiveTeamPanel('${e.name}')" style="cursor:pointer">
-      <div class="sc-pos">${pos}</div>
-      <div class="sc-av">${ini}</div>
-      <div class="sc-info">
-        <div class="sc-name">${e.team}</div>
-        <div class="sc-team">${e.name}</div>
-      </div>
-      <div class="sc-ht">${htCell}</div>
-      <div class="sc-mv ${mvCls}">${mvLbl}</div>
-      <div class="sc-pts">${e.pts.toLocaleString()}</div>
-    </div>`;
-  }).join('');
-}
-
-// Live team panel — uses LIVE_BOARD instead of MOCK_BOARD
-function openLiveTeamPanel(ownerName) {
-  const entry = LIVE_BOARD.find(e => e.name === ownerName);
-  if (!entry) return;
-  const ini = ownerName.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-  document.getElementById('tp-av').textContent = ini;
-  document.getElementById('tp-tname').textContent = entry.team;
-  document.getElementById('tp-owner').textContent = ownerName;
-  document.getElementById('tp-meta').innerHTML = `
-    <div class="tp-stat-pill"><div class="spv burg">${entry.pts}</div><div class="spl">Total Pts</div></div>
-    <div class="tp-stat-pill"><div class="spv blue">${entry.rank}</div><div class="spl">Rank</div></div>
-    <div class="tp-stat-pill"><div class="spv">${entry.hatTricks > 0 ? '🎩'.repeat(Math.min(entry.hatTricks,3)) : '0'}</div><div class="spl">Hat Tricks</div></div>
-  `;
-  document.getElementById('tp-tbody').innerHTML =
-    `<tr><td colspan="15" style="text-align:center;padding:30px;color:var(--muted);font-size:13px">
-      Full roster view available once the season begins and stats are live.
-    </td></tr>`;
-  document.getElementById('tp-tfoot').innerHTML = '';
-  document.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelector('.tp-tab').classList.add('active');
-  document.getElementById('modal-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-
-function updateLivePayouts() {
-  const prize = totalEntries * 10 * 0.5;
-  const he = document.getElementById('h-entries');
-  const hp = document.getElementById('h-pot');
-  if (he) he.textContent = totalEntries;
-  if (hp) hp.textContent = '$' + Math.round(prize);
-}
-
-// ══════════ INIT ══════════
-Promise.all([fetchNightlyStats(), fetchStandings()]).then(() => {
-  buildTicker();
-  buildLiveStandings();
-  updateLivePayouts();
-});
+buildTicker();
 </script>
 </body>
 </html>
