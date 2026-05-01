@@ -465,6 +465,33 @@ pre { background: var(--surface2); border: 1px solid var(--border); border-radiu
   color: var(--muted); letter-spacing: 2px; text-transform: uppercase;
 }
 
+/* ── PIXEL ALPACA RUNNER ── */
+.header-inner { position: relative; }
+.alpaca-runner {
+  position: absolute;
+  top: 50%; 
+  width: 36px; height: 36px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+  z-index: 10;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+  animation: alpaca-run 10s linear infinite, alpaca-bob 0.3s ease-in-out infinite;
+}
+@keyframes alpaca-run {
+  0%   { left: 158px; transform: translateY(-50%) scaleX(1);  }
+  43%  { left: calc(100% - 190px); transform: translateY(-50%) scaleX(1);  }
+  50%  { left: calc(100% - 190px); transform: translateY(-50%) scaleX(1);  }
+  51%  { left: calc(100% - 190px); transform: translateY(-50%) scaleX(-1); }
+  93%  { left: 158px; transform: translateY(-50%) scaleX(-1); }
+  99%  { left: 158px; transform: translateY(-50%) scaleX(-1); }
+  100% { left: 158px; transform: translateY(-50%) scaleX(1);  }
+}
+@keyframes alpaca-bob {
+  0%, 100% { top: calc(50% + 0px); }
+  50%       { top: calc(50% - 3px); }
+}
+
 /* ── MOBILE ── */
 @media(max-width:640px) {
   .wrap { padding: 0 16px; }
