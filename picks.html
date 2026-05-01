@@ -6,7 +6,6 @@
 <title>My Picks — AAHL</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
-<link rel="icon" type="image/png" href="aahl-logo.png">
 </head>
 <body>
 
@@ -52,7 +51,7 @@
       </div>
       <div class="form-row">
         <div class="field"><label>Email</label><input type="email" id="fe" placeholder="you@email.com"></div>
-        <div class="field"><label>Phone</label><input type="tel" id="fp" placeholder="416-555-0100"></div>
+        <div class="field"><label>Phone</label><input type="tel" id="fp" placeholder="(416) 555-0100" oninput="formatPhone(this)" maxlength="14"></div>
       </div>
       <div class="field"><label>Team name</label><input type="text" id="ft" placeholder="Your team name"></div>
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;font-size:13px;color:var(--muted);margin-top:12px">
