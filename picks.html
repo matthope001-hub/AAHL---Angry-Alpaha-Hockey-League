@@ -132,7 +132,9 @@
 </div>
 
 <script src="main.js"></script>
-<script>
+<script>buildTicker();</script>
+<script src="alpaca-runner.js"></script>
+</body>
 // main.js has all data + functions. Just call what this page needs.
 fetchNightlyStats().then(() => buildTicker());
 buildDraft();
