@@ -318,22 +318,22 @@ pre { background: var(--surface2); border: 1px solid var(--border); border-radiu
 @keyframes reel { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 .t-item { display: inline-flex; align-items: center; gap: 8px; padding: 0 20px; height: 32px; border-right: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.04); font-family: 'DM Mono', monospace; font-size: 11px; cursor: default; }
 .t-item:hover { background: rgba(255,255,255,0.03); }
-.t-game { color: rgba(255,255,255,0.3); font-size: 9px; letter-spacing: 0.5px; }
-.t-name { color: #fff; font-weight: 500; }
-.t-team { color: rgba(255,255,255,0.4); font-size: 9px; }
-.t-sep  { color: rgba(255,255,255,0.12); }
+.t-game { color: rgba(255,255,255,0.55); font-size: 9px; letter-spacing: 0.5px; }
+.t-name { color: #fff; font-weight: 600; }
+.t-team { color: rgba(255,255,255,0.65); font-size: 9px; }
+.t-sep  { color: rgba(255,255,255,0.25); }
 .t-stat { font-size: 9px; font-weight: 600; padding: 1px 5px; border-radius: 3px; letter-spacing: 0.3px; }
-.ts-g   { background: rgba(111,38,61,0.4);  color: #d4748a; }
-.ts-a   { background: rgba(35,97,146,0.4);  color: #6aaad4; }
-.ts-sog { background: rgba(162,170,173,0.15); color: #a2aaad; }
-.ts-w   { background: rgba(34,211,122,0.2); color: #22d37a; }
-.ts-l   { background: rgba(192,57,43,0.2);  color: #e74c3c; }
-.ts-otl { background: rgba(240,165,0,0.2);  color: #f0a500; }
-.ts-so  { background: rgba(35,97,146,0.5);  color: #a0ccee; }
-.ts-sv  { background: rgba(162,170,173,0.1); color: #777; }
-.ts-pim { background: rgba(240,165,0,0.2);  color: #d4920a; }
-.ts-ht  { background: rgba(111,38,61,0.6);  color: #ffbbcc; font-weight:700; }
-.t-pts  { color: var(--burgundy2); font-weight: 700; font-size: 12px; }
+.ts-g   { background: rgba(111,38,61,0.55); color: #f09ab0; }
+.ts-a   { background: rgba(35,97,146,0.55); color: #90c8e8; }
+.ts-sog { background: rgba(162,170,173,0.25); color: #d0d4d6; }
+.ts-w   { background: rgba(34,211,122,0.25); color: #4de89a; }
+.ts-l   { background: rgba(192,57,43,0.3);  color: #f07060; }
+.ts-otl { background: rgba(240,165,0,0.25); color: #f5c040; }
+.ts-so  { background: rgba(35,97,146,0.55); color: #b8dcf4; }
+.ts-sv  { background: rgba(162,170,173,0.2); color: #b0b6b9; }
+.ts-pim { background: rgba(240,165,0,0.25); color: #e8b030; }
+.ts-ht  { background: rgba(111,38,61,0.75); color: #ffd0dd; font-weight:700; }
+.t-pts  { color: #e8a0b4; font-weight: 700; font-size: 12px; }
 .page { padding-top: 64px; }
 
 /* ── HOME ── */
