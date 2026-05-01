@@ -6,6 +6,7 @@
 <title>My Picks — AAHL</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="icon" type="image/png" href="aahl-logo.png">
 </head>
 <body>
 
@@ -19,14 +20,13 @@
     <nav>
       <button class="nav-btn" onclick="window.location.href='index.html'">Home</button>
       <button class="nav-btn active">My Picks</button>
-      <button class="nav-btn" onclick="window.location.href='standings.html'">Standings</button>
+      <button class="nav-btn" onclick="window.location.href='standings.html'">Stats</button>
       <button class="nav-btn" onclick="window.location.href='rules.html'">Rules</button>
       <button class="nav-btn" onclick="window.location.href='admin.html'">Admin</button>
     </nav>
   </div>
 </header>
 
-<!-- SPORTS TICKER -->
 <div class="ticker-wrap">
   <div class="ticker-tag">Last Night</div>
   <div class="ticker-viewport">
@@ -42,7 +42,6 @@
     <div style="font-size:26px;font-weight:800">Make Your Picks</div>
   </div>
 
-  <!-- Your Info — IDs match main.js submitEntry() -->
   <div class="card" style="margin-bottom:24px">
     <div class="card-head"><span class="card-title">Your Info</span></div>
     <div class="card-body">
@@ -61,7 +60,6 @@
     </div>
   </div>
 
-  <!-- Progress — IDs match main.js pick() -->
   <div class="picks-bar">
     <div class="big" id="pc">0</div>
     <div class="picks-bar-right">
@@ -71,10 +69,8 @@
     </div>
   </div>
 
-  <!-- Player Draft Grid — id="draft" matches main.js buildDraft() -->
   <div class="draft-grid" id="draft"></div>
 
-  <!-- Division Picks — id="div-grid" matches main.js buildDivisionPicks() -->
   <div class="div-picks-card" style="margin-top:32px">
     <div class="div-picks-head">
       <div class="div-picks-title">
@@ -91,18 +87,14 @@
     </div>
   </div>
 
-  <!-- Submit -->
   <div style="text-align:center;margin-top:32px">
-    <button class="btn btn-gold" style="font-size:16px;padding:14px 40px" onclick="submitEntry()">
-      Submit Entry →
-    </button>
+    <button class="btn btn-gold" style="font-size:16px;padding:14px 40px" onclick="submitEntry()">Submit Entry →</button>
     <div style="margin-top:10px;font-size:12px;color:var(--muted2)">Picks lock September 29, 2026 · No trades after submission</div>
   </div>
 
 </div>
 </div>
 
-<!-- PLAYER INFO MODAL -->
 <div class="player-modal-overlay" id="player-modal-overlay" onclick="closePlayerModal(event)">
   <div class="player-modal" id="player-modal">
     <div class="pm-head">
@@ -125,20 +117,17 @@
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast">
   <div class="toast-title" id="toast-t"></div>
   <div class="toast-body" id="toast-b"></div>
 </div>
 
 <script src="main.js"></script>
-<script>buildTicker();</script>
-<script src="alpaca-runner.js"></script>
-</body>
-// main.js has all data + functions. Just call what this page needs.
+<script>
 fetchNightlyStats().then(() => buildTicker());
 buildDraft();
 buildDivisionPicks();
 </script>
+<script src="alpaca-runner.js"></script>
 </body>
 </html>
