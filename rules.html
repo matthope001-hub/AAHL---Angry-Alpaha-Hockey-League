@@ -20,14 +20,13 @@
     <nav>
       <button class="nav-btn" onclick="window.location.href='index.html'">Home</button>
       <button class="nav-btn" onclick="window.location.href='picks.html'">My Picks</button>
-      <button class="nav-btn" onclick="window.location.href='standings.html'">Standings</button>
+      <button class="nav-btn" onclick="window.location.href='standings.html'">Stats</button>
       <button class="nav-btn active">Rules</button>
       <button class="nav-btn" onclick="window.location.href='admin.html'">Admin</button>
     </nav>
   </div>
 </header>
 
-<!-- SPORTS TICKER -->
 <div class="ticker-wrap">
   <div class="ticker-tag">Last Night</div>
   <div class="ticker-viewport">
@@ -47,14 +46,14 @@
   <div class="card" style="margin-bottom:28px">
     <div class="card-body" style="padding:4px 20px">
       <div class="rule-item"><div class="rule-num">01</div><div>$10 per entry — enter as many times as you want. E-transfer to <strong>matt.hope@rocketmail.com</strong> with your full real name in the memo.</div></div>
-      <div class="rule-item"><div class="rule-num">02</div><div>All entries must be received before puck drop on opening night. Deadline: <strong>September 29, 2026</strong> — the expected start of the 2026-27 NHL season.</div></div>
+      <div class="rule-item"><div class="rule-num">02</div><div>All entries must be received before puck drop on opening night. Deadline: <strong>September 29, 2026</strong>.</div></div>
       <div class="rule-item"><div class="rule-num">03</div><div>Select <strong>one (1) player per box</strong> — 24 boxes total covering forwards, defensemen, and goalies.</div></div>
-      <div class="rule-item"><div class="rule-num">04</div><div>Points from all 24 players are <strong>combined</strong> into one total score per entry. Every goal, assist, shot, save, and penalty minute adds up over the full season.</div></div>
+      <div class="rule-item"><div class="rule-num">04</div><div>Points from all 24 players are <strong>combined</strong> into one total score per entry.</div></div>
       <div class="rule-item"><div class="rule-num">05</div><div><strong>No trades.</strong> Picks lock at puck drop on September 29, 2026 and cannot be changed for any reason after that.</div></div>
-      <div class="rule-item"><div class="rule-num">06</div><div><strong>Tie-breaker sequence:</strong> total points → total goals + assists → total goalie saves. If still tied after all three, the prize is split equally.</div></div>
+      <div class="rule-item"><div class="rule-num">06</div><div><strong>Tie-breaker sequence:</strong> total points → total goals + assists → total goalie saves. If still tied, the prize is split equally.</div></div>
       <div class="rule-item" style="background:rgba(111,38,61,0.05);border-radius:var(--r);margin:4px 0;border:1px solid rgba(111,38,61,0.18)">
         <div class="rule-num" style="color:var(--burgundy2);font-size:16px">🎩</div>
-        <div><strong>Hat Trick bonus:</strong> Any skater scoring 3 or more goals in a single game earns +3 bonus points. A hat trick night = 3G + 2A + 8 SOG would score 3 + 3(bonus) + 2 + 0.88 = <strong>8.88 pts</strong>. Hat tricks are also tracked in the Hat Trick Hall on the Standings page.</div>
+        <div><strong>Hat Trick bonus:</strong> Any skater scoring 3+ goals in a single game earns +3 bonus points.</div>
       </div>
     </div>
   </div>
@@ -123,7 +122,7 @@
         <span class="card-title">Estimated Payouts</span>
         <span style="font-size:11px;color:var(--muted2);font-family:'DM Mono',monospace">$10/entry · 50% to prize pool</span>
       </div>
-      <table class="score-tbl" id="payout-table">
+      <table class="score-tbl">
         <thead><tr>
           <th>Entries</th>
           <th style="text-align:right;color:var(--gold)">1st</th>
@@ -138,18 +137,16 @@
 </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast">
   <div class="toast-title" id="toast-t"></div>
   <div class="toast-body" id="toast-b"></div>
 </div>
 
 <script src="main.js"></script>
-<script>buildTicker();</script>
-<script src="alpaca-runner.js"></script>
-</body>
+<script>
 buildTicker();
 buildPayoutTable();
 </script>
+<script src="alpaca-runner.js"></script>
 </body>
 </html>
