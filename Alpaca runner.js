@@ -1,47 +1,21 @@
-// ══════════════════════════════════════════════
-// PIXEL ALPACA RUNNER
-// ══════════════════════════════════════════════
 (function() {
   function initAlpaca() {
     const el = document.querySelector('.alpaca-runner');
-    const container = document.querySelector('.header-inner');
-    if (!el || !container) return;
+    if (!el) return;
 
-    const SPEED = 80;
-    const BOB_SPEED = 300;
-    const PAUSE_MS = 1200;
-
-    let x = 0, minX = 0, maxX = 100, dir = 1, paused = false, bobT = 0;
-
-    function recalcBounds() {
-      const cRect = container.getBoundingClientRect();
-      const wordmark = container.querySelector('.wordmark');
-      const homeBtn = container.querySelector('nav .nav-btn:first-child');
-
-      const wRight = wordmark
-        ? wordmark.getBoundingClientRect().right - cRect.left
-        : 170;
-
-      const hLeft = homeBtn
-        ? homeBtn.getBoundingClientRect().left - cRect.left
-        : wRight + 150;
-
-      minX = wRight + 10;
-      maxX = hLeft - el.offsetWidth - 10;
-      if (maxX <= minX) maxX = minX + 60;
-    }
-
-    function reset() {
-      recalcBounds();
-      x = minX;
-      dir = 1;
-      paused = false;
-      bobT = 0;
-      el.style.left = x + 'px';
-      el.style.transform = 'translateY(-50%) scaleX(1)';
-    }
-
+    let x = 170;
+    let dir = 1;
+    let paused = false;
+    let bobT = 0;
     let last = null;
+
+    const MIN_X = 170;
+    const MAX_X = 320;
+    const SPEED = 60;
+
+    el.style.left = x + 'px';
+    el.style.transform = 'translateY(-50%) scaleX(1)';
+
     function frame(ts) {
       if (!last) last = ts;
       const dt = Math.min((ts - last) / 1000, 0.05);
@@ -50,24 +24,35 @@
       if (!paused) {
         x += dir * SPEED * dt;
         bobT += dt;
-        const bob = Math.sin(bobT * (2 * Math.PI / (BOB_SPEED / 1000))) * 3;
+        const bob = Math.sin(bobT * Math.PI * 2 / 0.3) * 3;
         el.style.top = 'calc(50% + ' + bob + 'px)';
-        el.style.left = x + 'px';
+        el.style.left = Math.round(x) + 'px';
 
-        if (dir === 1 && x >= maxX) {
-          x = maxX; el.style.left = x + 'px'; paused = true;
-          setTimeout(() => { dir = -1; el.style.transform = 'translateY(-50%) scaleX(-1)'; paused = false; }, PAUSE_MS);
+        if (dir === 1 && x >= MAX_X) {
+          x = MAX_X;
+          paused = true;
+          setTimeout(function() {
+            dir = -1;
+            el.style.transform = 'translateY(-50%) scaleX(-1)';
+            paused = false;
+          }, 1000);
         }
-        if (dir === -1 && x <= minX) {
-          x = minX; el.style.left = x + 'px'; paused = true;
-          setTimeout(() => { dir = 1; el.style.transform = 'translateY(-50%) scaleX(1)'; paused = false; }, PAUSE_MS);
+
+        if (dir === -1 && x <= MIN_X) {
+          x = MIN_X;
+          paused = true;
+          setTimeout(function() {
+            dir = 1;
+            el.style.transform = 'translateY(-50%) scaleX(1)';
+            paused = false;
+          }, 1000);
         }
       }
+
       requestAnimationFrame(frame);
     }
 
-    setTimeout(() => { reset(); requestAnimationFrame(frame); }, 200);
-    window.addEventListener('resize', recalcBounds);
+    requestAnimationFrame(frame);
   }
 
   if (document.readyState === 'loading') {
