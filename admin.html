@@ -6,19 +6,21 @@
 <title>Admin — AAHL</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<link rel="icon" type="image/png" href="aahl-logo.png">
 </head>
 <body>
 
 <header>
-<div class="header-inner">
-  <div class="wordmark" onclick="window.location.href='index.html'">...</div>
-  <img src="alpaca-pixel.png" alt="" class="alpaca-runner">
-  <nav>...</nav>
-</div>
+  <div class="header-inner">
+    <div class="wordmark" onclick="window.location.href='index.html'">
+      <img src="aahl-logo.png" alt="AAHL Logo" style="height:48px;width:auto;margin-right:12px;">
+      <div class="wordmark-text">AAHL <span>/</span> Angry Alpaca</div>
+    </div>
+    <img src="alpaca-pixel.png" alt="" class="alpaca-runner">
     <nav>
       <button class="nav-btn" onclick="window.location.href='index.html'">Home</button>
       <button class="nav-btn" onclick="window.location.href='picks.html'">My Picks</button>
-      <button class="nav-btn" onclick="window.location.href='standings.html'">Standings</button>
+      <button class="nav-btn" onclick="window.location.href='standings.html'">Stats</button>
       <button class="nav-btn" onclick="window.location.href='rules.html'">Rules</button>
       <button class="nav-btn active">Admin</button>
     </nav>
@@ -224,7 +226,6 @@ function writeStandings(ranked) {
         [...(team.forwards||[]), ...(team.defense||[])].forEach(p => {
           if (!p.toi) return;
           const stats = { name: p.name?.default||'', team: team.abbrev, pos: team.forwards?.includes(p)?'F':'D', goals: p.goals||0, assists: p.assists||0, sog: p.sog||0, pim: p.pim||0 };
-          // ── ANOMALY DETECTION ──
           if (stats.goals > 6 || stats.assists > 6) { anomalies++; agentLog('AGT-002','⚠️',`Suspicious: ${stats.name} — ${stats.goals}G ${stats.assists}A`,true); return; }
           updateSkaterStats(stats);
           checkHatTrick(stats, game.id, date);
@@ -362,8 +363,6 @@ function sendWeeklyDigest(standings) {
 </div>
 
 <script src="main.js"></script>
-<script>
-buildTicker();
-</script>
+<script>buildTicker();</script>
 </body>
 </html>
