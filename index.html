@@ -20,14 +20,13 @@
     <nav>
       <button class="nav-btn active" onclick="window.location.href='index.html'">Home</button>
       <button class="nav-btn" onclick="window.location.href='picks.html'">My Picks</button>
-      <button class="nav-btn" onclick="window.location.href='standings.html'">Standings</button>
+      <button class="nav-btn" onclick="window.location.href='standings.html'">Stats</button>
       <button class="nav-btn" onclick="window.location.href='rules.html'">Rules</button>
       <button class="nav-btn" onclick="window.location.href='admin.html'">Admin</button>
     </nav>
   </div>
 </header>
 
-<!-- SPORTS TICKER -->
 <div class="ticker-wrap">
   <div class="ticker-tag">Last Night</div>
   <div class="ticker-viewport">
@@ -35,7 +34,6 @@
   </div>
 </div>
 
-<!-- HOME PAGE -->
 <div class="page on">
 <div class="wrap">
 
@@ -52,8 +50,6 @@
   </div>
 
   <div class="home-grid">
-
-    <!-- LEFT — standings -->
     <div class="standings-card">
       <div class="sc-head">
         <span class="sc-title">Current Standings</span>
@@ -71,7 +67,6 @@
       </div>
     </div>
 
-    <!-- RIGHT — scoring ref -->
     <div class="home-right">
       <div class="mini-card">
         <div class="mini-head">Scoring Reference</div>
@@ -96,13 +91,11 @@
         </table>
       </div>
     </div>
-
   </div>
 
 </div>
 </div>
 
-<!-- TEAM MODAL — uses main.js openTeamPanel() / renderRoster() -->
 <div class="modal-overlay" id="modal-overlay" onclick="overlayClick(event)">
   <div class="modal-card" id="modal-card">
     <div class="tp-header">
@@ -134,43 +127,29 @@
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast" id="toast">
   <div class="toast-title" id="toast-t"></div>
   <div class="toast-body" id="toast-b"></div>
 </div>
 
 <script src="main.js"></script>
-<script>buildTicker();</script>
-<script src="alpaca-runner.js"></script>
-// ══════════════════════════════════════════════════════
-// INDEX.HTML ONLY — live standings fetch from Google Sheets
-// Everything else (ticker, toast, team panel) is in main.js
-// ══════════════════════════════════════════════════════
-
+<script>
 const STANDINGS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1410587271&single=true&output=csv';
-
 let LIVE_BOARD = [];
 
 function parseStandingsCSV(csv) {
   const lines = csv.trim().split('\n');
   return lines.slice(1).map(line => {
-    const cols = [];
-    let cur = '', inQ = false;
+    const cols = []; let cur = '', inQ = false;
     for (const ch of line) {
       if (ch === '"') { inQ = !inQ; }
       else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
       else { cur += ch; }
     }
     cols.push(cur.trim());
-    const rank      = parseInt(cols[0])   || 0;
-    const entryId   = cols[1]             || '';
-    const team      = cols[2]             || '';
-    const owner     = cols[3]             || '';
-    const pts       = parseFloat(cols[4]) || 0;
-    const change    = parseInt(cols[6])   || 0;
-    const hatTricks = parseInt(cols[10])  || 0;
-    const trend = change > 0 ? `+${change}` : change < 0 ? `${change}` : '=';
+    const rank = parseInt(cols[0])||0, entryId = cols[1]||'', team = cols[2]||'', owner = cols[3]||'';
+    const pts = parseFloat(cols[4])||0, change = parseInt(cols[6])||0, hatTricks = parseInt(cols[10])||0;
+    const trend = change > 0 ? '+'+change : change < 0 ? ''+change : '=';
     return { rank, entryId, team, name: owner, pts, trend, hatTricks };
   }).filter(e => e.team && e.name);
 }
@@ -178,48 +157,34 @@ function parseStandingsCSV(csv) {
 async function fetchStandings() {
   try {
     const res = await fetch(STANDINGS_CSV);
-    const csv = await res.text();
-    LIVE_BOARD = parseStandingsCSV(csv);
-    totalEntries = LIVE_BOARD.length; // totalEntries declared in main.js
-  } catch(err) {
-    console.warn('Standings fetch failed:', err);
-    LIVE_BOARD = [];
-  }
+    LIVE_BOARD = parseStandingsCSV(await res.text());
+    totalEntries = LIVE_BOARD.length;
+  } catch(err) { LIVE_BOARD = []; }
 }
 
 function buildLiveStandings() {
   const el = document.getElementById('home-standings');
   if (!el) return;
-  if (!LIVE_BOARD.length) {
-    el.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">No entries yet — be the first!</div>`;
-    return;
-  }
+  if (!LIVE_BOARD.length) { el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">No entries yet — be the first!</div>'; return; }
   const last = LIVE_BOARD.length - 1;
   el.innerHTML = LIVE_BOARD.map((e, i) => {
     const rowCls = i===0?'r1':i===1?'r2':i===2?'r3':i===last?'rl':'';
-    const pos = i===last
-      ? `<span style="font-size:9px;letter-spacing:0px">LAST</span>`
-      : (i+1);
+    const pos = i===last ? '<span style="font-size:9px;letter-spacing:0px">LAST</span>' : (i+1);
     const t = e.trend;
     const mvCls = t.startsWith('+')?'up':t.startsWith('-')?'dn':'eq';
     const mvLbl = t.startsWith('+')?'▲'+t.slice(1):t.startsWith('-')?'▼'+t.slice(1):'—';
     const htCell = e.hatTricks > 0 ? '🎩'.repeat(Math.min(e.hatTricks,3)) : '';
     const ini = e.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-    return `<div class="sc-row ${rowCls}" onclick="openLiveTeamPanel('${e.name}')" style="cursor:pointer">
-      <div class="sc-pos">${pos}</div>
-      <div class="sc-av">${ini}</div>
-      <div class="sc-info">
-        <div class="sc-name">${e.team}</div>
-        <div class="sc-team">${e.name}</div>
-      </div>
-      <div class="sc-ht">${htCell}</div>
-      <div class="sc-mv ${mvCls}">${mvLbl}</div>
-      <div class="sc-pts">${e.pts.toLocaleString()}</div>
-    </div>`;
+    return '<div class="sc-row '+rowCls+'" onclick="openLiveTeamPanel(\''+e.name+'\')" style="cursor:pointer">'
+      +'<div class="sc-pos">'+pos+'</div>'
+      +'<div class="sc-av">'+ini+'</div>'
+      +'<div class="sc-info"><div class="sc-name">'+e.team+'</div><div class="sc-team">'+e.name+'</div></div>'
+      +'<div class="sc-ht">'+htCell+'</div>'
+      +'<div class="sc-mv '+mvCls+'">'+mvLbl+'</div>'
+      +'<div class="sc-pts">'+e.pts.toLocaleString()+'</div></div>';
   }).join('');
 }
 
-// Live team panel — uses LIVE_BOARD instead of MOCK_BOARD
 function openLiveTeamPanel(ownerName) {
   const entry = LIVE_BOARD.find(e => e.name === ownerName);
   if (!entry) return;
@@ -227,15 +192,11 @@ function openLiveTeamPanel(ownerName) {
   document.getElementById('tp-av').textContent = ini;
   document.getElementById('tp-tname').textContent = entry.team;
   document.getElementById('tp-owner').textContent = ownerName;
-  document.getElementById('tp-meta').innerHTML = `
-    <div class="tp-stat-pill"><div class="spv burg">${entry.pts}</div><div class="spl">Total Pts</div></div>
-    <div class="tp-stat-pill"><div class="spv blue">${entry.rank}</div><div class="spl">Rank</div></div>
-    <div class="tp-stat-pill"><div class="spv">${entry.hatTricks > 0 ? '🎩'.repeat(Math.min(entry.hatTricks,3)) : '0'}</div><div class="spl">Hat Tricks</div></div>
-  `;
+  document.getElementById('tp-meta').innerHTML =
+    '<div class="tp-stat-pill"><div class="spv burg">'+entry.pts+'</div><div class="spl">Total Pts</div></div>'
+    +'<div class="tp-stat-pill"><div class="spv blue">'+entry.rank+'</div><div class="spl">Rank</div></div>';
   document.getElementById('tp-tbody').innerHTML =
-    `<tr><td colspan="15" style="text-align:center;padding:30px;color:var(--muted);font-size:13px">
-      Full roster view available once the season begins and stats are live.
-    </td></tr>`;
+    '<tr><td colspan="15" style="text-align:center;padding:30px;color:var(--muted);font-size:13px">Full roster view available once the season begins.</td></tr>';
   document.getElementById('tp-tfoot').innerHTML = '';
   document.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active'));
   document.querySelector('.tp-tab').classList.add('active');
@@ -245,18 +206,17 @@ function openLiveTeamPanel(ownerName) {
 
 function updateLivePayouts() {
   const prize = totalEntries * 10 * 0.5;
-  const he = document.getElementById('h-entries');
-  const hp = document.getElementById('h-pot');
+  const he = document.getElementById('h-entries'), hp = document.getElementById('h-pot');
   if (he) he.textContent = totalEntries;
   if (hp) hp.textContent = '$' + Math.round(prize);
 }
 
-// ══════════ INIT ══════════
 Promise.all([fetchNightlyStats(), fetchStandings()]).then(() => {
   buildTicker();
   buildLiveStandings();
   updateLivePayouts();
 });
 </script>
+<script src="alpaca-runner.js"></script>
 </body>
 </html>
