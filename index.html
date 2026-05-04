@@ -205,6 +205,18 @@ async function openLiveTeamPanel(ownerName) {
   
   // Load roster data
   const ENTRIES_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=0&single=true&output=csv&v=2';
+  
+  function parseCSVLine(line) {
+    const cols = []; let cur = '', inQ = false;
+    for (const ch of line) {
+      if (ch === '"') { inQ = !inQ; }
+      else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+      else { cur += ch; }
+    }
+    cols.push(cur.trim());
+    return cols;
+  }
+  
   try {
     const res = await fetch(ENTRIES_CSV);
     const text = await res.text();
@@ -212,8 +224,8 @@ async function openLiveTeamPanel(ownerName) {
     const entryRow = rows.find(r => r.includes(entry.entryId) || r.includes(ownerName));
     if (!entryRow) throw new Error('Entry not found');
     
-    const cols = entryRow.split(',');
-    const picks = cols.slice(7, 31).filter(p => p);
+    const cols = parseCSVLine(entryRow);
+    const picks = cols.slice(7, 31).filter(p => p && !p.match(/^\d{1,2}\/\d{1,2}\/\d{4}/));
     const boxLabels = [
       'Forwards 1','Forwards 2','Forwards 3','Forwards 4','Forwards 5','Forwards 6',
       'Forwards 7','Forwards 8','Forwards 9','Forwards 10','Forwards 11','Forwards 12',
