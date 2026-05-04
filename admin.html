@@ -499,17 +499,17 @@ function seedIRStatuses() {
 }
 
 // ── Populate PlayerIDs for headshots ──
-function normalizeName(name) {
-  // Handle "Last, First" format and extra spaces
-  name = name.trim();
-  if (name.includes(',')) {
-    const parts = name.split(',').map(p => p.trim());
-    if (parts.length === 2) name = `${parts[1]} ${parts[0]}`;
-  }
-  return name;
-}
-
 function populatePlayerIDs() {
+  // Helper to normalize names
+  function normalizeName(name) {
+    name = name.trim();
+    if (name.includes(',')) {
+      const parts = name.split(',').map(p => p.trim());
+      if (parts.length === 2) name = `${parts[1]} ${parts[0]}`;
+    }
+    return name;
+  }
+  
   agentLog('AGT-002', '⏳', 'Starting PlayerID population');
   const sheet = SS.getSheetByName('Players');
   if (!sheet) { agentLog('AGT-002', '❌', 'Players sheet not found'); return; }
