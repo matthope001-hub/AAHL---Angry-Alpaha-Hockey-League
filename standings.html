@@ -215,7 +215,7 @@
 
 <script src="main.js"></script>
 <script>
-const PLAYERS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1949508708&single=true&output=csv';
+// PLAYERS_CSV is defined in main.js
 let ALL_PLAYERS = [], skaterSort = {col:'pts',dir:-1}, goalieSort = {col:'pts',dir:-1}, skaterPos = 'ALL';
 
 function parsePlayersCSV(csv) {
@@ -236,8 +236,16 @@ function parsePlayersCSV(csv) {
 }
 
 async function fetchPlayers() {
-  try { const res = await fetch(PLAYERS_CSV); ALL_PLAYERS = parsePlayersCSV(await res.text()); }
-  catch(err) { ALL_PLAYERS = []; }
+  try {
+    const res = await fetch(PLAYERS_CSV);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    ALL_PLAYERS = parsePlayersCSV(text);
+    console.log('Loaded', ALL_PLAYERS.length, 'players');
+  } catch(err) {
+    console.error('Failed to load players:', err);
+    ALL_PLAYERS = [];
+  }
 }
 
 function switchTab(tab, btn) {
@@ -245,8 +253,8 @@ function switchTab(tab, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('tab-' + tab).classList.add('active');
-  if (tab === 'skaters') renderSkaters();
-  if (tab === 'goalies') renderGoalies();
+  if (tab === 'skaters') { fetchPlayers().then(renderSkaters); }
+  if (tab === 'goalies') { fetchPlayers().then(renderGoalies); }
 }
 
 function sortSkaters(col) {
@@ -270,6 +278,11 @@ function filterSkaterPos(pos, btn) {
 }
 
 function renderSkaters() {
+  const tbody = document.getElementById('skater-tbody');
+  if (!ALL_PLAYERS.length) {
+    tbody.innerHTML = '<tr><td colspan="11" class="stats-empty">Loading player stats…</td></tr>';
+    return;
+  }
   const search = (document.getElementById('skater-search')?.value||'').toLowerCase();
   let data = ALL_PLAYERS.filter(p => p.pos==='F'||p.pos==='D');
   if (skaterPos !== 'ALL') data = data.filter(p => p.pos === skaterPos);
@@ -279,8 +292,7 @@ function renderSkaters() {
     const bv = typeof b[skaterSort.col]==='string'?b[skaterSort.col]:(b[skaterSort.col]||0);
     return typeof av==='string' ? av.localeCompare(bv)*skaterSort.dir : (bv-av)*(skaterSort.dir===-1?1:-1)||a.name.localeCompare(b.name);
   });
-  const tbody = document.getElementById('skater-tbody');
-  if (!data.length) { tbody.innerHTML = '<tr><td colspan="11" class="stats-empty">'+(ALL_PLAYERS.length?'No players match':'Stats update nightly — check back tomorrow')+'</td></tr>'; return; }
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="11" class="stats-empty">No players match</td></tr>'; return; }
   tbody.innerHTML = data.map((p,i) => {
     const rc = i===0?'r1':i===1?'r2':i===2?'r3':'', ht = p.hatTricks>0;
     return '<tr class="'+(ht?'ht-row':'')+'"><td class="st-rank '+rc+'">'+(i+1)+'</td>'
@@ -312,6 +324,11 @@ function updateGoalieHeaders() {
 }
 
 function renderGoalies() {
+  const tbody = document.getElementById('goalie-tbody');
+  if (!ALL_PLAYERS.length) {
+    tbody.innerHTML = '<tr><td colspan="10" class="stats-empty">Loading goalie stats…</td></tr>';
+    return;
+  }
   const search = (document.getElementById('goalie-search')?.value||'').toLowerCase();
   let data = ALL_PLAYERS.filter(p => p.pos==='G');
   if (search) data = data.filter(p => p.name.toLowerCase().includes(search)||p.team.toLowerCase().includes(search));
@@ -320,8 +337,7 @@ function renderGoalies() {
     const bv = typeof b[goalieSort.col]==='string'?b[goalieSort.col]:(b[goalieSort.col]||0);
     return typeof av==='string' ? av.localeCompare(bv)*goalieSort.dir : (bv-av)*(goalieSort.dir===-1?1:-1)||a.name.localeCompare(b.name);
   });
-  const tbody = document.getElementById('goalie-tbody');
-  if (!data.length) { tbody.innerHTML = '<tr><td colspan="10" class="stats-empty">'+(ALL_PLAYERS.length?'No goalies match':'Stats update nightly — check back tomorrow')+'</td></tr>'; return; }
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="10" class="stats-empty">No goalies match</td></tr>'; return; }
   tbody.innerHTML = data.map((p,i) => {
     const rc = i===0?'r1':i===1?'r2':i===2?'r3':'';
     return '<tr><td class="st-rank '+rc+'">'+(i+1)+'</td>'
@@ -337,9 +353,14 @@ function renderGoalies() {
   }).join('');
 }
 
-Promise.all([fetchNightlyStats(), fetchPlayers()]).then(() => {
-  buildTicker(); buildBoards(); buildHatTrickHall(); renderSkaters(); renderGoalies();
-});
+// Load data on page init
+fetchNightlyStats().then(() => {
+  buildTicker(); buildBoards(); buildHatTrickHall();
+}).catch(err => console.error('Nightly stats failed:', err));
+
+fetchPlayers().then(() => {
+  renderSkaters(); renderGoalies();
+}).catch(err => console.error('Players fetch failed:', err));
 </script>
 <script>
 (function() {
