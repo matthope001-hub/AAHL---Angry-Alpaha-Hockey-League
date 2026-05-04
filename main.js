@@ -123,6 +123,7 @@ const PREV_STATS = {
 
 // ══════════ IR STATUS ══════════
 let IR_STATUS = {};
+let PLAYER_ID_MAP = {};
 
 const PLAYERS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1949508708&single=true&output=csv&v=2';
 
@@ -135,11 +136,22 @@ async function fetchIRStatuses() {
       const cols = line.split(',');
       const name = (cols[0] || '').trim();
       const onIR = (cols[15] || '').trim().toUpperCase() === 'TRUE';
-      if (name) IR_STATUS[name] = onIR;
+      const playerId = (cols[16] || '').trim();
+      if (name) {
+        IR_STATUS[name] = onIR;
+        if (playerId) PLAYER_ID_MAP[name] = playerId;
+      }
     });
+    console.log('Loaded', Object.keys(PLAYER_ID_MAP).length, 'player IDs');
   } catch(err) {
     console.warn('IR fetch failed:', err);
   }
+}
+
+function getPlayerHeadshotUrl(playerName) {
+  const playerId = PLAYER_ID_MAP[playerName];
+  if (!playerId) return null;
+  return `https://nhl.bamcontent.com/images/headshots/current/168x168/${playerId}.jpg`;
 }
 
 function irBadge(name) {
@@ -482,6 +494,16 @@ function openPlayerModal(playerName, team, pos, boxId, radioEl) {
   document.getElementById('pm-name').textContent = playerName;
   document.getElementById('pm-nhl').textContent = team + ' · ' + (s?.pos || pos);
   const badge = document.getElementById('pm-pos-badge'); badge.textContent = pos; badge.className = `pm-pos-badge pm-pos-${pos}`;
+  // Show headshot if available
+  const headshotEl = document.getElementById('pm-headshot');
+  const headshotUrl = getPlayerHeadshotUrl(playerName);
+  if (headshotUrl && headshotEl) {
+    headshotEl.src = headshotUrl;
+    headshotEl.style.display = 'block';
+    headshotEl.onerror = () => { headshotEl.style.display = 'none'; };
+  } else if (headshotEl) {
+    headshotEl.style.display = 'none';
+  }
   const statsGrid = document.getElementById('pm-stats-grid');
   if (!s) { statsGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px;padding:8px 0">No prior season data available</div>`; document.getElementById('pm-pts-breakdown').innerHTML=''; document.getElementById('pm-total-pts').textContent='—'; }
   else if (pos==='G') {

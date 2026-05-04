@@ -98,8 +98,11 @@
 <div class="player-modal-overlay" id="player-modal-overlay" onclick="closePlayerModal(event)">
   <div class="player-modal" id="player-modal">
     <div class="pm-head">
-      <div><div class="pm-name" id="pm-name"></div>
-        <div class="pm-team-row"><span class="pm-nhl" id="pm-nhl"></span><span class="pm-pos-badge" id="pm-pos-badge"></span></div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <img id="pm-headshot" src="" alt="" style="width:72px;height:72px;border-radius:50%;object-fit:cover;background:var(--surface2);display:none;">
+        <div><div class="pm-name" id="pm-name"></div>
+          <div class="pm-team-row"><span class="pm-nhl" id="pm-nhl"></span><span class="pm-pos-badge" id="pm-pos-badge"></span></div>
+        </div>
       </div>
       <button class="pm-close" onclick="closePlayerModal()">✕</button>
     </div>
