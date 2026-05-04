@@ -121,6 +121,35 @@ const PREV_STATS = {
   'Jonathan Quick':        {w:14,l:10,otl:2,so:1,sv:544,  pos:'G'},
 };
 
+// ══════════ IR STATUS ══════════
+// Populated nightly by AGT-004 via the Players sheet OnIR column.
+// Key = player name, value = true if on IR.
+// This object is refreshed from the Google Sheet CSV at page load.
+let IR_STATUS = {};
+
+const PLAYERS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=0&single=true&output=csv';
+
+async function fetchIRStatuses() {
+  try {
+    const res = await fetch(PLAYERS_CSV);
+    const text = await res.text();
+    const lines = text.trim().split('\n');
+    // Header: PlayerName, NHLTeam, Position, BoxNumber, ..., OnIR (col P = index 15)
+    lines.slice(1).forEach(line => {
+      const cols = line.split(',');
+      const name = (cols[0] || '').trim();
+      const onIR = (cols[15] || '').trim().toUpperCase() === 'TRUE';
+      if (name) IR_STATUS[name] = onIR;
+    });
+  } catch(err) {
+    console.warn('IR fetch failed:', err);
+  }
+}
+
+function irBadge(name) {
+  return IR_STATUS[name] ? ' <span class="ir-badge">IR</span>' : '';
+}
+
 // ══════════ DIVISIONS ══════════
 const DIVISIONS = {
   'Atlantic': { conf:'Eastern', teams:['Boston Bruins','Buffalo Sabres','Detroit Red Wings','Florida Panthers','Montreal Canadiens','Ottawa Senators','Tampa Bay Lightning','Toronto Maple Leafs'] },
@@ -414,7 +443,9 @@ function renderRoster(picks, filter) {
     const sc = p.pos==='G'
       ? `<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">${p.w}</td><td class="tp-stat-num">${p.l}</td><td class="tp-stat-num">${p.otl}</td><td class="tp-stat-num">${p.so}</td><td class="tp-stat-num">${p.sv.toLocaleString()}</td>`
       : `<td class="tp-stat-num">${p.g}</td><td class="tp-stat-num">${p.a}</td><td class="tp-stat-num">${p.sog}</td><td class="tp-stat-num">${p.pos==='D'?p.pim:'—'}</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>`;
-    return `<tr style="${isHT?'background:rgba(111,38,61,0.06)':''}"><td><span class="tp-pos-badge pos-${p.pos}">${p.pos}</span></td><td><div class="tp-pname">${p.name}${isHT?' 🎩':''}</div><div class="tp-box">${p.box}</div></td><td><div class="tp-nhl">${p.nhl}</div></td><td class="tp-box">${p.box.replace(/Forwards |Defense |Goalie /,'').padStart(2,'0')}</td>${sc}<td class="tp-ht-flag">${htCell}</td><td class="tp-pts-num">${pts}</td></tr>`;
+    // ── IR badge shown in team panel player name ──
+    const nameCell = `<div class="tp-pname">${p.name}${isHT?' 🎩':''}${irBadge(p.name)}</div><div class="tp-box">${p.box}</div>`;
+    return `<tr style="${isHT?'background:rgba(111,38,61,0.06)':''}${IR_STATUS[p.name]?';opacity:0.75':''}"><td><span class="tp-pos-badge pos-${p.pos}">${p.pos}</span></td><td>${nameCell}</td><td><div class="tp-nhl">${p.nhl}</div></td><td class="tp-box">${p.box.replace(/Forwards |Defense |Goalie /,'').padStart(2,'0')}</td>${sc}<td class="tp-ht-flag">${htCell}</td><td class="tp-pts-num">${pts}</td></tr>`;
   }).join('');
   const totalPts=roundPts(rows.reduce((s,p)=>s+rosterPts(p),0)), totalG=rows.reduce((s,p)=>s+(p.g||0),0), totalA=rows.reduce((s,p)=>s+(p.a||0),0), totalSOG=rows.reduce((s,p)=>s+(p.sog||0),0), totalPIM=rows.reduce((s,p)=>s+(p.pim||0),0), totalSV=rows.reduce((s,p)=>s+(p.sv||0),0), totalW=rows.reduce((s,p)=>s+(p.w||0),0);
   document.getElementById('tp-tfoot').innerHTML = `<tr class="tp-footer"><td></td><td style="font-size:13px;color:var(--muted)">${rows.length} players</td><td></td><td></td><td class="tp-stat-num">${totalG}</td><td class="tp-stat-num">${totalA}</td><td class="tp-stat-num">${totalSOG}</td><td class="tp-stat-num">${totalPIM}</td><td class="tp-stat-num">${totalW}W</td><td></td><td></td><td></td><td class="tp-stat-num">${totalSV.toLocaleString()}</td><td></td><td class="tp-pts-num">${totalPts}</td></tr>`;
