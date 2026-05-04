@@ -122,9 +122,6 @@ const PREV_STATS = {
 };
 
 // ══════════ IR STATUS ══════════
-// Populated nightly by AGT-004 via the Players sheet OnIR column.
-// Key = player name, value = true if on IR.
-// This object is refreshed from the Google Sheet CSV at page load.
 let IR_STATUS = {};
 
 const PLAYERS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=0&single=true&output=csv';
@@ -134,7 +131,6 @@ async function fetchIRStatuses() {
     const res = await fetch(PLAYERS_CSV);
     const text = await res.text();
     const lines = text.trim().split('\n');
-    // Header: PlayerName, NHLTeam, Position, BoxNumber, ..., OnIR (col P = index 15)
     lines.slice(1).forEach(line => {
       const cols = line.split(',');
       const name = (cols[0] || '').trim();
@@ -346,13 +342,34 @@ function tickerStatChips(p) {
 
 function buildTicker() {
   const reel = document.getElementById('ticker-reel'); if (!reel) return;
-  if (!NIGHTLY_STATS.length) { reel.innerHTML = `<div class="t-item"><span class="t-game">No pool player stats yet for last night</span></div>`; reel.style.animation='none'; return; }
+
+  const empty = msg =>
+    reel.innerHTML = `<div class="t-row t-row1"><div class="t-item"><span class="t-game">${msg}</span></div></div>` +
+                     `<div class="t-row t-row2"><div class="t-item"><span class="t-game">${msg}</span></div></div>`;
+
+  if (!NIGHTLY_STATS.length) { empty('No pool player stats yet for last night'); return; }
   const scorers = NIGHTLY_STATS.filter(p => nightlyPts(p) > 0);
-  if (!scorers.length) { reel.innerHTML = `<div class="t-item"><span class="t-game">No scoring pool players last night</span></div>`; reel.style.animation='none'; return; }
-  const itemHTML = p => `<div class="t-item"><span class="t-game">${p.game}</span><span class="t-sep">·</span><span class="t-name">${p.name}</span><span class="t-team">${p.team}&nbsp;${p.pos}</span><span class="t-sep">|</span>${tickerStatChips(p)}<span class="t-pts">+${nightlyPts(p)}pts</span></div>`;
+  if (!scorers.length) { empty('No scoring pool players last night'); return; }
+
+  const itemHTML = p =>
+    `<div class="t-item">` +
+    `<span class="t-game">${p.game}</span>` +
+    `<span class="t-sep">·</span>` +
+    `<span class="t-name">${p.name}</span>` +
+    `<span class="t-team">${p.team}&nbsp;${p.pos}</span>` +
+    `<span class="t-sep">|</span>` +
+    `${tickerStatChips(p)}` +
+    `<span class="t-pts">+${nightlyPts(p)}pts</span>` +
+    `</div>`;
+
+  // Triple the content so seamless loop works even with few scorers
   const inner = scorers.map(itemHTML).join('');
-  // Duplicate for seamless loop
-  reel.innerHTML = inner + inner;
+  const looped = inner + inner + inner;
+
+  // Both rows show ALL scorers; row2 scrolls opposite direction for visual interest
+  reel.innerHTML =
+    `<div class="t-row t-row1">${looped}</div>` +
+    `<div class="t-row t-row2">${looped}</div>`;
 }
 
 // ══════════ LEADERBOARD ══════════
@@ -443,7 +460,6 @@ function renderRoster(picks, filter) {
     const sc = p.pos==='G'
       ? `<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">${p.w}</td><td class="tp-stat-num">${p.l}</td><td class="tp-stat-num">${p.otl}</td><td class="tp-stat-num">${p.so}</td><td class="tp-stat-num">${p.sv.toLocaleString()}</td>`
       : `<td class="tp-stat-num">${p.g}</td><td class="tp-stat-num">${p.a}</td><td class="tp-stat-num">${p.sog}</td><td class="tp-stat-num">${p.pos==='D'?p.pim:'—'}</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>`;
-    // ── IR badge shown in team panel player name ──
     const nameCell = `<div class="tp-pname">${p.name}${isHT?' 🎩':''}${irBadge(p.name)}</div><div class="tp-box">${p.box}</div>`;
     return `<tr style="${isHT?'background:rgba(111,38,61,0.06)':''}${IR_STATUS[p.name]?';opacity:0.75':''}"><td><span class="tp-pos-badge pos-${p.pos}">${p.pos}</span></td><td>${nameCell}</td><td><div class="tp-nhl">${p.nhl}</div></td><td class="tp-box">${p.box.replace(/Forwards |Defense |Goalie /,'').padStart(2,'0')}</td>${sc}<td class="tp-ht-flag">${htCell}</td><td class="tp-pts-num">${pts}</td></tr>`;
   }).join('');
