@@ -107,10 +107,10 @@
       <button class="tp-close-btn" onclick="closeTeamPanel()">✕</button>
     </div>
     <div class="tp-tabs">
-      <div class="tp-tab active" onclick="filterRoster('ALL',this)">All Players</div>
-      <div class="tp-tab" onclick="filterRoster('F',this)">Forwards</div>
-      <div class="tp-tab" onclick="filterRoster('D',this)">Defense</div>
-      <div class="tp-tab" onclick="filterRoster('G',this)">Goalies</div>
+      <div class="tp-tab active" onclick="filterLiveRoster('ALL',this)">All Players</div>
+      <div class="tp-tab" onclick="filterLiveRoster('F',this)">Forwards</div>
+      <div class="tp-tab" onclick="filterLiveRoster('D',this)">Defense</div>
+      <div class="tp-tab" onclick="filterLiveRoster('G',this)">Goalies</div>
     </div>
     <div class="tp-scroll">
       <table class="tp-table" id="tp-table">
@@ -188,7 +188,9 @@ function buildLiveStandings() {
   }).join('');
 }
 
-function openLiveTeamPanel(ownerName) {
+let currentLiveRoster = [];
+
+async function openLiveTeamPanel(ownerName) {
   const entry = LIVE_BOARD.find(e => e.name === ownerName);
   if (!entry) return;
   const ini = ownerName.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
@@ -198,13 +200,67 @@ function openLiveTeamPanel(ownerName) {
   document.getElementById('tp-meta').innerHTML =
     '<div class="tp-stat-pill"><div class="spv burg">'+entry.pts+'</div><div class="spl">Total Pts</div></div>'
     +'<div class="tp-stat-pill"><div class="spv blue">'+entry.rank+'</div><div class="spl">Rank</div></div>';
-  document.getElementById('tp-tbody').innerHTML =
-    '<tr><td colspan="15" style="text-align:center;padding:30px;color:var(--muted);font-size:13px">Full roster view available once the season begins.</td></tr>';
-  document.getElementById('tp-tfoot').innerHTML = '';
-  document.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelector('.tp-tab').classList.add('active');
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
+  
+  // Load roster data
+  const ENTRIES_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=0&single=true&output=csv&v=2';
+  try {
+    const res = await fetch(ENTRIES_CSV);
+    const text = await res.text();
+    const rows = text.trim().split('\n').slice(1);
+    const entryRow = rows.find(r => r.includes(entry.entryId) || r.includes(ownerName));
+    if (!entryRow) throw new Error('Entry not found');
+    
+    const cols = entryRow.split(',');
+    const picks = cols.slice(7, 31).filter(p => p);
+    const boxLabels = [
+      'Forwards 1','Forwards 2','Forwards 3','Forwards 4','Forwards 5','Forwards 6',
+      'Forwards 7','Forwards 8','Forwards 9','Forwards 10','Forwards 11','Forwards 12',
+      'Defense 1','Defense 2','Defense 3','Defense 4','Defense 5','Defense 6',
+      'Goalie 1','Goalie 2','Goalie 3','Goalie 4','Goalie 5','Goalie 6'
+    ];
+    
+    // Store for filtering
+    currentLiveRoster = picks.map((name, i) => ({ name, pos: i < 12 ? 'F' : i < 18 ? 'D' : 'G', box: boxLabels[i] }));
+    renderLiveRoster('ALL');
+    
+    document.getElementById('tp-tfoot').innerHTML = '<tr><td colspan="15" style="padding:12px;text-align:center;color:var(--muted);font-size:12px">Stats available once season begins</td></tr>';
+  } catch(err) {
+    console.error('Failed to load roster:', err);
+    document.getElementById('tp-tbody').innerHTML = '<tr><td colspan="15" style="text-align:center;padding:30px;color:var(--muted)">Roster data unavailable. View full stats on Stats page.</td></tr>';
+    currentLiveRoster = [];
+  }
+  
+  document.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector('.tp-tab').classList.add('active');
+}
+
+function renderLiveRoster(filter) {
+  const tbody = document.getElementById('tp-tbody');
+  let rows = currentLiveRoster;
+  if (filter !== 'ALL') rows = rows.filter(p => p.pos === filter);
+  
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="15" style="text-align:center;padding:30px">No players</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = rows.map((p, i) => {
+    const isIR = IR_STATUS[p.name] || false;
+    return '<tr'+(isIR?' style="opacity:0.6"':'')+'><td><span class="tp-pos-badge pos-'+p.pos+'">'+p.pos+'</span></td>'
+      +'<td><div class="tp-pname">'+p.name+(isIR?' <span class="ir-badge">IR</span>':'')+'</div><div class="tp-box">'+p.box+'</div></td>'
+      +'<td><div class="tp-nhl">—</div></td><td class="tp-box">'+(i+1)+'</td>'
+      +'<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'
+      +'<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'
+      +'<td class="tp-stat-num">—</td><td class="tp-ht-flag"></td><td class="tp-pts-num">—</td></tr>';
+  }).join('');
+}
+
+function filterLiveRoster(pos, btn) {
+  document.querySelectorAll('.tp-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderLiveRoster(pos);
 }
 
 function updateLivePayouts() {
