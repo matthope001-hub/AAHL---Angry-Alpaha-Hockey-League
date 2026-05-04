@@ -346,13 +346,13 @@ function tickerStatChips(p) {
 
 function buildTicker() {
   const reel = document.getElementById('ticker-reel'); if (!reel) return;
-  if (!NIGHTLY_STATS.length) { reel.innerHTML = `<div class="t-row t-row1"><div class="t-item"><span class="t-game">No pool player stats yet for last night</span></div></div>`; return; }
+  if (!NIGHTLY_STATS.length) { reel.innerHTML = `<div class="t-item"><span class="t-game">No pool player stats yet for last night</span></div>`; reel.style.animation='none'; return; }
   const scorers = NIGHTLY_STATS.filter(p => nightlyPts(p) > 0);
-  if (!scorers.length) { reel.innerHTML = `<div class="t-row t-row1"><div class="t-item"><span class="t-game">No scoring pool players last night</span></div></div>`; return; }
+  if (!scorers.length) { reel.innerHTML = `<div class="t-item"><span class="t-game">No scoring pool players last night</span></div>`; reel.style.animation='none'; return; }
   const itemHTML = p => `<div class="t-item"><span class="t-game">${p.game}</span><span class="t-sep">·</span><span class="t-name">${p.name}</span><span class="t-team">${p.team}&nbsp;${p.pos}</span><span class="t-sep">|</span>${tickerStatChips(p)}<span class="t-pts">+${nightlyPts(p)}pts</span></div>`;
-  const mid = Math.ceil(scorers.length / 2);
-  const makeRow = (items, cls) => { const inner = items.map(itemHTML).join(''); return `<div class="t-row ${cls}">${inner}${inner}</div>`; };
-  reel.innerHTML = makeRow(scorers.slice(0,mid),'t-row1') + makeRow(scorers.slice(mid),'t-row2');
+  const inner = scorers.map(itemHTML).join('');
+  // Duplicate for seamless loop
+  reel.innerHTML = inner + inner;
 }
 
 // ══════════ LEADERBOARD ══════════
