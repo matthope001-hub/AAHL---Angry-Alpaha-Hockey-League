@@ -499,6 +499,16 @@ function seedIRStatuses() {
 }
 
 // ── Populate PlayerIDs for headshots ──
+function normalizeName(name) {
+  // Handle "Last, First" format and extra spaces
+  name = name.trim();
+  if (name.includes(',')) {
+    const parts = name.split(',').map(p => p.trim());
+    if (parts.length === 2) name = `${parts[1]} ${parts[0]}`;
+  }
+  return name;
+}
+
 function populatePlayerIDs() {
   agentLog('AGT-002', '⏳', 'Starting PlayerID population');
   const sheet = SS.getSheetByName('Players');
@@ -509,7 +519,7 @@ function populatePlayerIDs() {
   let updated = 0;
   let missing = [];
   
-  // Get all NHL rosters to build name→ID map
+  // Get all NHL rosters to build name→ID map (multiple keys for matching)
   const nameToId = {};
   const allTeams = ['ANA','BOS','BUF','CAR','CBJ','CGY','CHI','COL','DAL','DET',
     'EDM','FLA','LA','MIN','MTL','NJ','NSH','NYI','NYR','OTT',
@@ -525,6 +535,10 @@ function populatePlayerIDs() {
           .forEach(p => {
             const fullName = `${p.firstName.default} ${p.lastName.default}`;
             nameToId[fullName] = p.id;
+            // Also store normalized version
+            nameToId[normalizeName(fullName)] = p.id;
+            // Store last name only for partial matching
+            nameToId[p.lastName.default.toLowerCase()] = p.id;
           });
       }
     } catch(e) { /* skip */ }
@@ -536,7 +550,15 @@ function populatePlayerIDs() {
     const currentId = data[i][PLAYER_ID_COL];
     if (!name || currentId) continue;
     
-    const playerId = nameToId[name];
+    const normalizedName = normalizeName(name);
+    let playerId = nameToId[name] || nameToId[normalizedName];
+    
+    // Try partial match if exact fails
+    if (!playerId) {
+      const lastName = name.split(' ').pop().toLowerCase();
+      playerId = nameToId[lastName];
+    }
+    
     if (playerId) {
       sheet.getRange(i + 1, PLAYER_ID_COL + 1).setValue(playerId);
       updated++;
@@ -548,6 +570,15 @@ function populatePlayerIDs() {
   agentLog('AGT-002', '✅', `PlayerIDs updated: ${updated} found, ${missing.length} missing`);
   if (missing.length) {
     console.log('Missing PlayerIDs for:', missing.join(', '));
+    // Create sheet with missing players for manual lookup
+    const missingSheet = SS.getSheetByName('MissingPlayerIDs') || SS.insertSheet('MissingPlayerIDs');
+    missingSheet.clear();
+    missingSheet.appendRow(['Player Name', 'NHL.com Search URL', 'PlayerID', 'Notes']);
+    missing.forEach(name => {
+      const searchUrl = `https://www.nhl.com/player/${name.toLowerCase().replace(/\s+/g, '-')}`;
+      missingSheet.appendRow([name, searchUrl, '', 'Find ID on nhl.com and paste here']);
+    });
+    agentLog('AGT-002', 'ℹ️', `Created 'MissingPlayerIDs' sheet with ${missing.length} players to look up`);
   }
 }
 
