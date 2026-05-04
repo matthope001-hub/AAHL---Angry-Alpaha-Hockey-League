@@ -498,6 +498,59 @@ function seedIRStatuses() {
   updateIRStatuses(allTeams);
 }
 
+// ── Populate PlayerIDs for headshots ──
+function populatePlayerIDs() {
+  agentLog('AGT-002', '⏳', 'Starting PlayerID population');
+  const sheet = SS.getSheetByName('Players');
+  if (!sheet) { agentLog('AGT-002', '❌', 'Players sheet not found'); return; }
+  
+  const data = sheet.getDataRange().getValues();
+  const PLAYER_ID_COL = 16; // Column Q (0-indexed)
+  let updated = 0;
+  let missing = [];
+  
+  // Get all NHL rosters to build name→ID map
+  const nameToId = {};
+  const allTeams = ['ANA','BOS','BUF','CAR','CBJ','CGY','CHI','COL','DAL','DET',
+    'EDM','FLA','LA','MIN','MTL','NJ','NSH','NYI','NYR','OTT',
+    'PHI','PIT','SEA','STL','TB','TOR','UTA','VAN','VGK','WSH','WPG'];
+  
+  allTeams.forEach(abbrev => {
+    try {
+      const url = `https://api-web.nhle.com/v1/roster/${abbrev}/current`;
+      const response = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+      if (response.getResponseCode() === 200) {
+        const roster = JSON.parse(response.getContentText());
+        [...(roster.forwards||[]), ...(roster.defensemen||[]), ...(roster.goalies||[])]
+          .forEach(p => {
+            const fullName = `${p.firstName.default} ${p.lastName.default}`;
+            nameToId[fullName] = p.id;
+          });
+      }
+    } catch(e) { /* skip */ }
+  });
+  
+  // Update PlayerID column
+  for (let i = 1; i < data.length; i++) {
+    const name = data[i][0];
+    const currentId = data[i][PLAYER_ID_COL];
+    if (!name || currentId) continue;
+    
+    const playerId = nameToId[name];
+    if (playerId) {
+      sheet.getRange(i + 1, PLAYER_ID_COL + 1).setValue(playerId);
+      updated++;
+    } else {
+      missing.push(name);
+    }
+  }
+  
+  agentLog('AGT-002', '✅', `PlayerIDs updated: ${updated} found, ${missing.length} missing`);
+  if (missing.length) {
+    console.log('Missing PlayerIDs for:', missing.join(', '));
+  }
+}
+
 function updateSkaterStats(stats) {
   const sheet = SS.getSheetByName('Players');
   const rows = sheet.getDataRange().getValues();
