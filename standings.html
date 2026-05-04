@@ -245,6 +245,8 @@ function switchTab(tab, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'skaters') renderSkaters();
+  if (tab === 'goalies') renderGoalies();
 }
 
 function sortSkaters(col) {
