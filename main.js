@@ -124,7 +124,7 @@ const PREV_STATS = {
 // ══════════ IR STATUS ══════════
 let IR_STATUS = {};
 
-const PLAYERS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1949508708&single=true&output=csv';
+const PLAYERS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1949508708&single=true&output=csv&v=2';
 
 async function fetchIRStatuses() {
   try {
@@ -272,7 +272,7 @@ function getDefaultRoster(entryName) {
 }
 
 // ══════════ NIGHTLY STATS ══════════
-const NIGHTLY_STATS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=615464608&single=true&output=csv';
+const NIGHTLY_STATS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=615464608&single=true&output=csv&v=2';
 let NIGHTLY_STATS = [];
 
 function parseNightlyCSV(csv) {
@@ -286,8 +286,16 @@ function parseNightlyCSV(csv) {
 }
 
 async function fetchNightlyStats() {
-  try { const res = await fetch(NIGHTLY_STATS_CSV); NIGHTLY_STATS = parseNightlyCSV(await res.text()); }
-  catch(err) { console.warn('NightlyStats fetch failed:', err); NIGHTLY_STATS = []; }
+  try {
+    const res = await fetch(NIGHTLY_STATS_CSV);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    NIGHTLY_STATS = parseNightlyCSV(text);
+    console.log('Nightly stats loaded:', NIGHTLY_STATS.length, 'players');
+  } catch(err) {
+    console.error('NightlyStats fetch failed:', err);
+    NIGHTLY_STATS = [];
+  }
 }
 
 // ══════════ SCORING ══════════

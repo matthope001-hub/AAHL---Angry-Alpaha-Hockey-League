@@ -134,7 +134,7 @@
 
 <script src="main.js"></script>
 <script>
-const STANDINGS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1410587271&single=true&output=csv';
+const STANDINGS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1410587271&single=true&output=csv&v=2';
 let LIVE_BOARD = [];
 
 function parseStandingsCSV(csv) {
@@ -147,19 +147,22 @@ function parseStandingsCSV(csv) {
       else { cur += ch; }
     }
     cols.push(cur.trim());
-    const rank = parseInt(cols[0])||0, entryId = cols[1]||'', team = cols[2]||'', owner = cols[3]||'';
-    const pts = parseFloat(cols[4])||0, change = parseInt(cols[6])||0, hatTricks = parseInt(cols[10])||0;
-    const trend = change > 0 ? '+'+change : change < 0 ? ''+change : '=';
-    return { rank, entryId, team, name: owner, pts, trend, hatTricks };
-  }).filter(e => e.team && e.name);
+    return { rank:parseInt(cols[0])||0, entryId:cols[1], team:cols[2], name:cols[3], pts:parseFloat(cols[5])||0, trend:cols[7]||'=' };
+  }).filter(e => e.entryId);
 }
 
 async function fetchStandings() {
   try {
     const res = await fetch(STANDINGS_CSV);
-    LIVE_BOARD = parseStandingsCSV(await res.text());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    LIVE_BOARD = parseStandingsCSV(text);
     totalEntries = LIVE_BOARD.length;
-  } catch(err) { LIVE_BOARD = []; }
+    console.log('Standings loaded:', LIVE_BOARD.length, 'entries');
+  } catch(err) {
+    console.error('Standings fetch failed:', err);
+    LIVE_BOARD = [];
+  }
 }
 
 function buildLiveStandings() {
