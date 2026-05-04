@@ -312,16 +312,13 @@ pre { background: var(--surface2); border: 1px solid var(--border); border-radiu
 .page.on .card, .page.on .stat-cell { animation: fadeUp 0.35s ease both; }
 
 /* ── SPORTS TICKER ── */
-.ticker-wrap { position: fixed; top: 60px; left: 0; right: 0; z-index: 150; height: 64px; background: #09030a; border-bottom: 2px solid var(--burgundy); display: flex; overflow: hidden; }
+.ticker-wrap { position: fixed; top: 60px; left: 0; right: 0; z-index: 150; height: 36px; background: #09030a; border-bottom: 2px solid var(--burgundy); display: flex; overflow: hidden; }
 .ticker-tag { flex-shrink: 0; background: var(--burgundy); display: flex; align-items: center; padding: 0 14px; font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500; color: #fff; letter-spacing: 2.5px; text-transform: uppercase; white-space: nowrap; z-index: 2; border-right: 1px solid rgba(255,255,255,0.15); }
 .ticker-viewport { flex: 1; overflow: hidden; position: relative; }
-.ticker-reel { display: flex; flex-direction: column; height: 64px; }
-.t-row { display: flex; align-items: center; white-space: nowrap; flex: 1; overflow: hidden; }
-.t-row1 { animation: reel 25s linear infinite; border-bottom: 1px solid rgba(255,255,255,0.05); }
-.t-row2 { animation: reel 25s linear infinite reverse; }
-.t-row:hover { animation-play-state: paused; }
-@keyframes reel { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-.t-item { display: inline-flex; align-items: center; gap: 8px; padding: 0 20px; height: 32px; border-right: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.04); font-family: 'DM Mono', monospace; font-size: 11px; cursor: default; }
+.ticker-reel { display: flex; align-items: center; height: 36px; white-space: nowrap; animation: ticker-scroll 60s linear infinite; }
+.ticker-reel:hover { animation-play-state: paused; }
+@keyframes ticker-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+.t-item { display: inline-flex; align-items: center; gap: 8px; padding: 0 20px; height: 36px; border-right: 1px solid rgba(255,255,255,0.06); font-family: 'DM Mono', monospace; font-size: 11px; cursor: default; flex-shrink: 0; }
 .t-item:hover { background: rgba(255,255,255,0.03); }
 .t-game { color: rgba(255,255,255,0.55); font-size: 9px; letter-spacing: 0.5px; }
 .t-name { color: #fff; font-weight: 600; }
@@ -339,7 +336,7 @@ pre { background: var(--surface2); border: 1px solid var(--border); border-radiu
 .ts-pim { background: rgba(240,165,0,0.25); color: #e8b030; }
 .ts-ht  { background: rgba(111,38,61,0.75); color: #ffd0dd; font-weight:700; }
 .t-pts  { color: #e8a0b4; font-weight: 700; font-size: 12px; }
-.page { padding-top: 64px; }
+.page { padding-top: 36px; }
 
 /* ── HOME ── */
 .home-topbar { display: flex; align-items: flex-end; justify-content: space-between; padding: 28px 0 20px; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
