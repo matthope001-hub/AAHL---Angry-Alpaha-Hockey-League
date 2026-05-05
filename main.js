@@ -151,7 +151,7 @@ async function fetchIRStatuses() {
 function getPlayerHeadshotUrl(playerName) {
   const playerId = PLAYER_ID_MAP[playerName];
   if (!playerId) return null;
-  return `https://assets.nhle.com/mugs/nhl/20232024/168x168/${playerId}.png`;
+  return `https://assets.nhle.com/photos/20232024/168x168/${playerId}.png`;
 }
 
 function irBadge(name) {
