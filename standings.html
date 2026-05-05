@@ -135,7 +135,6 @@
         <thead><tr>
           <th style="width:32px;text-align:center">#</th>
           <th onclick="sortSkaters('name')">Player <span class="sort-arrow">↕</span></th>
-          <th class="hide-mob" onclick="sortSkaters('team')">Team <span class="sort-arrow">↕</span></th>
           <th style="width:36px;text-align:center">Pos</th>
           <th class="ra hide-mob" onclick="sortSkaters('box')">Box <span class="sort-arrow">↕</span></th>
           <th class="ra" onclick="sortSkaters('goals')">G <span class="sort-arrow">↕</span></th>
@@ -145,7 +144,7 @@
           <th class="ra" onclick="sortSkaters('hatTricks')">🎩 <span class="sort-arrow">↕</span></th>
           <th class="ra sorted" onclick="sortSkaters('pts')">Pts <span class="sort-arrow">↓</span></th>
         </tr></thead>
-        <tbody id="skater-tbody"><tr><td colspan="11" class="stats-empty">Loading player stats…</td></tr></tbody>
+        <tbody id="skater-tbody"><tr><td colspan="10" class="stats-empty">Loading player stats…</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -160,7 +159,6 @@
         <thead><tr>
           <th style="width:32px;text-align:center">#</th>
           <th onclick="sortGoalies('name')">Player <span class="sort-arrow">↕</span></th>
-          <th class="hide-mob" onclick="sortGoalies('team')">Team <span class="sort-arrow">↕</span></th>
           <th class="ra hide-mob" onclick="sortGoalies('box')">Box <span class="sort-arrow">↕</span></th>
           <th class="ra" onclick="sortGoalies('wins')">W <span class="sort-arrow">↕</span></th>
           <th class="ra" onclick="sortGoalies('losses')">L <span class="sort-arrow">↕</span></th>
@@ -169,7 +167,7 @@
           <th class="ra" onclick="sortGoalies('saves')">SV <span class="sort-arrow">↕</span></th>
           <th class="ra sorted" onclick="sortGoalies('pts')">Pts <span class="sort-arrow">↓</span></th>
         </tr></thead>
-        <tbody id="goalie-tbody"><tr><td colspan="10" class="stats-empty">Loading goalie stats…</td></tr></tbody>
+        <tbody id="goalie-tbody"><tr><td colspan="9" class="stats-empty">Loading goalie stats…</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -280,7 +278,7 @@ function filterSkaterPos(pos, btn) {
 function renderSkaters() {
   const tbody = document.getElementById('skater-tbody');
   if (!ALL_PLAYERS.length) {
-    tbody.innerHTML = '<tr><td colspan="11" class="stats-empty">Loading player stats…</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" class="stats-empty">Loading player stats…</td></tr>';
     return;
   }
   const search = (document.getElementById('skater-search')?.value||'').toLowerCase();
@@ -292,12 +290,11 @@ function renderSkaters() {
     const bv = typeof b[skaterSort.col]==='string'?b[skaterSort.col]:(b[skaterSort.col]||0);
     return typeof av==='string' ? av.localeCompare(bv)*skaterSort.dir : (bv-av)*(skaterSort.dir===-1?1:-1)||a.name.localeCompare(b.name);
   });
-  if (!data.length) { tbody.innerHTML = '<tr><td colspan="11" class="stats-empty">No players match</td></tr>'; return; }
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="10" class="stats-empty">No players match</td></tr>'; return; }
   tbody.innerHTML = data.map((p,i) => {
     const rc = i===0?'r1':i===1?'r2':i===2?'r3':'', ht = p.hatTricks>0;
     return '<tr class="'+(ht?'ht-row':'')+'"><td class="st-rank '+rc+'">'+(i+1)+'</td>'
       +'<td><div class="st-name">'+p.name+(ht?' <span style="font-size:11px">🎩</span>':'')+'</div><div class="st-sub">'+p.team+'</div></td>'
-      +'<td class="hide-mob"><span style="font-size:11px;color:var(--muted);font-family:\'DM Mono\',monospace">'+p.team+'</span></td>'
       +'<td style="text-align:center"><span class="st-pos-badge pos-'+p.pos+'">'+p.pos+'</span></td>'
       +'<td class="st-box hide-mob">'+p.box+'</td>'
       +'<td class="st-num'+(p.goals>0?' highlight':'')+'">'+p.goals+'</td>'
@@ -337,12 +334,11 @@ function renderGoalies() {
     const bv = typeof b[goalieSort.col]==='string'?b[goalieSort.col]:(b[goalieSort.col]||0);
     return typeof av==='string' ? av.localeCompare(bv)*goalieSort.dir : (bv-av)*(goalieSort.dir===-1?1:-1)||a.name.localeCompare(b.name);
   });
-  if (!data.length) { tbody.innerHTML = '<tr><td colspan="10" class="stats-empty">No goalies match</td></tr>'; return; }
+  if (!data.length) { tbody.innerHTML = '<tr><td colspan="9" class="stats-empty">No goalies match</td></tr>'; return; }
   tbody.innerHTML = data.map((p,i) => {
     const rc = i===0?'r1':i===1?'r2':i===2?'r3':'';
     return '<tr><td class="st-rank '+rc+'">'+(i+1)+'</td>'
       +'<td><div class="st-name">'+p.name+'</div><div class="st-sub">'+p.team+'</div></td>'
-      +'<td class="hide-mob"><span style="font-size:11px;color:var(--muted);font-family:\'DM Mono\',monospace">'+p.team+'</span></td>'
       +'<td class="st-box hide-mob">'+p.box+'</td>'
       +'<td class="st-num'+(p.wins>0?' highlight':'')+'">'+p.wins+'</td>'
       +'<td class="st-num">'+p.losses+'</td>'
