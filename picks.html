@@ -127,6 +127,7 @@
 
 <script src="main.js"></script>
 <script>
+fetchIRStatuses(); // Load player IDs for headshots
 fetchNightlyStats().then(() => buildTicker());
 buildDraft();
 buildDivisionPicks();
