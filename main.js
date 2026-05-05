@@ -151,7 +151,9 @@ async function fetchIRStatuses() {
 function getPlayerHeadshotUrl(playerName) {
   const playerId = PLAYER_ID_MAP[playerName];
   if (!playerId) return null;
-  return `https://nhl.com/players/${playerId}/headshot`;
+  // Get first letter of last name for folder structure
+  const lastNameInitial = playerName.split(' ').pop()[0].toUpperCase();
+  return `https://assets.nhle.com/mugs/nhl/20252026/${lastNameInitial}/${playerId}.png`;
 }
 
 function irBadge(name) {
