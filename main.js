@@ -497,10 +497,14 @@ function openPlayerModal(playerName, team, pos, boxId, radioEl) {
   // Show headshot if available
   const headshotEl = document.getElementById('pm-headshot');
   const headshotUrl = getPlayerHeadshotUrl(playerName);
+  console.log('Headshot debug:', playerName, 'URL:', headshotUrl, 'Map size:', Object.keys(PLAYER_ID_MAP).length);
   if (headshotUrl && headshotEl) {
     headshotEl.src = headshotUrl;
     headshotEl.style.display = 'block';
-    headshotEl.onerror = () => { headshotEl.style.display = 'none'; };
+    headshotEl.onerror = () => { 
+      console.log('Headshot failed to load:', headshotUrl);
+      headshotEl.style.display = 'none'; 
+    };
   } else if (headshotEl) {
     headshotEl.style.display = 'none';
   }
