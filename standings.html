@@ -27,6 +27,9 @@
 .stats-table { width:100%;border-collapse:collapse;font-size:13px; }
 .stats-table thead tr { background:var(--surface2);border-bottom:2px solid var(--border2); }
 .stats-table th { padding:10px 14px;font-family:'DM Mono',monospace;font-size:9px;font-weight:500;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;text-align:left;white-space:nowrap;cursor:pointer;user-select:none;transition:color 0.12s; }
+.stats-table th.ra, .stats-table td.ra,
+.stats-table td.st-num { text-align: right; }
+.stats-table th.ca, .stats-table td.ca { text-align: center; }
 .stats-table th:hover { color:var(--text); }
 .stats-table th.sorted { color:var(--burgundy2); }
 .stats-table th .sort-arrow { margin-left:4px;opacity:0.4;font-size:8px; }
@@ -47,6 +50,9 @@
 .pos-D { background:var(--burgundy); }
 .pos-G { background:var(--accent); }
 .st-num { font-family:'DM Mono',monospace;font-size:13px;text-align:right;color:var(--muted); }
+.stats-table td { text-align: left; }
+.stats-table td.ra { text-align: right; }
+.stats-table td.ca { text-align: center; }
 .st-num.highlight { color:var(--text);font-weight:600; }
 .st-pts { font-family:'DM Mono',monospace;font-size:14px;font-weight:800;text-align:right;color:var(--burgundy2); }
 .st-box { font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);text-align:center; }
