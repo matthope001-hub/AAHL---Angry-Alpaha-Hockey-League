@@ -795,13 +795,13 @@ function sendEntryConfirmation(entry) {
     const label = boxLabels[i] || `Box ${i+1}`;
     const pos = i < 12 ? 'F' : i < 18 ? 'D' : 'G';
     const posColor = pos === 'F' ? '#2563eb' : pos === 'D' ? '#7c3aed' : '#059669';
-    return `&lt;tr style="border-bottom:1px solid #e5e7eb"&gt;
-      &lt;td style="padding:6px 10px;font-size:12px;color:#6b7280"&gt;${label}&lt;/td&gt;
-      &lt;td style="padding:6px 10px"&gt;
-        &lt;span style="display:inline-block;background:${posColor};color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;margin-right:6px"&gt;${pos}&lt;/span&gt;
+    return `<tr style="border-bottom:1px solid #e5e7eb">
+      <td style="padding:6px 10px;font-size:12px;color:#6b7280">${label}</td>
+      <td style="padding:6px 10px">
+        <span style="display:inline-block;background:${posColor};color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;margin-right:6px">${pos}</span>
         ${player}
-      &lt;/td&gt;
-    &lt;/tr&gt;`;
+      </td>
+    </tr>`;
   }).filter(Boolean).join('');
 
   const divs = entry.divisions || {};
@@ -810,57 +810,57 @@ function sendEntryConfirmation(entry) {
     ['Metropolitan', divs.metropolitan || '—'],
     ['Central',      divs.central      || '—'],
     ['Pacific',      divs.pacific      || '—'],
-  ].map(([div, team]) => `&lt;tr style="border-bottom:1px solid #e5e7eb"&gt;
-    &lt;td style="padding:6px 10px;font-size:12px;color:#6b7280"&gt;${div}&lt;/td&gt;
-    &lt;td style="padding:6px 10px;font-weight:600"&gt;${team}&lt;/td&gt;
-  &lt;/tr&gt;`).join('');
+  ].map(([div, team]) => `<tr style="border-bottom:1px solid #e5e7eb">
+    <td style="padding:6px 10px;font-size:12px;color:#6b7280">${div}</td>
+    <td style="padding:6px 10px;font-weight:600">${team}</td>
+  </tr>`).join('');
 
   MailApp.sendEmail({
     to: entry.email,
     subject: '🏒 AAHL Entry Confirmed — ' + entry.teamName,
     htmlBody: `
-      &lt;div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#111"&gt;
-        &lt;div style="background:#1a1a2e;padding:24px;text-align:center;border-radius:8px 8px 0 0"&gt;
-          &lt;h1 style="color:#fff;margin:0;font-size:22px"&gt;🦙 Angry Alpaca Hockey League&lt;/h1&gt;
-          &lt;p style="color:#9ca3af;margin:6px 0 0"&gt;Entry Confirmation&lt;/p&gt;
-        &lt;/div&gt;
-        &lt;div style="background:#f9fafb;padding:24px;border:1px solid #e5e7eb;border-top:none"&gt;
-          &lt;h2 style="margin:0 0 4px"&gt;You're in, ${entry.firstName}! 🎉&lt;/h2&gt;
-          &lt;p style="color:#6b7280;margin:0 0 20px"&gt;Your entry &lt;strong style="color:#111"&gt;${entry.teamName}&lt;/strong&gt; has been received and locked in.&lt;/p&gt;
-          &lt;div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:6px;padding:12px 16px;margin-bottom:24px"&gt;
-            &lt;strong&gt;💳 Payment required:&lt;/strong&gt; Send &lt;strong&gt;$10&lt;/strong&gt; via e-transfer to
-            &lt;strong style="color:#7c3aed"&gt;matt.hope@rocketmail.com&lt;/strong&gt;
+      <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#111">
+        <div style="background:#1a1a2e;padding:24px;text-align:center;border-radius:8px 8px 0 0">
+          <h1 style="color:#fff;margin:0;font-size:22px">🦙 Angry Alpaca Hockey League</h1>
+          <p style="color:#9ca3af;margin:6px 0 0">Entry Confirmation</p>
+        </div>
+        <div style="background:#f9fafb;padding:24px;border:1px solid #e5e7eb;border-top:none">
+          <h2 style="margin:0 0 4px">You're in, ${entry.firstName}! 🎉</h2>
+          <p style="color:#6b7280;margin:0 0 20px">Your entry <strong style="color:#111">${entry.teamName}</strong> has been received and locked in.</p>
+          <div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:6px;padding:12px 16px;margin-bottom:24px">
+            <strong>💳 Payment required:</strong> Send <strong>$10</strong> via e-transfer to
+            <strong style="color:#7c3aed">matt.hope@rocketmail.com</strong>
             with your name in the memo to confirm your spot.
-          &lt;/div&gt;
-          &lt;h3 style="margin:0 0 8px;font-size:15px"&gt;Your 24 Player Picks&lt;/h3&gt;
-          &lt;table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;margin-bottom:24px"&gt;
-            &lt;thead&gt;
-              &lt;tr style="background:#1a1a2e;color:#fff"&gt;
-                &lt;th style="padding:8px 10px;text-align:left;font-size:12px;font-weight:600"&gt;Box&lt;/th&gt;
-                &lt;th style="padding:8px 10px;text-align:left;font-size:12px;font-weight:600"&gt;Player&lt;/th&gt;
-              &lt;/tr&gt;
-            &lt;/thead&gt;
-            &lt;tbody&gt;${picksRows}&lt;/tbody&gt;
-          &lt;/table&gt;
-          &lt;h3 style="margin:0 0 8px;font-size:15px"&gt;Division Winner Picks &lt;span style="font-size:12px;color:#6b7280;font-weight:400"&gt;(+10 pts while your team leads)&lt;/span&gt;&lt;/h3&gt;
-          &lt;table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;margin-bottom:24px"&gt;
-            &lt;thead&gt;
-              &lt;tr style="background:#1a1a2e;color:#fff"&gt;
-                &lt;th style="padding:8px 10px;text-align:left;font-size:12px;font-weight:600"&gt;Division&lt;/th&gt;
-                &lt;th style="padding:8px 10px;text-align:left;font-size:12px;font-weight:600"&gt;Your Pick&lt;/th&gt;
-              &lt;/tr&gt;
-            &lt;/thead&gt;
-            &lt;tbody&gt;${divRows}&lt;/tbody&gt;
-          &lt;/table&gt;
-          &lt;p style="font-size:13px;color:#6b7280;margin:0"&gt;
-            Picks lock &lt;strong&gt;September 29, 2026&lt;/strong&gt; (opening night). No changes after submission.&lt;br&gt;
+          </div>
+          <h3 style="margin:0 0 8px;font-size:15px">Your 24 Player Picks</h3>
+          <table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;margin-bottom:24px">
+            <thead>
+              <tr style="background:#1a1a2e;color:#fff">
+                <th style="padding:8px 10px;text-align:left;font-size:12px;font-weight:600">Box</th>
+                <th style="padding:8px 10px;text-align:left;font-size:12px;font-weight:600">Player</th>
+              </tr>
+            </thead>
+            <tbody>${picksRows}</tbody>
+          </table>
+          <h3 style="margin:0 0 8px;font-size:15px">Division Winner Picks <span style="font-size:12px;color:#6b7280;font-weight:400">(+10 pts while your team leads)</span></h3>
+          <table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;margin-bottom:24px">
+            <thead>
+              <tr style="background:#1a1a2e;color:#fff">
+                <th style="padding:8px 10px;text-align:left;font-size:12px;font-weight:600">Division</th>
+                <th style="padding:8px 10px;text-align:left;font-size:12px;font-weight:600">Your Pick</th>
+              </tr>
+            </thead>
+            <tbody>${divRows}</tbody>
+          </table>
+          <p style="font-size:13px;color:#6b7280;margin:0">
+            Picks lock <strong>September 29, 2026</strong> (opening night). No changes after submission.<br>
             Questions? Reply to this email or find us on Facebook.
-          &lt;/p&gt;
-        &lt;/div&gt;
-        &lt;div style="background:#1a1a2e;padding:12px;text-align:center;border-radius:0 0 8px 8px"&gt;
-          &lt;p style="color:#6b7280;font-size:11px;margin:0"&gt;AAHL — Angry Alpaca Hockey League 2026–27&lt;/p&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
+          </p>
+        </div>
+        <div style="background:#1a1a2e;padding:12px;text-align:center;border-radius:0 0 8px 8px">
+          <p style="color:#6b7280;font-size:11px;margin:0">AAHL — Angry Alpaca Hockey League 2026–27</p>
+        </div>
+      </div>
     `
   });
 
@@ -872,20 +872,20 @@ function sendWeeklyDigest(standings) {
   const allEntries = getEntries();
   const top3 = standings.slice(0, 3);
   const rows = standings.map((e, i) =>
-    `&lt;tr&gt;&lt;td&gt;${i+1}&lt;/td&gt;&lt;td&gt;${e.teamName}&lt;/td&gt;&lt;td&gt;${e.firstName} ${e.lastName}&lt;/td&gt;&lt;td&gt;${e.totalPts}&lt;/td&gt;&lt;/tr&gt;` 
+    `<tr><td>${i+1}</td><td>${e.teamName}</td><td>${e.firstName} ${e.lastName}</td><td>${e.totalPts}</td></tr>` 
   ).join('');
   allEntries.forEach(e => {
     MailApp.sendEmail({
       to: e.email,
       subject: `🦙 AAHL Weekly Update — ${top3[0]?.teamName} leads with ${top3[0]?.totalPts} pts`,
       htmlBody: `
-        &lt;h2&gt;This Week in AAHL&lt;/h2&gt;
-        &lt;h3&gt;🏆 Current Standings&lt;/h3&gt;
-        &lt;table border="1" cellpadding="6" style="border-collapse:collapse"&gt;
-          &lt;tr&gt;&lt;th&gt;#&lt;/th&gt;&lt;th&gt;Team&lt;/th&gt;&lt;th&gt;Owner&lt;/th&gt;&lt;th&gt;Pts&lt;/th&gt;&lt;/tr&gt;
+        <h2>This Week in AAHL</h2>
+        <h3>🏆 Current Standings</h3>
+        <table border="1" cellpadding="6" style="border-collapse:collapse">
+          <tr><th>#</th><th>Team</th><th>Owner</th><th>Pts</th></tr>
           ${rows}
-        &lt;/table&gt;
-        &lt;p&gt;Prize pool: $${Math.round(allEntries.length * 10 * 0.5 * 0.5)} for 1st place.&lt;/p&gt;
+        </table>
+        <p>Prize pool: $${Math.round(allEntries.length * 10 * 0.5 * 0.5)} for 1st place.</p>
       `
     });
   });
@@ -900,11 +900,11 @@ function sendHatTrickAlert(playerName, team, goals, assists, ptsEarned, draftedB
       to: e.email,
       subject: `🎩 HAT TRICK — ${playerName} scored ${goals} goals last night!`,
       htmlBody: `
-        &lt;h2&gt;🎩 Hat Trick Alert!&lt;/h2&gt;
-        &lt;p&gt;&lt;strong&gt;${playerName}&lt;/strong&gt; (${team}) scored &lt;strong&gt;${goals} goals&lt;/strong&gt;
-           and added ${assists} assists last night.&lt;/p&gt;
-        &lt;p&gt;Drafted by: &lt;strong&gt;${draftedBy}&lt;/strong&gt;&lt;/p&gt;
-        &lt;p&gt;Points earned: &lt;strong&gt;${ptsEarned}&lt;/strong&gt; (incl. +3 hat trick bonus)&lt;/p&gt;
+        <h2>🎩 Hat Trick Alert!</h2>
+        <p><strong>${playerName}</strong> (${team}) scored <strong>${goals} goals</strong>
+           and added ${assists} assists last night.</p>
+        <p>Drafted by: <strong>${draftedBy}</strong></p>
+        <p>Points earned: <strong>${ptsEarned}</strong> (incl. +3 hat trick bonus)</p>
       `
     });
   });
