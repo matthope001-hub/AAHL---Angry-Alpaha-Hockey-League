@@ -153,7 +153,7 @@ function getPlayerHeadshotUrl(playerName) {
   if (!playerId) return null;
   // Get first letter of last name for folder structure
   const lastNameInitial = playerName.split(' ').pop()[0].toUpperCase();
-  return `https://assets.nhle.com/mugs/nhl/20252026/${lastNameInitial}/${playerId}.png`;
+  return `https://assets.nhle.com/mugs/nhl/20242025/${lastNameInitial}/${playerId}.png`;
 }
 
 function irBadge(name) {
