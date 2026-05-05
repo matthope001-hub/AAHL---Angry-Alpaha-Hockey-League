@@ -521,9 +521,10 @@ function populatePlayerIDs() {
   
   // Get all NHL rosters to build name→ID map (multiple keys for matching)
   const nameToId = {};
+  // NHL API uses TBL not TB, NJD not NJ, LAK not LA
   const allTeams = ['ANA','BOS','BUF','CAR','CBJ','CGY','CHI','COL','DAL','DET',
-    'EDM','FLA','LA','MIN','MTL','NJ','NSH','NYI','NYR','OTT',
-    'PHI','PIT','SEA','STL','TB','TOR','UTA','VAN','VGK','WSH','WPG'];
+    'EDM','FLA','LAK','MIN','MTL','NJD','NSH','NYI','NYR','OTT',
+    'PHI','PIT','SEA','STL','TBL','TOR','UTA','VAN','VGK','WSH','WPG'];
   
   // Debug: Store sample API names
   let apiNameSamples = [];
