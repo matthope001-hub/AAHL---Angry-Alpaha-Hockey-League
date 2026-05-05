@@ -4,29 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Stats — AAHL</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Teko:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" type="image/png" href="aahl-logo.png">
 <style>
 .page-tabs { display:flex;gap:4px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:4px;margin-bottom:24px; }
-.page-tab { flex:1;padding:10px 16px;border-radius:8px;font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all 0.15s;text-align:center;border:none;background:none; }
+.page-tab { flex:1;padding:10px 16px;border-radius:8px;font-family:'Teko',sans-serif;font-size:11px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all 0.15s;text-align:center;border:none;background:none; }
 .page-tab:hover { color:var(--text);background:var(--surface3); }
 .page-tab.active { background:var(--burgundy);color:#fff; }
 .tab-panel { display:none; }
 .tab-panel.active { display:block; }
 .stats-controls { display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap; }
 .pos-tabs { display:flex;gap:3px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:3px; }
-.pos-tab { padding:6px 16px;border-radius:6px;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all 0.12s;border:none;background:none; }
+.pos-tab { padding:6px 16px;border-radius:6px;font-family:'Teko',sans-serif;font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all 0.12s;border:none;background:none; }
 .pos-tab:hover { color:var(--text); }
 .pos-tab.active { background:var(--surface3);color:var(--text);border:1px solid var(--border2); }
 .pos-tab.active.skater { background:rgba(111,38,61,0.2);color:var(--burgundy2);border-color:rgba(111,38,61,0.3); }
-.stats-search { background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:7px 12px;font-family:'Outfit',sans-serif;font-size:13px;color:var(--text);outline:none;width:200px;transition:border-color 0.15s; }
+.stats-search { background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:7px 12px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);outline:none;width:200px;transition:border-color 0.15s; }
 .stats-search:focus { border-color:var(--burgundy); }
 .stats-search::placeholder { color:var(--muted); }
 .stats-table-wrap { background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden; }
 .stats-table { width:100%;border-collapse:collapse;font-size:13px; }
 .stats-table thead tr { background:var(--surface2);border-bottom:2px solid var(--border2); }
-.stats-table th { padding:10px 14px;font-family:'DM Mono',monospace;font-size:9px;font-weight:500;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;text-align:left;white-space:nowrap;cursor:pointer;user-select:none;transition:color 0.12s; }
+.stats-table th { padding:10px 14px;font-family:'Teko',sans-serif;font-size:9px;font-weight:500;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;text-align:left;white-space:nowrap;cursor:pointer;user-select:none;transition:color 0.12s; }
 .stats-table th.ra, .stats-table td.ra,
 .stats-table td.st-num { text-align: right; }
 .stats-table th.ca, .stats-table td.ca { text-align: center; }
@@ -39,25 +39,25 @@
 .stats-table tbody tr:hover { background:var(--surface2); }
 .stats-table tbody tr.ht-row { background:rgba(111,38,61,0.04); }
 .stats-table td { padding:10px 14px;white-space:nowrap; }
-.st-rank { font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);width:32px;text-align:center; }
+.st-rank { font-family:'Teko',sans-serif;font-size:11px;color:var(--muted);width:32px;text-align:center; }
 .st-rank.r1 { color:var(--gold);font-weight:700; }
 .st-rank.r2 { color:#9ca3af;font-weight:700; }
 .st-rank.r3 { color:#cd7f32;font-weight:700; }
 .st-name { font-weight:700;color:var(--text); }
-.st-sub { font-size:10px;color:var(--muted);font-family:'DM Mono',monospace;margin-top:1px; }
-.st-pos-badge { display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:4px;font-family:'DM Mono',monospace;font-size:9px;font-weight:700;color:#fff;flex-shrink:0; }
+.st-sub { font-size:10px;color:var(--muted);font-family:'Teko',sans-serif;margin-top:1px; }
+.st-pos-badge { display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:4px;font-family:'Teko',sans-serif;font-size:9px;font-weight:700;color:#fff;flex-shrink:0; }
 .pos-F { background:var(--surface3);color:var(--muted); }
 .pos-D { background:var(--burgundy); }
 .pos-G { background:var(--accent); }
-.st-num { font-family:'DM Mono',monospace;font-size:13px;text-align:right;color:var(--muted); }
+.st-num { font-family:'Teko',sans-serif;font-size:13px;text-align:right;color:var(--muted); }
 .stats-table td { text-align: left; }
 .stats-table td.ra { text-align: right; }
 .stats-table td.ca { text-align: center; }
 .st-num.highlight { color:var(--text);font-weight:600; }
-.st-pts { font-family:'DM Mono',monospace;font-size:14px;font-weight:800;text-align:right;color:var(--burgundy2); }
-.st-box { font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);text-align:center; }
+.st-pts { font-family:'Teko',sans-serif;font-size:14px;font-weight:800;text-align:right;color:var(--burgundy2); }
+.st-box { font-family:'Teko',sans-serif;font-size:10px;color:var(--muted2);text-align:center; }
 .st-ht { text-align:center;font-size:12px; }
-.stats-empty { padding:40px;text-align:center;color:var(--muted);font-size:13px;font-family:'DM Mono',monospace; }
+.stats-empty { padding:40px;text-align:center;color:var(--muted);font-size:13px;font-family:'Teko',sans-serif; }
 @media(max-width:640px) {
   .stats-controls { flex-direction:column;align-items:flex-start; }
   .stats-search { width:100%; }
@@ -114,14 +114,14 @@
     <div class="ht-hall" style="margin-bottom:20px">
       <div class="ht-hall-head">
         <div class="ht-hall-title"><span style="font-size:22px">🎩</span> Hat Trick Hall <span class="ht-count-badge" id="ht-total-badge">0 this season</span></div>
-        <span style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace">+3 bonus pts each</span>
+        <span style="font-size:12px;color:var(--muted);font-family:'Teko',sans-serif">+3 bonus pts each</span>
       </div>
       <div id="ht-hall-rows"></div>
     </div>
     <div class="card">
       <div class="card-head">
         <span class="card-title">All Entries</span>
-        <span style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace" id="bd-count">— entries</span>
+        <span style="font-size:12px;color:var(--muted);font-family:'Teko',sans-serif" id="bd-count">— entries</span>
       </div>
       <div id="full-lb"></div>
     </div>
@@ -157,7 +157,7 @@
 
   <div class="tab-panel" id="tab-goalies">
     <div class="stats-controls">
-      <div style="font-size:12px;color:var(--muted);font-family:'DM Mono',monospace">Scoring: W×3 · L×1 · OTL×1.5 · SO×2 · SV×0.02</div>
+      <div style="font-size:12px;color:var(--muted);font-family:'Teko',sans-serif">Scoring: W×3 · L×1 · OTL×1.5 · SO×2 · SV×0.02</div>
       <input class="stats-search" id="goalie-search" placeholder="Search goalie…" oninput="renderGoalies()">
     </div>
     <div class="stats-table-wrap">
