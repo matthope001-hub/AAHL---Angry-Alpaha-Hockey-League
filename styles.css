@@ -20,6 +20,19 @@
   --r2: 16px;
 }
 
+/* ── LIGHT MODE ── */
+[data-theme="light"] {
+  --bg: #f5f2f3;
+  --surface: #ffffff;
+  --surface2: #f0eaec;
+  --surface3: #e8e0e3;
+  --border: rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.12);
+  --text: #1a0f12;
+  --muted: #6b5a62;
+  --muted2: #8a7a80;
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 
@@ -339,6 +352,27 @@ pre { background: var(--surface2); border: 1px solid var(--border); border-radiu
 .ts-ht  { background: rgba(111,38,61,0.75); color: #ffd0dd; font-weight:700; }
 .t-pts  { color: #e8a0b4; font-weight: 700; font-size: 12px; }
 .page { padding-top: 36px; }
+
+/* ── LIVE INDICATOR ── */
+.ticker-tag.live { background: #c0392b; animation: live-pulse 2s infinite; }
+@keyframes live-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
+.live-dot { display: inline-flex; align-items: center; gap: 6px; }
+.live-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #ff4444; animation: blink 1.2s infinite; box-shadow: 0 0 8px #ff4444; }
+
+/* ── DARK/LIGHT MODE TOGGLE ── */
+.theme-toggle { background: none; border: 1px solid var(--border2); border-radius: 6px; padding: 6px 10px; cursor: pointer; font-size: 16px; transition: all 0.15s; color: var(--muted); }
+.theme-toggle:hover { background: var(--surface3); color: var(--text); }
+
+/* ── STICKY TABLE HEADERS ── */
+.stats-table thead { position: sticky; top: 96px; z-index: 100; }
+.stats-table-wrap { max-height: 70vh; overflow-y: auto; }
+.tp-table th { position: sticky; top: 0; z-index: 10; }
+
+/* ── PLAYER OWNERSHIP BAR ── */
+.popt { position: relative; }
+.ownership-bar { position: absolute; left: 0; top: 0; bottom: 0; background: rgba(35,97,146,0.15); z-index: 0; transition: width 0.3s ease; }
+.popt-content { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; width: 100%; }
+.ownership-pct { font-family: 'Teko', sans-serif; font-size: 11px; color: var(--accent); margin-left: auto; }
 
 /* ── HOME ── */
 .home-topbar { display: flex; align-items: flex-end; justify-content: space-between; padding: 28px 0 20px; gap: 16px; flex-wrap: wrap; border-bottom: 1px solid var(--border); margin-bottom: 24px; }

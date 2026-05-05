@@ -630,3 +630,162 @@ function adminAdd() {
   }
   if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initAlpaca); } else { initAlpaca(); }
 })();
+
+// ══════════ LIVE GAME INDICATOR ══════════
+(function(){
+  function isGameTime() {
+    const now = new Date();
+    const hour = now.getHours();
+    const day = now.getDay();
+    // NHL games typically 7pm-11pm ET, Tue-Sat
+    const isWeekend = day === 0 || day === 6;
+    const isGameDay = isWeekend || (day >= 2 && day <= 5); // Tue-Sat + Sun
+    const isGameHour = hour >= 19 && hour <= 23; // 7pm-11pm
+    return isGameDay && isGameHour;
+  }
+  function updateLiveIndicator() {
+    const tag = document.querySelector('.ticker-tag');
+    if (!tag) return;
+    if (isGameTime()) {
+      tag.classList.add('live');
+      tag.innerHTML = '<span class="live-dot">● LIVE</span>';
+    } else {
+      tag.classList.remove('live');
+      tag.textContent = 'Last Night';
+    }
+  }
+  updateLiveIndicator();
+  setInterval(updateLiveIndicator, 60000); // Check every minute
+})();
+
+// ══════════ PLAYER OWNERSHIP PERCENTAGES ══════════
+function calculateOwnership() {
+  // Mock data - in production, this would come from entries data
+  // Returns object: { 'Player Name': { count: 5, pct: 20.8 } }
+  const ownership = {};
+  const totalEntries = MOCK_BOARD?.length || 24;
+  
+  // Count how many times each player appears across all entries
+  MOCK_BOARD?.forEach(entry => {
+    entry.picks?.forEach(player => {
+      if (!ownership[player]) ownership[player] = { count: 0, pct: 0 };
+      ownership[player].count++;
+    });
+  });
+  
+  // Calculate percentages
+  Object.keys(ownership).forEach(player => {
+    ownership[player].pct = ((ownership[player].count / totalEntries) * 100).toFixed(1);
+  });
+  
+  return ownership;
+}
+
+function renderOwnershipBars() {
+  const ownership = calculateOwnership();
+  document.querySelectorAll('.popt').forEach(popt => {
+    const nameEl = popt.querySelector('.popt-name');
+    if (!nameEl) return;
+    const playerName = nameEl.textContent.trim();
+    const data = ownership[playerName];
+    if (data) {
+      // Add ownership bar
+      let bar = popt.querySelector('.ownership-bar');
+      if (!bar) {
+        bar = document.createElement('div');
+        bar.className = 'ownership-bar';
+        popt.insertBefore(bar, popt.firstChild);
+      }
+      bar.style.width = data.pct + '%';
+      
+      // Add percentage text
+      let pctEl = popt.querySelector('.ownership-pct');
+      if (!pctEl) {
+        pctEl = document.createElement('span');
+        pctEl.className = 'ownership-pct';
+        const content = popt.querySelector('.popt-content') || popt;
+        content.appendChild(pctEl);
+      }
+      pctEl.textContent = data.pct + '%';
+    }
+  });
+}
+
+// ══════════ THEME TOGGLE ══════════
+(function(){
+  function initTheme() {
+    const saved = localStorage.getItem('aahl-theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = saved || (prefersDark ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+    return theme;
+  }
+  
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('aahl-theme', next);
+    return next;
+  }
+  
+  // Add toggle button to header
+  function addThemeToggle() {
+    const nav = document.querySelector('nav');
+    if (!nav || document.getElementById('theme-toggle')) return;
+    const btn = document.createElement('button');
+    btn.id = 'theme-toggle';
+    btn.className = 'theme-toggle';
+    btn.innerHTML = '🌓';
+    btn.title = 'Toggle theme';
+    btn.onclick = () => {
+      const theme = toggleTheme();
+      btn.innerHTML = theme === 'dark' ? '☀️' : '🌙';
+    };
+    nav.appendChild(btn);
+    // Set initial icon
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    btn.innerHTML = current === 'dark' ? '☀️' : '🌙';
+  }
+  
+  initTheme();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addThemeToggle);
+  } else {
+    addThemeToggle();
+  }
+})();
+
+// ══════════ AUTO-REFRESH DURING GAMES ══════════
+(function(){
+  let refreshInterval;
+  function shouldAutoRefresh() {
+    const now = new Date();
+    const hour = now.getHours();
+    return hour >= 19 && hour <= 23; // 7pm-11pm
+  }
+  function startAutoRefresh() {
+    if (refreshInterval) return;
+    console.log('Starting auto-refresh during game hours');
+    refreshInterval = setInterval(() => {
+      if (typeof loadData === 'function') loadData();
+      if (typeof buildTicker === 'function') buildTicker();
+    }, 300000); // Refresh every 5 minutes
+  }
+  function stopAutoRefresh() {
+    if (refreshInterval) {
+      clearInterval(refreshInterval);
+      refreshInterval = null;
+      console.log('Stopped auto-refresh');
+    }
+  }
+  function checkAndUpdate() {
+    if (shouldAutoRefresh()) {
+      startAutoRefresh();
+    } else {
+      stopAutoRefresh();
+    }
+  }
+  checkAndUpdate();
+  setInterval(checkAndUpdate, 60000); // Check every minute
+})();
