@@ -258,15 +258,55 @@ function renderLiveRoster(filter) {
     return;
   }
   
+  // Check if we have nightly stats data
+  const hasNightlyStats = typeof NIGHTLY_STATS !== 'undefined' && NIGHTLY_STATS.length > 0;
+  
   tbody.innerHTML = rows.map((p, i) => {
     const isIR = IR_STATUS[p.name] || false;
+    
+    // Look up player in nightly stats
+    const playerStats = hasNightlyStats ? NIGHTLY_STATS.find(s => s.name === p.name) : null;
+    const pts = playerStats ? nightlyPts(playerStats) : 0;
+    const isHatTrick = playerStats && playerStats.pos !== 'G' && (playerStats.goals || 0) >= 3;
+    
+    // Build stat cells based on position
+    let statCells = '';
+    if (p.pos === 'G') {
+      // Goalie stats: W, L, OTL, SO, SV, PTS
+      const w = playerStats?.wins || 0;
+      const l = playerStats?.losses || 0;
+      const otl = playerStats?.otl || 0;
+      const so = playerStats?.shutouts || 0;
+      const sv = playerStats?.saves || 0;
+      statCells = '<td class="tp-stat-num">'+w+'</td><td class="tp-stat-num">'+l+'</td><td class="tp-stat-num">'+otl+'</td><td class="tp-stat-num">'+so+'</td>'
+        +'<td class="tp-stat-num">'+(sv?sv.toLocaleString():'—')+'</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'
+        +'<td class="tp-stat-num">—</td><td class="tp-ht-flag"></td><td class="tp-pts-num">'+pts+'</td>';
+    } else {
+      // Skater stats: G, A, SOG, PIM (D only), PTS
+      const g = playerStats?.goals || 0;
+      const a = playerStats?.assists || 0;
+      const sog = playerStats?.sog || 0;
+      const pim = playerStats?.pim || 0;
+      statCells = '<td class="tp-stat-num">'+g+'</td><td class="tp-stat-num">'+a+'</td><td class="tp-stat-num">'+sog+'</td><td class="tp-stat-num">—</td>'
+        +'<td class="tp-stat-num">'+(p.pos==='D'?pim:'—')+'</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'
+        +'<td class="tp-stat-num">—</td><td class="tp-ht-flag">'+(isHatTrick?'🎩':'')+'</td><td class="tp-pts-num">'+pts+'</td>';
+    }
+    
     return '<tr'+(isIR?' style="opacity:0.6"':'')+'><td><span class="tp-pos-badge pos-'+p.pos+'">'+p.pos+'</span></td>'
       +'<td><div class="tp-pname">'+p.name+(isIR?' <span class="ir-badge">IR</span>':'')+'</div><div class="tp-box">'+p.box+'</div></td>'
-      +'<td><div class="tp-nhl">—</div></td><td class="tp-box">'+(i+1)+'</td>'
-      +'<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'
-      +'<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'
-      +'<td class="tp-stat-num">—</td><td class="tp-ht-flag"></td><td class="tp-pts-num">—</td></tr>';
+      +'<td><div class="tp-nhl">'+(playerStats?.team || '—')+'</div></td><td class="tp-box">'+(i+1)+'</td>'
+      +statCells+'</tr>';
   }).join('');
+  
+  // Update footer message
+  const tfoot = document.getElementById('tp-tfoot');
+  if (tfoot) {
+    if (!hasNightlyStats) {
+      tfoot.innerHTML = '<tr><td colspan="15" style="padding:12px;text-align:center;color:var(--muted);font-size:12px">Stats available once season begins</td></tr>';
+    } else {
+      tfoot.innerHTML = '<tr><td colspan="15" style="padding:12px;text-align:center;color:var(--muted);font-size:12px">Showing current season stats · Click player for details</td></tr>';
+    }
+  }
 }
 
 function filterLiveRoster(pos, btn) {

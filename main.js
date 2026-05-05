@@ -475,15 +475,51 @@ function renderRoster(picks, filter) {
   const rows = filter==='ALL' ? picks : picks.filter(p=>p.pos===filter);
   const ownerName = document.getElementById('tp-owner').textContent;
   const htMap = {}; HAT_TRICKS.forEach(h=>{ if(h.owner===ownerName) htMap[h.player]=(htMap[h.player]||0)+h.count; });
+  
+  // Check if we have nightly stats
+  const hasNightlyStats = typeof NIGHTLY_STATS !== 'undefined' && NIGHTLY_STATS.length > 0;
+  
   document.getElementById('tp-tbody').innerHTML = rows.map(p => {
-    const pts = rosterPts(p), isHT = p.pos!=='G'&&p.g>=3, htCell = htMap[p.name]?'🎩'.repeat(Math.min(htMap[p.name],3)):'';
+    // Look up current stats from NIGHTLY_STATS if available
+    const liveStats = hasNightlyStats ? NIGHTLY_STATS.find(s => s.name === (p.name || p.player)) : null;
+    
+    // Use live stats if available, otherwise fall back to hardcoded data
+    const g = liveStats?.goals ?? p.g ?? 0;
+    const a = liveStats?.assists ?? p.a ?? 0;
+    const sog = liveStats?.sog ?? p.sog ?? 0;
+    const pim = liveStats?.pim ?? p.pim ?? 0;
+    const w = liveStats?.wins ?? p.w ?? 0;
+    const l = liveStats?.losses ?? p.l ?? 0;
+    const otl = liveStats?.otl ?? p.otl ?? 0;
+    const so = liveStats?.shutouts ?? p.so ?? 0;
+    const sv = liveStats?.saves ?? p.sv ?? 0;
+    const nhlTeam = liveStats?.team ?? p.nhl ?? p.team ?? '—';
+    
+    // Calculate points using live stats or fallback
+    const statsObj = liveStats || { ...p, pos: p.pos, goals: g, assists: a, sog, pim, wins: w, losses: l, otl, shutouts: so, saves: sv };
+    const pts = liveStats ? nightlyPts(liveStats) : rosterPts(p);
+    const isHT = p.pos!=='G' && g >= 3;
+    const htCell = htMap[p.name] || htMap[p.player] ? '🎩'.repeat(Math.min(htMap[p.name]||htMap[p.player]||0,3)) : '';
+    
     const sc = p.pos==='G'
-      ? `<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">${p.w}</td><td class="tp-stat-num">${p.l}</td><td class="tp-stat-num">${p.otl}</td><td class="tp-stat-num">${p.so}</td><td class="tp-stat-num">${p.sv.toLocaleString()}</td>`
-      : `<td class="tp-stat-num">${p.g}</td><td class="tp-stat-num">${p.a}</td><td class="tp-stat-num">${p.sog}</td><td class="tp-stat-num">${p.pos==='D'?p.pim:'—'}</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>`;
-    const nameCell = `<div class="tp-pname">${p.name}${isHT?' 🎩':''}${irBadge(p.name)}</div><div class="tp-box">${p.box}</div>`;
-    return `<tr style="${isHT?'background:rgba(111,38,61,0.06)':''}${IR_STATUS[p.name]?';opacity:0.75':''}"><td><span class="tp-pos-badge pos-${p.pos}">${p.pos}</span></td><td>${nameCell}</td><td><div class="tp-nhl">${p.nhl}</div></td><td class="tp-box">${p.box.replace(/Forwards |Defense |Goalie /,'').padStart(2,'0')}</td>${sc}<td class="tp-ht-flag">${htCell}</td><td class="tp-pts-num">${pts}</td></tr>`;
+      ? `<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">${w}</td><td class="tp-stat-num">${l}</td><td class="tp-stat-num">${otl}</td><td class="tp-stat-num">${so}</td><td class="tp-stat-num">${sv.toLocaleString()}</td>`
+      : `<td class="tp-stat-num">${g}</td><td class="tp-stat-num">${a}</td><td class="tp-stat-num">${sog}</td><td class="tp-stat-num">${p.pos==='D'?pim:'—'}</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>`;
+    const nameCell = `<div class="tp-pname">${p.name || p.player}${isHT?' 🎩':''}${irBadge(p.name || p.player)}</div><div class="tp-box">${p.box}</div>`;
+    return `<tr style="${isHT?'background:rgba(111,38,61,0.06)':''}${IR_STATUS[p.name || p.player]?';opacity:0.75':''}"><td><span class="tp-pos-badge pos-${p.pos}">${p.pos}</span></td><td>${nameCell}</td><td><div class="tp-nhl">${nhlTeam}</div></td><td class="tp-box">${p.box.replace(/Forwards |Defense |Goalie /,'').padStart(2,'0')}</td>${sc}<td class="tp-ht-flag">${htCell}</td><td class="tp-pts-num">${pts}</td></tr>`;
   }).join('');
-  const totalPts=roundPts(rows.reduce((s,p)=>s+rosterPts(p),0)), totalG=rows.reduce((s,p)=>s+(p.g||0),0), totalA=rows.reduce((s,p)=>s+(p.a||0),0), totalSOG=rows.reduce((s,p)=>s+(p.sog||0),0), totalPIM=rows.reduce((s,p)=>s+(p.pim||0),0), totalSV=rows.reduce((s,p)=>s+(p.sv||0),0), totalW=rows.reduce((s,p)=>s+(p.w||0),0);
+  
+  // Calculate totals using live stats where available
+  const totalPts = roundPts(rows.reduce((s,p) => {
+    const liveStats = hasNightlyStats ? NIGHTLY_STATS.find(s => s.name === (p.name || p.player)) : null;
+    return s + (liveStats ? nightlyPts(liveStats) : rosterPts(p));
+  }, 0));
+  const totalG = rows.reduce((s,p) => s + ((hasNightlyStats ? NIGHTLY_STATS.find(s => s.name === (p.name || p.player))?.goals : null) ?? p.g ?? 0), 0);
+  const totalA = rows.reduce((s,p) => s + ((hasNightlyStats ? NIGHTLY_STATS.find(s => s.name === (p.name || p.player))?.assists : null) ?? p.a ?? 0), 0);
+  const totalSOG = rows.reduce((s,p) => s + ((hasNightlyStats ? NIGHTLY_STATS.find(s => s.name === (p.name || p.player))?.sog : null) ?? p.sog ?? 0), 0);
+  const totalPIM = rows.reduce((s,p) => s + ((hasNightlyStats ? NIGHTLY_STATS.find(s => s.name === (p.name || p.player))?.pim : null) ?? p.pim ?? 0), 0);
+  const totalSV = rows.reduce((s,p) => s + ((hasNightlyStats ? NIGHTLY_STATS.find(s => s.name === (p.name || p.player))?.saves : null) ?? p.sv ?? 0), 0);
+  const totalW = rows.reduce((s,p) => s + ((hasNightlyStats ? NIGHTLY_STATS.find(s => s.name === (p.name || p.player))?.wins : null) ?? p.w ?? 0), 0);
+  
   document.getElementById('tp-tfoot').innerHTML = `<tr class="tp-footer"><td></td><td style="font-size:13px;color:var(--muted)">${rows.length} players</td><td></td><td></td><td class="tp-stat-num">${totalG}</td><td class="tp-stat-num">${totalA}</td><td class="tp-stat-num">${totalSOG}</td><td class="tp-stat-num">${totalPIM}</td><td class="tp-stat-num">${totalW}W</td><td></td><td></td><td></td><td class="tp-stat-num">${totalSV.toLocaleString()}</td><td></td><td class="tp-pts-num">${totalPts}</td></tr>`;
 }
 
