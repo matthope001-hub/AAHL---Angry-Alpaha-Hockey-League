@@ -494,20 +494,9 @@ function openPlayerModal(playerName, team, pos, boxId, radioEl) {
   document.getElementById('pm-name').textContent = playerName;
   document.getElementById('pm-nhl').textContent = team + ' · ' + (s?.pos || pos);
   const badge = document.getElementById('pm-pos-badge'); badge.textContent = pos; badge.className = `pm-pos-badge pm-pos-${pos}`;
-  // Show headshot if available
+  // Hide headshot - NHL images not publicly accessible
   const headshotEl = document.getElementById('pm-headshot');
-  const headshotUrl = getPlayerHeadshotUrl(playerName);
-  console.log('Headshot debug:', playerName, 'URL:', headshotUrl, 'Map size:', Object.keys(PLAYER_ID_MAP).length);
-  if (headshotUrl && headshotEl) {
-    headshotEl.src = headshotUrl;
-    headshotEl.style.display = 'block';
-    headshotEl.onerror = () => { 
-      console.log('Headshot failed to load:', headshotUrl);
-      headshotEl.style.display = 'none'; 
-    };
-  } else if (headshotEl) {
-    headshotEl.style.display = 'none';
-  }
+  if (headshotEl) headshotEl.style.display = 'none';
   const statsGrid = document.getElementById('pm-stats-grid');
   if (!s) { statsGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px;padding:8px 0">No prior season data available</div>`; document.getElementById('pm-pts-breakdown').innerHTML=''; document.getElementById('pm-total-pts').textContent='—'; }
   else if (pos==='G') {
