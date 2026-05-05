@@ -525,6 +525,9 @@ function populatePlayerIDs() {
     'EDM','FLA','LA','MIN','MTL','NJ','NSH','NYI','NYR','OTT',
     'PHI','PIT','SEA','STL','TB','TOR','UTA','VAN','VGK','WSH','WPG'];
   
+  // Debug: Store sample API names
+  let apiNameSamples = [];
+  
   allTeams.forEach(abbrev => {
     try {
       const url = `https://api-web.nhle.com/v1/roster/${abbrev}/current`;
@@ -539,10 +542,26 @@ function populatePlayerIDs() {
             nameToId[normalizeName(fullName)] = p.id;
             // Store last name only for partial matching
             nameToId[p.lastName.default.toLowerCase()] = p.id;
+            // Debug: collect samples
+            if (apiNameSamples.length < 5 && p.lastName.default === 'Kucherov') {
+              apiNameSamples.push(fullName + ' (ID: ' + p.id + ')');
+            }
           });
       }
     } catch(e) { /* skip */ }
   });
+  
+  // Debug log
+  console.log('API loaded ' + Object.keys(nameToId).length + ' name mappings');
+  console.log('Sample API names: ' + apiNameSamples.join(', '));
+  console.log('Looking for Kucherov: ' + (nameToId['Nikita Kucherov'] || 'NOT FOUND'));
+  
+  // Debug: Log first few sheet names
+  let sheetNameSamples = [];
+  for (let i = 1; i < Math.min(10, data.length); i++) {
+    if (data[i][0]) sheetNameSamples.push(data[i][0] + ' -> ' + normalizeName(data[i][0]));
+  }
+  console.log('Sheet name samples: ' + sheetNameSamples.join('; '));
   
   // Update PlayerID column
   for (let i = 1; i < data.length; i++) {
@@ -552,6 +571,13 @@ function populatePlayerIDs() {
     
     const normalizedName = normalizeName(name);
     let playerId = nameToId[name] || nameToId[normalizedName];
+    
+    // Debug logging for first few missing
+    if (!playerId && missing.length < 3) {
+      console.log('DEBUG: Name=' + name + ', Normalized=' + normalizedName + 
+                  ', LastName=' + name.split(' ').pop().toLowerCase() +
+                  ', HasKucherov=' + (nameToId['Nikita Kucherov'] ? 'YES' : 'NO'));
+    }
     
     // Try partial match if exact fails
     if (!playerId) {
