@@ -152,10 +152,10 @@ async function fetchIRStatuses() {
 function getPlayerHeadshotUrl(playerName) {
   const playerId = PLAYER_ID_MAP[playerName];
   if (!playerId) return null;
-  // Try multiple known CDN formats — NHL changes these periodically
-  return `https://assets.nhle.com/mugs/nhl/00/00/${playerId}_headshot_current.png`;
+  return `https://assets.nhle.com/mugs/nhl/00/00/${playerId}.png`;
 }
 
+// Fetch real headshot URL from NHL API player landing page
 async function fetchHeadshotFromAPI(playerName) {
   const playerId = PLAYER_ID_MAP[playerName];
   if (!playerId) return null;
@@ -163,6 +163,7 @@ async function fetchHeadshotFromAPI(playerName) {
     const res = await fetch(`https://api-web.nhle.com/v1/player/${playerId}/landing`);
     if (!res.ok) return null;
     const data = await res.json();
+    // API returns headshot field with the actual CDN URL
     return data.headshot || null;
   } catch(e) { return null; }
 }
@@ -432,29 +433,24 @@ function openPlayerModal(playerName, team, pos, boxId, radioEl) {
       pmHead.insertBefore(hsWrap, pmHead.firstChild);
     }
     const ini = initials(playerName);
-    // Show initials immediately, replace with photo when loaded
     hsWrap.innerHTML = `<span class="pm-headshot-placeholder">${ini}</span>`;
-    // Try CDN first (fast), fall back to API fetch
-    const cdnUrl = getPlayerHeadshotUrl(playerName);
-    if (cdnUrl) {
-      const img = new Image();
-      img.onload = () => {
-        hsWrap.innerHTML = `<img class="pm-headshot" src="${cdnUrl}" alt="${playerName}">`;
-      };
-      img.onerror = async () => {
-        // CDN failed — try NHL API landing endpoint for the real URL
-        const apiUrl = await fetchHeadshotFromAPI(playerName);
-        if (apiUrl) {
-          hsWrap.innerHTML = `<img class="pm-headshot" src="${apiUrl}" alt="${playerName}" onerror="this.parentNode.innerHTML='<span class=pm-headshot-placeholder>${ini}</span>'">`;
+    // Always fetch from API — it returns the actual current headshot URL
+    fetchHeadshotFromAPI(playerName).then(apiUrl => {
+      if (apiUrl) {
+        const img = new Image();
+        img.onload = () => { hsWrap.innerHTML = `<img class="pm-headshot" src="${apiUrl}" alt="${playerName}">`; };
+        img.onerror = () => { /* keep initials */ };
+        img.src = apiUrl;
+      } else {
+        // API failed or no player ID — try CDN directly
+        const cdnUrl = getPlayerHeadshotUrl(playerName);
+        if (cdnUrl) {
+          const img = new Image();
+          img.onload = () => { hsWrap.innerHTML = `<img class="pm-headshot" src="${cdnUrl}" alt="${playerName}">`; };
+          img.src = cdnUrl;
         }
-      };
-      img.src = cdnUrl;
-    } else {
-      // No player ID — try API anyway
-      fetchHeadshotFromAPI(playerName).then(apiUrl => {
-        if (apiUrl) hsWrap.innerHTML = `<img class="pm-headshot" src="${apiUrl}" alt="${playerName}" onerror="this.parentNode.innerHTML='<span class=pm-headshot-placeholder>${ini}</span>'">`;
-      });
-    }
+      }
+    });
   }
   const statsGrid = document.getElementById('pm-stats-grid');
   if (!s) { statsGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px;padding:8px 0">No prior season data available</div>`; document.getElementById('pm-pts-breakdown').innerHTML=''; document.getElementById('pm-total-pts').textContent='—'; }
