@@ -211,6 +211,15 @@
 
 <script src="main.js?v=5"></script>
 <script>
+
+function calcSkaterPts(p) {
+  const ht = (p.hatTricks||0) * 3;
+  const pim = p.pos==='D' ? (p.pim||0)*0.25 : 0;
+  return Math.round(((p.goals||0) + (p.assists||0) + (p.sog||0)*0.11 + ht + pim) * 100) / 100;
+}
+function calcGoaliePts(p) {
+  return Math.round(((p.wins||0)*3 + (p.losses||0)*1 + (p.otl||0)*1.5 + (p.shutouts||0)*2 + (p.saves||0)*0.02) * 100) / 100;
+}
 let ALL_PLAYERS = [], skaterSort = {col:'pts',dir:-1}, goalieSort = {col:'pts',dir:-1}, skaterPos = 'ALL';
 
 function parsePlayersCSV(csv) {
@@ -222,11 +231,12 @@ function parsePlayersCSV(csv) {
       else { cur += ch; }
     }
     cols.push(cur.trim());
+    // Cols: A=PlayerName,B=NHLTeam,C=Position,D=BoxNumber,E=BoxLabel,F=Goals,G=Assists,H=SOG,I=PIM,J=Wins,K=Losses,L=OTLosses,M=Shutouts,N=Saves,O=HatTricks,P=OnIR,Q=PlayerID
     return { name:(cols[0]||'').trim(), team:(cols[1]||'').trim(), pos:(cols[2]||'').trim(),
-      box:parseInt(cols[3])||0, goals:parseInt(cols[4])||0, assists:parseInt(cols[5])||0,
-      sog:parseInt(cols[6])||0, pim:parseInt(cols[7])||0, wins:parseInt(cols[8])||0,
-      losses:parseInt(cols[9])||0, otl:parseInt(cols[10])||0, shutouts:parseInt(cols[11])||0,
-      saves:parseInt(cols[12])||0, hatTricks:parseInt(cols[13])||0, pts:parseFloat(cols[14])||0 };
+      box:parseInt(cols[3])||0, goals:parseInt(cols[5])||0, assists:parseInt(cols[6])||0,
+      sog:parseInt(cols[7])||0, pim:parseInt(cols[8])||0, wins:parseInt(cols[9])||0,
+      losses:parseInt(cols[10])||0, otl:parseInt(cols[11])||0, shutouts:parseInt(cols[12])||0,
+      saves:parseInt(cols[13])||0, hatTricks:parseInt(cols[14])||0 };
   }).filter(p => p.name && p.pos);
 }
 
@@ -282,6 +292,7 @@ function renderSkaters() {
   let data = ALL_PLAYERS.filter(p => p.pos==='F'||p.pos==='D');
   if (skaterPos !== 'ALL') data = data.filter(p => p.pos === skaterPos);
   if (search) data = data.filter(p => p.name.toLowerCase().includes(search)||p.team.toLowerCase().includes(search));
+  data.forEach(p => p.pts = calcSkaterPts(p));
   data.sort((a,b) => {
     const av = typeof a[skaterSort.col]==='string'?a[skaterSort.col]:(a[skaterSort.col]||0);
     const bv = typeof b[skaterSort.col]==='string'?b[skaterSort.col]:(b[skaterSort.col]||0);
@@ -300,7 +311,7 @@ function renderSkaters() {
       +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:var(--muted)" class="hide-mob">'+p.sog+'</td>'
       +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:var(--muted)" class="hide-mob">'+(p.pos==='D'?p.pim:'—')+'</td>'
       +'<td style="text-align:center;font-size:12px">'+(p.hatTricks>0?'🎩'.repeat(Math.min(p.hatTricks,3)):'')+'</td>'
-      +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:14px;font-weight:800;color:var(--burgundy2)">'+p.pts+'</td></tr>';
+      +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:14px;font-weight:800;color:var(--burgundy2)">'+calcSkaterPts(p)+'</td></tr>';
   }).join('');
 }
 
@@ -327,6 +338,7 @@ function renderGoalies() {
   const search = (document.getElementById('goalie-search')?.value||'').toLowerCase();
   let data = ALL_PLAYERS.filter(p => p.pos==='G');
   if (search) data = data.filter(p => p.name.toLowerCase().includes(search)||p.team.toLowerCase().includes(search));
+  data.forEach(p => p.pts = calcGoaliePts(p));
   data.sort((a,b) => {
     const av = typeof a[goalieSort.col]==='string'?a[goalieSort.col]:(a[goalieSort.col]||0);
     const bv = typeof b[goalieSort.col]==='string'?b[goalieSort.col]:(b[goalieSort.col]||0);
@@ -344,7 +356,7 @@ function renderGoalies() {
       +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:var(--muted)" class="hide-mob">'+p.otl+'</td>'
       +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:var(--muted)" class="hide-mob">'+p.shutouts+'</td>'
       +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:'+(p.saves>0?'var(--text)':'var(--muted)')+(p.saves>0?';font-weight:600':'')+'">'+(p.saves?p.saves.toLocaleString():0)+'</td>'
-      +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:14px;font-weight:800;color:var(--burgundy2)">'+p.pts+'</td></tr>';
+      +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:14px;font-weight:800;color:var(--burgundy2)">'+calcGoaliePts(p)+'</td></tr>';
   }).join('');
 }
 
