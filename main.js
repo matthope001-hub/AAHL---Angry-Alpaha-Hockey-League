@@ -143,6 +143,8 @@ async function fetchIRStatuses() {
         if (playerId) PLAYER_ID_MAP[name] = playerId;
         const team = (cols[1] || '').trim();
         if (team) PLAYER_TEAM_MAP[name] = team;
+        const headshot = (cols[17] || '').trim();
+        if (headshot) PLAYER_HEADSHOT_MAP[name] = headshot;
       }
     });
     console.log('Loaded', Object.keys(PLAYER_ID_MAP).length, 'player IDs');
@@ -152,7 +154,8 @@ async function fetchIRStatuses() {
 }
 
 // NHL headshot CDN — season/team/id format
-const PLAYER_TEAM_MAP = {}; // populated by fetchIRStatuses → cols[1]
+const PLAYER_TEAM_MAP = {};    // populated via fetchIRStatuses → cols[1]
+const PLAYER_HEADSHOT_MAP = {}; // populated via fetchIRStatuses → cols[17] (NHL API headshot URL)
 const SEASON = '20252026';
 
 // Short → full 3-letter NHL CDN abbreviations
@@ -167,6 +170,10 @@ const TEAM_ABBREV = {
 };
 
 function getPlayerHeadshotUrls(playerName) {
+  // 1. Direct URL from roster API (most reliable — stored in col R of Players sheet)
+  const directUrl = PLAYER_HEADSHOT_MAP[playerName];
+  if (directUrl) return [directUrl];
+  // 2. CDN URL constructed from player ID + team
   const playerId = PLAYER_ID_MAP[playerName];
   if (!playerId) return [];
   const shortTeam = PLAYER_TEAM_MAP[playerName] || '';
