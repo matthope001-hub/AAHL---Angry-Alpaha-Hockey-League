@@ -201,14 +201,16 @@ const BOXES = [
 let LIVE_BOARD = [];
 
 function parseStandingsCSV(csv) {
-  return csv.trim().split('\n').slice(1).map(line => {
-    const cols = line.split(',');
+  // Cols: Rank,EntryID,TeamName,OwnerName,Email,TotalPts,PrevRank,RankChange,...
+  return csv.trim().split("\n").slice(1).map(line => {
+    const cols = line.split(",");
     return {
-      rank:    parseInt(cols[0]) || 0,
-      name:    (cols[1] || '').trim(),
-      team:    (cols[2] || '').trim(),
-      pts:     parseFloat(cols[3]) || 0,
-      trend:   (cols[4] || '=').trim(),
+      rank:  parseInt(cols[0])    || 0,
+      entry: (cols[1] || "").trim(),
+      name:  (cols[2] || "").trim(),  // TeamName
+      owner: (cols[3] || "").trim(),  // OwnerName
+      pts:   parseFloat(cols[5]) || 0, // TotalPts
+      trend: (cols[7] || "=").trim(),  // RankChange
     };
   }).filter(e => e.name);
 }
@@ -331,11 +333,11 @@ function buildTicker() {
 // ══════════ LEADERBOARD ══════════
 function lbRowHTML(e, i) {
   const cls = i===0?'p1':i===1?'p2':i===2?'p3':'';
-  const t = e.trend || '=';
-  const tCls = t.startsWith('+')?'trend-up':t.startsWith('-')?'trend-dn':'trend-eq';
-  const tLbl = t.startsWith('+')?'▲'+t.slice(1):t.startsWith('-')?'▼'+t.slice(1):'—';
-  return `<div class="lb-row ${cls}"><div class="lb-pos">${i+1}</div><div class="lb-av">${initials(e.name)}</div><div class="lb-info"><div class="lb-name">${e.name}</div><div class="lb-team">${e.team}</div></div><span class="lb-trend ${tCls}">${tLbl}</span><div class="lb-pts">${e.pts.toLocaleString()}</div></div>`;
-}
+  const t = e.trend;
+  const tv = parseInt(t) || 0;
+  const tCls = tv>0?'trend-up':tv<0?'trend-dn':'trend-eq';
+  const tLbl = tv>0?'▲'+tv:tv<0?'▼'+Math.abs(tv):'—';
+  return `<div class="lb-row ${cls}"><div class="lb-pos">${i+1}</div><div class="lb-av">${initials(e.name)}</div><div class="lb-info"><div class="lb-name">${e.name}</div></div><span class="lb-trend ${tCls}">${tLbl}</span><div class="lb-pts">${e.pts.toLocaleString()}</div></div>`;
 
 function buildBoards() {
   const fl = document.getElementById('full-lb');
@@ -386,8 +388,8 @@ function openTeamPanel(entryName) {
   const entry = LIVE_BOARD.find(e => e.name === entryName);
   if (!entry) return;
   document.getElementById('tp-av').textContent = initials(entryName);
-  document.getElementById('tp-tname').textContent = entry.team;
-  document.getElementById('tp-owner').textContent = entryName;
+  document.getElementById('tp-tname').textContent = entry.name;
+  document.getElementById('tp-owner').textContent = entry.owner || '';
   document.getElementById('tp-meta').innerHTML =
     `<div class="tp-stat-pill"><div class="spv burg">${entry.pts.toLocaleString()}</div><div class="spl">Pool Pts</div></div>` +
     `<div class="tp-stat-pill"><div class="spv">${entry.rank || '—'}</div><div class="spl">Rank</div></div>`;
