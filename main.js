@@ -338,7 +338,7 @@ function lbRowHTML(e, i) {
   const tCls = tv>0?'trend-up':tv<0?'trend-dn':'trend-eq';
   const tLbl = tv>0?'▲'+tv:tv<0?'▼'+Math.abs(tv):'—';
   return `<div class="lb-row ${cls}"><div class="lb-pos">${i+1}</div><div class="lb-av">${initials(e.name)}</div><div class="lb-info"><div class="lb-name">${e.name}</div></div><span class="lb-trend ${tCls}">${tLbl}</span><div class="lb-pts">${e.pts.toLocaleString()}</div></div>`;
-
+}
 function buildBoards() {
   const fl = document.getElementById('full-lb');
   if (!fl) return;
