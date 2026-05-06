@@ -439,26 +439,44 @@ function openPlayerModal(playerName, team, pos, boxId, radioEl) {
   document.getElementById('pm-name').textContent = playerName;
   document.getElementById('pm-nhl').textContent = team + ' · ' + (s?.pos || pos);
   const badge = document.getElementById('pm-pos-badge'); badge.textContent = pos; badge.className = `pm-pos-badge pm-pos-${pos}`;
-  // ── Headshot — try CDN URLs in sequence, show initials until one loads ──
-  const pmHead = document.querySelector('.pm-head');
-  if (pmHead) {
-    let hsWrap = pmHead.querySelector('.pm-headshot-wrap');
-    if (!hsWrap) {
-      hsWrap = document.createElement('div');
-      hsWrap.className = 'pm-headshot-wrap';
-      pmHead.insertBefore(hsWrap, pmHead.firstChild);
+  // ── Headshot — use existing #pm-headshot img tag if present, else inject ──
+  const urls = getPlayerHeadshotUrls(playerName);
+  const existingImg = document.getElementById('pm-headshot');
+  if (existingImg) {
+    existingImg.style.display = 'none';
+    if (urls.length) {
+      function tryUrl(i) {
+        if (i >= urls.length) return;
+        const img = new Image();
+        img.onload = () => { existingImg.src = urls[i]; existingImg.style.display = 'block'; };
+        img.onerror = () => tryUrl(i + 1);
+        img.src = urls[i];
+      }
+      tryUrl(0);
     }
-    const ini = initials(playerName);
-    hsWrap.innerHTML = `<span class="pm-headshot-placeholder">${ini}</span>`;
-    const urls = getPlayerHeadshotUrls(playerName);
-    function tryUrl(i) {
-      if (i >= urls.length) return; // all failed, keep initials
-      const img = new Image();
-      img.onload = () => { hsWrap.innerHTML = `<img class="pm-headshot" src="${urls[i]}" alt="${playerName}">`; };
-      img.onerror = () => tryUrl(i + 1);
-      img.src = urls[i];
+  } else {
+    // No static img tag — inject dynamically
+    const pmHead = document.querySelector('.pm-head');
+    if (pmHead) {
+      let hsWrap = pmHead.querySelector('.pm-headshot-wrap');
+      if (!hsWrap) {
+        hsWrap = document.createElement('div');
+        hsWrap.className = 'pm-headshot-wrap';
+        pmHead.insertBefore(hsWrap, pmHead.firstChild);
+      }
+      const ini = initials(playerName);
+      hsWrap.innerHTML = `<span class="pm-headshot-placeholder">${ini}</span>`;
+      if (urls.length) {
+        function tryUrl2(i) {
+          if (i >= urls.length) return;
+          const img = new Image();
+          img.onload = () => { hsWrap.innerHTML = `<img class="pm-headshot" src="${urls[i]}" alt="${playerName}">`; };
+          img.onerror = () => tryUrl2(i + 1);
+          img.src = urls[i];
+        }
+        tryUrl2(0);
+      }
     }
-    tryUrl(0);
   }
   const statsGrid = document.getElementById('pm-stats-grid');
   if (!s) { statsGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px;padding:8px 0">No prior season data available</div>`; document.getElementById('pm-pts-breakdown').innerHTML=''; document.getElementById('pm-total-pts').textContent='—'; }
@@ -497,7 +515,8 @@ function buildDraft() {
     const players = box.players.map(p => {
       const rid = `radio-${box.id}-${p.name.replace(/\W/g,'')}`;
       const displayPts = calcPrevPts(PREV_STATS[p.name]) || p.pts;
-      return `<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px"><label class="popt" id="opt-${box.id}-${p.name.replace(/\W/g,'')}" style="flex:1;margin-bottom:0"><input type="radio" name="b${box.id}" value="${p.name}" id="${rid}" onchange="pick(${box.id},'${p.name}',this)"><div style="flex:1"><div class="popt-name">${p.name}</div><div class="popt-team">${p.team}</div></div><div style="text-align:right"><div class="popt-pts">${displayPts}</div><div class="popt-pts-label">prev pts</div></div></label><button class="player-info-btn" title="View ${p.name} stats" onclick="event.stopPropagation();openPlayerModal('${p.name.replace(/'/g,"\\'")}','${p.team}','${box.type}',${box.id},document.getElementById('${rid}'))">ℹ</button></div>`;
+      const irTag = IR_STATUS[p.name] ? ' <span class="ir-badge" style="font-size:9px;padding:1px 5px;border-radius:3px;background:#c0392b;color:#fff;margin-left:4px">IR</span>' : '';
+      return `<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px"><label class="popt" id="opt-${box.id}-${p.name.replace(/\W/g,'')}" style="flex:1;margin-bottom:0${IR_STATUS[p.name]?';opacity:0.55':''}"><input type="radio" name="b${box.id}" value="${p.name}" id="${rid}" onchange="pick(${box.id},'${p.name}',this)"><div style="flex:1"><div class="popt-name">${p.name}${irTag}</div><div class="popt-team">${p.team}</div></div><div style="text-align:right"><div class="popt-pts">${displayPts}</div><div class="popt-pts-label">prev pts</div></div></label><button class="player-info-btn" title="View ${p.name} stats" onclick="event.stopPropagation();openPlayerModal('${p.name.replace(/'/g,"\\'")}','${p.team}','${box.type}',${box.id},document.getElementById('${rid}'))">ℹ</button></div>`;
     }).join('');
     return `<div class="box-wrap" id="bx-${box.id}"><div class="box-hd"><div><div class="box-type">${typeLabel}</div><div class="box-name">${box.label}</div></div><div class="box-check" id="chk-${box.id}">✓</div></div><div class="player-opts">${players}</div></div>`;
   }).join('');
