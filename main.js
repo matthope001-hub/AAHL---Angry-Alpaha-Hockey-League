@@ -133,7 +133,7 @@ async function fetchIRStatuses() {
     const res = await fetch(PLAYERS_CSV);
     const text = await res.text();
     const lines = text.trim().split('\n');
-    lines.slice(2).forEach(line => {  // skip 2 header rows (row1=blank/labels, row2=col names)
+    lines.slice(1).forEach(line => {
       const cols = line.split(',');
       const name = (cols[0] || '').trim();
       const onIR = (cols[15] || '').trim().toUpperCase() === 'TRUE';
