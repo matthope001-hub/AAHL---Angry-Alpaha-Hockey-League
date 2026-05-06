@@ -223,7 +223,7 @@ function calcGoaliePts(p) {
 let ALL_PLAYERS = [], skaterSort = {col:'pts',dir:-1}, goalieSort = {col:'pts',dir:-1}, skaterPos = 'ALL';
 
 function parsePlayersCSV(csv) {
-  return csv.trim().split('\n').slice(2).map(line => {  // skip 2 header rows
+  return csv.trim().split('\n').slice(1).map(line => {
     const cols = []; let cur = '', inQ = false;
     for (const ch of line) {
       if (ch === '"') { inQ = !inQ; }
