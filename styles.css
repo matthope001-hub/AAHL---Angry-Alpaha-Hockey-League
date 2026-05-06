@@ -121,23 +121,6 @@ nav { display: flex; gap: 2px; }
 .trend-eq { background: var(--surface3); color: var(--muted); }
 .lb-pts { font-size: 18px; font-weight: 800; font-family: 'Teko', sans-serif; color: var(--text); min-width: 52px; text-align: right; }
 
-/* ── HAT TRICK HALL ── */
-.ht-hall { background: var(--surface); border: 1px solid var(--border2); border-top: 3px solid var(--burgundy); border-radius: var(--r2); overflow: hidden; margin-bottom: 24px; }
-.ht-hall-head { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-.ht-hall-title { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 800; color: var(--text); }
-.ht-count-badge { font-family: 'Teko', sans-serif; font-size: 11px; background: rgba(111,38,61,0.2); color: var(--burgundy2); border: 1px solid rgba(111,38,61,0.25); padding: 2px 9px; border-radius: 100px; }
-.ht-row { display: flex; align-items: center; gap: 14px; padding: 13px 20px; border-bottom: 1px solid var(--border); transition: background 0.15s; }
-.ht-row:last-child { border-bottom: none; }
-.ht-row:hover { background: var(--surface2); }
-.ht-num { font-family: 'Teko', sans-serif; font-size: 11px; color: var(--muted); width: 20px; flex-shrink: 0; text-align: center; }
-.ht-av { width: 36px; height: 36px; border-radius: 50%; background: var(--surface3); border: 1px solid rgba(111,38,61,0.35); display: grid; place-items: center; font-size: 13px; font-weight: 700; font-family: 'Teko', sans-serif; color: var(--burgundy2); flex-shrink: 0; }
-.ht-info { flex: 1; min-width: 0; }
-.ht-player { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ht-meta { font-size: 11px; color: var(--muted); margin-top: 2px; font-family: 'Teko', sans-serif; }
-.ht-hats { display: flex; gap: 2px; flex-shrink: 0; align-items: center; }
-.ht-hat-icon { font-size: 15px; line-height: 1; }
-.ht-entry-owner { font-size: 11px; color: var(--accent); font-family: 'Teko', sans-serif; margin-top: 1px; }
-.ht-goals-col { font-family: 'Teko', sans-serif; font-size: 15px; font-weight: 700; color: var(--burgundy2); min-width: 40px; text-align: right; }
 .player-info-btn { flex-shrink: 0; width: 44px; height: 44px; background: var(--surface3); border: 1px solid var(--border2); border-radius: 50%; color: var(--accent); font-size: 16px; cursor: pointer; display: grid; place-items: center; transition: all 0.15s; line-height: 1; }
 .player-info-btn:hover { background: rgba(35,97,146,0.2); border-color: var(--accent); }
 
@@ -297,7 +280,6 @@ pre { background: var(--surface2); border: 1px solid var(--border); border-radiu
 .pm-total-label { font-size: 13px; color: var(--muted); }
 .pm-total-val { font-family: 'Teko',sans-serif; font-size: 28px; font-weight: 800; color: var(--burgundy2); }
 .pm-total-note { font-size: 11px; color: var(--muted); }
-/* ... */
 .pm-pick-btn { display: block; width: calc(100% - 40px); margin: 0 20px 20px; padding: 12px; border-radius: var(--r); border: none; cursor: pointer; background: var(--burgundy); color: #fff; font-family: 'Inter',sans-serif; font-size: 14px; font-weight: 700; transition: background 0.15s, transform 0.15s; }
 .pm-pick-btn:hover { background: var(--burgundy2); transform: translateY(-1px); }
 .pm-pick-btn:disabled { background: var(--surface3); color: var(--muted); cursor: default; transform: none; }
@@ -314,7 +296,7 @@ pre { background: var(--surface2); border: 1px solid var(--border); border-radiu
 .div-section:nth-last-child(-n+2) { border-bottom: none; }
 @media(max-width:640px){ .div-section { border-right: none; } .div-section:last-child { border-bottom: none; } }
 .div-conf-label { font-family: 'Teko',sans-serif; font-size: 9px; font-weight: 500; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
-.div-name { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: var(--text); }Iner
+.div-name { font-size: 13px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
 .div-team-select { width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--r); padding: 9px 12px; font-family: 'Outfit',sans-serif; font-size: 13px; color: var(--text); cursor: pointer; outline: none; transition: border-color 0.15s; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a7a7e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
 .div-team-select:focus { border-color: var(--gold); }
 .div-team-select.picked { border-color: rgba(162,170,173,0.4); background-color: rgba(162,170,173,0.05); }
