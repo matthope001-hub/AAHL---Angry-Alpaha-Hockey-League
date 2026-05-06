@@ -155,13 +155,24 @@ async function fetchIRStatuses() {
 const PLAYER_TEAM_MAP = {}; // populated by fetchIRStatuses → cols[1]
 const SEASON = '20252026';
 
+// Short → full 3-letter NHL CDN abbreviations
+const TEAM_ABBREV = {
+  'ANA':'ANA','BOS':'BOS','BUF':'BUF','CAR':'CAR','CBJ':'CBJ',
+  'CGY':'CGY','CHI':'CHI','COL':'COL','DAL':'DAL','DET':'DET',
+  'EDM':'EDM','FLA':'FLA','LA':'LAK', 'MIN':'MIN','MTL':'MTL',
+  'NJ':'NJD', 'NSH':'NSH','NYI':'NYI','NYR':'NYR','OTT':'OTT',
+  'PHI':'PHI','PIT':'PIT','SEA':'SEA','STL':'STL','TB':'TBL',
+  'TOR':'TOR','UTA':'UTA','VAN':'VAN','VGK':'VGK','WSH':'WSH',
+  'WPG':'WPG','ARI':'ARI',
+};
+
 function getPlayerHeadshotUrls(playerName) {
   const playerId = PLAYER_ID_MAP[playerName];
   if (!playerId) return [];
-  const team = PLAYER_TEAM_MAP[playerName] || '';
+  const shortTeam = PLAYER_TEAM_MAP[playerName] || '';
+  const team = TEAM_ABBREV[shortTeam] || shortTeam;
   const urls = [];
   if (team) urls.push(`https://assets.nhle.com/mugs/nhl/${SEASON}/${team}/${playerId}.png`);
-  // Fallbacks without team
   urls.push(`https://assets.nhle.com/mugs/nhl/00/00/${playerId}.png`);
   return urls;
 }
