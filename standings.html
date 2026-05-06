@@ -303,7 +303,7 @@ function renderSkaters() {
     const rc = i===0?'r1':i===1?'r2':i===2?'r3':'', ht = p.hatTricks>0;
     const rankColor = i===0?'var(--gold)':i===1?'#9ca3af':i===2?'#cd7f32':'var(--muted)';
     return '<tr class="'+(ht?'ht-row':'')+'"><td style="text-align:center;font-family:Teko,sans-serif;font-size:11px;font-weight:'+(i<3?'700':'500')+';color:'+rankColor+'">'+(i+1)+'</td>'
-      +'<td><div class="st-name">'+p.name+(ht?' <span style="font-size:11px">🎩</span>':'')+'</div><div class="st-sub">'+p.team+'</div></td>'
+      +'<td><div class="st-name">'+p.name+(ht?' <span style="font-size:11px">🎩</span>':'')+(IR_STATUS[p.name]?' <span class="ir-badge" style="font-size:9px;padding:1px 5px;border-radius:3px;background:#c0392b;color:#fff">IR</span>':'')+'</div><div class="st-sub">'+p.team+'</div></td>'
       +'<td style="text-align:center"><span class="st-pos-badge pos-'+p.pos+'">'+p.pos+'</span></td>'
       +'<td style="text-align:center;font-family:Teko,sans-serif;font-size:10px;color:var(--muted2)" class="hide-mob">'+p.box+'</td>'
       +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:'+(p.goals>0?'var(--text)':'var(--muted)')+(p.goals>0?';font-weight:600':'')+'">'+(p.goals||0)+'</td>'
@@ -348,8 +348,9 @@ function renderGoalies() {
   tbody.innerHTML = data.map((p,i) => {
     const rc = i===0?'r1':i===1?'r2':i===2?'r3':'';
     const rankColor = i===0?'var(--gold)':i===1?'#9ca3af':i===2?'#cd7f32':'var(--muted)';
-    return '<tr><td style="text-align:center;font-family:Teko,sans-serif;font-size:11px;font-weight:'+(i<3?'700':'500')+';color:'+rankColor+'">'+(i+1)+'</td>'
-      +'<td><div class="st-name">'+p.name+'</div><div class="st-sub">'+p.team+'</div></td>'
+    return '<tr'+(IR_STATUS[p.name]?' style="opacity:0.5"':'')+'>'
+      +'<td style="text-align:center;font-family:Teko,sans-serif;font-size:11px;font-weight:'+(i<3?'700':'500')+';color:'+rankColor+'">'+(i+1)+'</td>'
+      +'<td><div class="st-name">'+p.name+(IR_STATUS[p.name]?' <span class="ir-badge" style="font-size:9px;padding:1px 5px;border-radius:3px;background:#c0392b;color:#fff">IR</span>':'')+'</div><div class="st-sub">'+p.team+'</div></td>'
       +'<td style="text-align:center;font-family:Teko,sans-serif;font-size:10px;color:var(--muted2)" class="hide-mob">'+p.box+'</td>'
       +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:'+(p.wins>0?'var(--text)':'var(--muted)')+(p.wins>0?';font-weight:600':'')+'">'+(p.wins||0)+'</td>'
       +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:var(--muted)">'+p.losses+'</td>'
@@ -364,7 +365,8 @@ function renderGoalies() {
 Promise.all([
   fetchNightlyStats(),
   fetchStandings(),
-  fetchPlayers()
+  fetchPlayers(),
+  fetchIRStatuses()
 ]).then(() => {
   buildTicker();
   buildBoards();
