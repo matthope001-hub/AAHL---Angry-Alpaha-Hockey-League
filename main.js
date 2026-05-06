@@ -410,8 +410,23 @@ function openPlayerModal(playerName, team, pos, boxId, radioEl) {
   document.getElementById('pm-name').textContent = playerName;
   document.getElementById('pm-nhl').textContent = team + ' · ' + (s?.pos || pos);
   const badge = document.getElementById('pm-pos-badge'); badge.textContent = pos; badge.className = `pm-pos-badge pm-pos-${pos}`;
-  const headshotEl = document.getElementById('pm-headshot');
-  if (headshotEl) headshotEl.style.display = 'none';
+  // ── Headshot — inject dynamically so picks.html doesn't need manual edits ──
+  const pmHead = document.querySelector('.pm-head');
+  if (pmHead) {
+    let hsWrap = pmHead.querySelector('.pm-headshot-wrap');
+    if (!hsWrap) {
+      hsWrap = document.createElement('div');
+      hsWrap.className = 'pm-headshot-wrap';
+      pmHead.insertBefore(hsWrap, pmHead.firstChild);
+    }
+    const hsUrl = getPlayerHeadshotUrl(playerName);
+    if (hsUrl) {
+      const ini = initials(playerName);
+      hsWrap.innerHTML = `<img class="pm-headshot" src="${hsUrl}" alt="${playerName}" onerror="this.parentNode.innerHTML='<span class=pm-headshot-placeholder>${ini}</span>'">`;
+    } else {
+      hsWrap.innerHTML = `<span class="pm-headshot-placeholder">${initials(playerName)}</span>`;
+    }
+  }
   const statsGrid = document.getElementById('pm-stats-grid');
   if (!s) { statsGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px;padding:8px 0">No prior season data available</div>`; document.getElementById('pm-pts-breakdown').innerHTML=''; document.getElementById('pm-total-pts').textContent='—'; }
   else if (pos==='G') {
