@@ -133,7 +133,7 @@ async function fetchIRStatuses() {
     const res = await fetch(PLAYERS_CSV);
     const text = await res.text();
     const lines = text.trim().split('\n');
-    lines.slice(1).forEach(line => {
+    lines.slice(2).forEach(line => {  // skip 2 header rows (row1=blank/labels, row2=col names)
       const cols = line.split(',');
       const name = (cols[0] || '').trim();
       const onIR = (cols[15] || '').trim().toUpperCase() === 'TRUE';
@@ -152,7 +152,19 @@ async function fetchIRStatuses() {
 function getPlayerHeadshotUrl(playerName) {
   const playerId = PLAYER_ID_MAP[playerName];
   if (!playerId) return null;
-  return `https://assets.nhle.com/msc/nhl/images/headshots/current/168x168/${playerId}.png`;
+  // Try multiple known CDN formats — NHL changes these periodically
+  return `https://assets.nhle.com/mugs/nhl/00/00/${playerId}_headshot_current.png`;
+}
+
+async function fetchHeadshotFromAPI(playerName) {
+  const playerId = PLAYER_ID_MAP[playerName];
+  if (!playerId) return null;
+  try {
+    const res = await fetch(`https://api-web.nhle.com/v1/player/${playerId}/landing`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.headshot || null;
+  } catch(e) { return null; }
 }
 
 function irBadge(name) {
@@ -410,7 +422,7 @@ function openPlayerModal(playerName, team, pos, boxId, radioEl) {
   document.getElementById('pm-name').textContent = playerName;
   document.getElementById('pm-nhl').textContent = team + ' · ' + (s?.pos || pos);
   const badge = document.getElementById('pm-pos-badge'); badge.textContent = pos; badge.className = `pm-pos-badge pm-pos-${pos}`;
-  // ── Headshot — inject dynamically so picks.html doesn't need manual edits ──
+  // ── Headshot — inject dynamically, fetch from NHL API ──
   const pmHead = document.querySelector('.pm-head');
   if (pmHead) {
     let hsWrap = pmHead.querySelector('.pm-headshot-wrap');
@@ -419,12 +431,29 @@ function openPlayerModal(playerName, team, pos, boxId, radioEl) {
       hsWrap.className = 'pm-headshot-wrap';
       pmHead.insertBefore(hsWrap, pmHead.firstChild);
     }
-    const hsUrl = getPlayerHeadshotUrl(playerName);
-    if (hsUrl) {
-      const ini = initials(playerName);
-      hsWrap.innerHTML = `<img class="pm-headshot" src="${hsUrl}" alt="${playerName}" onerror="this.parentNode.innerHTML='<span class=pm-headshot-placeholder>${ini}</span>'">`;
+    const ini = initials(playerName);
+    // Show initials immediately, replace with photo when loaded
+    hsWrap.innerHTML = `<span class="pm-headshot-placeholder">${ini}</span>`;
+    // Try CDN first (fast), fall back to API fetch
+    const cdnUrl = getPlayerHeadshotUrl(playerName);
+    if (cdnUrl) {
+      const img = new Image();
+      img.onload = () => {
+        hsWrap.innerHTML = `<img class="pm-headshot" src="${cdnUrl}" alt="${playerName}">`;
+      };
+      img.onerror = async () => {
+        // CDN failed — try NHL API landing endpoint for the real URL
+        const apiUrl = await fetchHeadshotFromAPI(playerName);
+        if (apiUrl) {
+          hsWrap.innerHTML = `<img class="pm-headshot" src="${apiUrl}" alt="${playerName}" onerror="this.parentNode.innerHTML='<span class=pm-headshot-placeholder>${ini}</span>'">`;
+        }
+      };
+      img.src = cdnUrl;
     } else {
-      hsWrap.innerHTML = `<span class="pm-headshot-placeholder">${initials(playerName)}</span>`;
+      // No player ID — try API anyway
+      fetchHeadshotFromAPI(playerName).then(apiUrl => {
+        if (apiUrl) hsWrap.innerHTML = `<img class="pm-headshot" src="${apiUrl}" alt="${playerName}" onerror="this.parentNode.innerHTML='<span class=pm-headshot-placeholder>${ini}</span>'">`;
+      });
     }
   }
   const statsGrid = document.getElementById('pm-stats-grid');
