@@ -270,7 +270,7 @@ function updateLivePayouts() {
   if (hp) hp.textContent = LIVE_BOARD.length ? '$' + Math.round(prize) : '—';
 }
 
-Promise.all([fetchNightlyStats(), fetchStandings()]).then(() => {
+Promise.all([fetchNightlyStats(), fetchStandings(), fetchIRStatuses()]).then(() => {
   buildTicker();
   buildLiveStandings();
   updateLivePayouts();
