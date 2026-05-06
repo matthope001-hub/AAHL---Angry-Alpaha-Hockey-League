@@ -132,57 +132,31 @@
   <div class="toast-body" id="toast-b"></div>
 </div>
 
-<script src="main.js"></script>
+<script src="main.js?v=4"></script>
 <script>
-const STANDINGS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1410587271&single=true&output=csv&v=2';
-let LIVE_BOARD = [];
-
-function parseStandingsCSV(csv) {
-  const lines = csv.trim().split('\n');
-  return lines.slice(1).map(line => {
-    const cols = []; let cur = '', inQ = false;
-    for (const ch of line) {
-      if (ch === '"') { inQ = !inQ; }
-      else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-      else { cur += ch; }
-    }
-    cols.push(cur.trim());
-    return { rank:parseInt(cols[0])||0, entryId:cols[1], team:cols[2], name:cols[3], pts:parseFloat(cols[5])||0, trend:cols[7]||'=' };
-  }).filter(e => e.entryId);
-}
-
-async function fetchStandings() {
-  try {
-    const res = await fetch(STANDINGS_CSV);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const text = await res.text();
-    LIVE_BOARD = parseStandingsCSV(text);
-    totalEntries = LIVE_BOARD.length;
-    console.log('Standings loaded:', LIVE_BOARD.length, 'entries');
-  } catch(err) {
-    console.error('Standings fetch failed:', err);
-    LIVE_BOARD = [];
-  }
-}
+// ── HOME PAGE: standings display & team panel ──
+// All data fetching (fetchStandings, fetchNightlyStats, LIVE_BOARD, NIGHTLY_STATS) lives in main.js
 
 function buildLiveStandings() {
   const el = document.getElementById('home-standings');
   if (!el) return;
-  if (!LIVE_BOARD.length) { el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">No entries yet — be the first!</div>'; return; }
+  if (!LIVE_BOARD.length) {
+    el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">No entries yet — be the first!</div>';
+    return;
+  }
   const last = LIVE_BOARD.length - 1;
   el.innerHTML = LIVE_BOARD.map((e, i) => {
     const rowCls = i===0?'r1':i===1?'r2':i===2?'r3':i===last?'rl':'';
     const pos = i===last ? '<span style="font-size:9px;letter-spacing:0px">LAST</span>' : (i+1);
-    const t = e.trend;
-    const mvCls = t.startsWith('+')?'up':t.startsWith('-')?'dn':'eq';
-    const mvLbl = t.startsWith('+')?'▲'+t.slice(1):t.startsWith('-')?'▼'+t.slice(1):'—';
-    const htCell = e.hatTricks > 0 ? '🎩'.repeat(Math.min(e.hatTricks,3)) : '';
-    const ini = e.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-    return '<div class="sc-row '+rowCls+'" onclick="openLiveTeamPanel(\''+e.name+'\')" style="cursor:pointer">'
+    const tv = parseInt(e.trend) || 0;
+    const mvCls = tv>0?'up':tv<0?'dn':'eq';
+    const mvLbl = tv>0?'▲'+tv:tv<0?'▼'+Math.abs(tv):'—';
+    const ini = initials(e.name);
+    return '<div class="sc-row '+rowCls+'" onclick="openLiveTeamPanel(\''+e.name.replace(/'/g,"\\'")+'\')" style="cursor:pointer">'
       +'<div class="sc-pos">'+pos+'</div>'
       +'<div class="sc-av">'+ini+'</div>'
-      +'<div class="sc-info"><div class="sc-name">'+e.team+'</div><div class="sc-team">'+e.name+'</div></div>'
-      +'<div class="sc-ht">'+htCell+'</div>'
+      +'<div class="sc-info"><div class="sc-name">'+e.name+'</div></div>'
+      +'<div class="sc-ht"></div>'
       +'<div class="sc-mv '+mvCls+'">'+mvLbl+'</div>'
       +'<div class="sc-pts">'+e.pts.toLocaleString()+'</div></div>';
   }).join('');
@@ -190,22 +164,27 @@ function buildLiveStandings() {
 
 let currentLiveRoster = [];
 
-async function openLiveTeamPanel(ownerName) {
-  const entry = LIVE_BOARD.find(e => e.name === ownerName);
+async function openLiveTeamPanel(teamName) {
+  const entry = LIVE_BOARD.find(e => e.name === teamName);
   if (!entry) return;
-  const ini = ownerName.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
-  document.getElementById('tp-av').textContent = ini;
-  document.getElementById('tp-tname').textContent = entry.team;
-  document.getElementById('tp-owner').textContent = ownerName;
+  document.getElementById('tp-av').textContent = initials(entry.name);
+  document.getElementById('tp-tname').textContent = entry.name;
+  document.getElementById('tp-owner').textContent = entry.owner || '';
   document.getElementById('tp-meta').innerHTML =
-    '<div class="tp-stat-pill"><div class="spv burg">'+entry.pts+'</div><div class="spl">Total Pts</div></div>'
-    +'<div class="tp-stat-pill"><div class="spv blue">'+entry.rank+'</div><div class="spl">Rank</div></div>';
+    '<div class="tp-stat-pill"><div class="spv burg">'+entry.pts.toLocaleString()+'</div><div class="spl">Total Pts</div></div>'
+    +'<div class="tp-stat-pill"><div class="spv blue">'+(entry.rank||'—')+'</div><div class="spl">Rank</div></div>';
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
-  
-  // Load roster data
+
+  // Load picks from Entries sheet
   const ENTRIES_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=0&single=true&output=csv&v=2';
-  
+  const boxLabels = [
+    'Forwards 1','Forwards 2','Forwards 3','Forwards 4','Forwards 5','Forwards 6',
+    'Forwards 7','Forwards 8','Forwards 9','Forwards 10','Forwards 11','Forwards 12',
+    'Defense 1','Defense 2','Defense 3','Defense 4','Defense 5','Defense 6',
+    'Goalie 1','Goalie 2','Goalie 3','Goalie 4','Goalie 5','Goalie 6'
+  ];
+
   function parseCSVLine(line) {
     const cols = []; let cur = '', inQ = false;
     for (const ch of line) {
@@ -216,97 +195,66 @@ async function openLiveTeamPanel(ownerName) {
     cols.push(cur.trim());
     return cols;
   }
-  
+
   try {
     const res = await fetch(ENTRIES_CSV);
     const text = await res.text();
     const rows = text.trim().split('\n').slice(1);
-    const entryRow = rows.find(r => r.includes(entry.entryId) || r.includes(ownerName));
+    const entryRow = rows.find(r => r.includes(entry.entry));
     if (!entryRow) throw new Error('Entry not found');
-    
     const cols = parseCSVLine(entryRow);
-    const picks = cols.slice(7, 31).filter(p => p && !p.match(/^\d{1,2}\/\d{1,2}\/\d{4}/));
-    const boxLabels = [
-      'Forwards 1','Forwards 2','Forwards 3','Forwards 4','Forwards 5','Forwards 6',
-      'Forwards 7','Forwards 8','Forwards 9','Forwards 10','Forwards 11','Forwards 12',
-      'Defense 1','Defense 2','Defense 3','Defense 4','Defense 5','Defense 6',
-      'Goalie 1','Goalie 2','Goalie 3','Goalie 4','Goalie 5','Goalie 6'
-    ];
-    
-    // Store for filtering
-    currentLiveRoster = picks.map((name, i) => ({ name, pos: i < 12 ? 'F' : i < 18 ? 'D' : 'G', box: boxLabels[i] }));
+    const picks = cols.slice(7, 31);
+    currentLiveRoster = picks.map((name, i) => ({
+      name: name.trim(),
+      pos: i < 12 ? 'F' : i < 18 ? 'D' : 'G',
+      box: boxLabels[i]
+    })).filter(p => p.name);
     renderLiveRoster('ALL');
-    
-    document.getElementById('tp-tfoot').innerHTML = '<tr><td colspan="15" style="padding:12px;text-align:center;color:var(--muted);font-size:12px">Stats available once season begins</td></tr>';
   } catch(err) {
-    console.error('Failed to load roster:', err);
-    document.getElementById('tp-tbody').innerHTML = '<tr><td colspan="15" style="text-align:center;padding:30px;color:var(--muted)">Roster data unavailable. View full stats on Stats page.</td></tr>';
+    console.error('Roster load failed:', err);
+    document.getElementById('tp-tbody').innerHTML = '<tr><td colspan="15" style="text-align:center;padding:30px;color:var(--muted)">Roster data unavailable.</td></tr>';
     currentLiveRoster = [];
   }
-  
-  document.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active'));
+
+  document.querySelectorAll('.tp-tab').forEach(t => t.classList.remove('active'));
   document.querySelector('.tp-tab').classList.add('active');
 }
 
 function renderLiveRoster(filter) {
   const tbody = document.getElementById('tp-tbody');
-  let rows = currentLiveRoster;
-  if (filter !== 'ALL') rows = rows.filter(p => p.pos === filter);
-  
-  if (!rows.length) {
-    tbody.innerHTML = '<tr><td colspan="15" style="text-align:center;padding:30px">No players</td></tr>';
-    return;
-  }
-  
-  // Check if we have nightly stats data
-  const hasNightlyStats = typeof NIGHTLY_STATS !== 'undefined' && NIGHTLY_STATS.length > 0;
-  
+  let rows = filter === 'ALL' ? currentLiveRoster : currentLiveRoster.filter(p => p.pos === filter);
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="15" style="text-align:center;padding:30px">No players</td></tr>'; return; }
+
+  const hasStats = typeof NIGHTLY_STATS !== 'undefined' && NIGHTLY_STATS.length > 0;
   tbody.innerHTML = rows.map((p, i) => {
-    const isIR = IR_STATUS[p.name] || false;
-    
-    // Look up player in nightly stats
-    const playerStats = hasNightlyStats ? NIGHTLY_STATS.find(s => s.name === p.name) : null;
-    const pts = playerStats ? nightlyPts(playerStats) : 0;
-    const isHatTrick = playerStats && playerStats.pos !== 'G' && (playerStats.goals || 0) >= 3;
-    
-    // Build stat cells based on position
-    let statCells = '';
+    const isIR = (typeof IR_STATUS !== 'undefined' && IR_STATUS[p.name]) || false;
+    const ps = hasStats ? NIGHTLY_STATS.find(s => s.name === p.name) : null;
+    const pts = ps ? nightlyPts(ps) : 0;
+    const isHT = ps && ps.pos !== 'G' && (ps.goals || 0) >= 3;
+    let sc = '';
     if (p.pos === 'G') {
-      // Goalie stats: W, L, OTL, SO, SV, PTS
-      const w = playerStats?.wins || 0;
-      const l = playerStats?.losses || 0;
-      const otl = playerStats?.otl || 0;
-      const so = playerStats?.shutouts || 0;
-      const sv = playerStats?.saves || 0;
-      statCells = '<td class="tp-stat-num">'+w+'</td><td class="tp-stat-num">'+l+'</td><td class="tp-stat-num">'+otl+'</td><td class="tp-stat-num">'+so+'</td>'
-        +'<td class="tp-stat-num">'+(sv?sv.toLocaleString():'—')+'</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'
-        +'<td class="tp-stat-num">—</td><td class="tp-ht-flag"></td><td class="tp-pts-num">'+pts+'</td>';
+      sc = '<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'
+         + '<td class="tp-stat-num">'+(ps?.wins||0)+'</td><td class="tp-stat-num">'+(ps?.losses||0)+'</td>'
+         + '<td class="tp-stat-num">'+(ps?.otl||0)+'</td><td class="tp-stat-num">'+(ps?.shutouts||0)+'</td>'
+         + '<td class="tp-stat-num">'+(ps?.saves||0)+'</td><td class="tp-ht-flag"></td><td class="tp-pts-num">'+pts+'</td>';
     } else {
-      // Skater stats: G, A, SOG, PIM (D only), PTS
-      const g = playerStats?.goals || 0;
-      const a = playerStats?.assists || 0;
-      const sog = playerStats?.sog || 0;
-      const pim = playerStats?.pim || 0;
-      statCells = '<td class="tp-stat-num">'+g+'</td><td class="tp-stat-num">'+a+'</td><td class="tp-stat-num">'+sog+'</td><td class="tp-stat-num">—</td>'
-        +'<td class="tp-stat-num">'+(p.pos==='D'?pim:'—')+'</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'
-        +'<td class="tp-stat-num">—</td><td class="tp-ht-flag">'+(isHatTrick?'🎩':'')+'</td><td class="tp-pts-num">'+pts+'</td>';
+      sc = '<td class="tp-stat-num">'+(ps?.goals||0)+'</td><td class="tp-stat-num">'+(ps?.assists||0)+'</td>'
+         + '<td class="tp-stat-num">'+(ps?.sog||0)+'</td><td class="tp-stat-num">'+(p.pos==='D'?(ps?.pim||0):'—')+'</td>'
+         + '<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'
+         + '<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'
+         + '<td class="tp-ht-flag">'+(isHT?'🎩':'')+'</td><td class="tp-pts-num">'+pts+'</td>';
     }
-    
-    return '<tr'+(isIR?' style="opacity:0.6"':'')+'><td><span class="tp-pos-badge pos-'+p.pos+'">'+p.pos+'</span></td>'
+    return '<tr'+(isIR?' style="opacity:0.6"':'')+'>'
+      +'<td><span class="tp-pos-badge pos-'+p.pos+'">'+p.pos+'</span></td>'
       +'<td><div class="tp-pname">'+p.name+(isIR?' <span class="ir-badge">IR</span>':'')+'</div><div class="tp-box">'+p.box+'</div></td>'
-      +'<td><div class="tp-nhl">'+(playerStats?.team || '—')+'</div></td><td class="tp-box">'+(i+1)+'</td>'
-      +statCells+'</tr>';
+      +'<td><div class="tp-nhl">'+(ps?.team||'—')+'</div></td>'
+      +'<td class="tp-box">'+(i+1)+'</td>'
+      +sc+'</tr>';
   }).join('');
-  
-  // Update footer message
+
   const tfoot = document.getElementById('tp-tfoot');
-  if (tfoot) {
-    if (!hasNightlyStats) {
-      tfoot.innerHTML = '<tr><td colspan="15" style="padding:12px;text-align:center;color:var(--muted);font-size:12px">Stats available once season begins</td></tr>';
-    } else {
-      tfoot.innerHTML = '<tr><td colspan="15" style="padding:12px;text-align:center;color:var(--muted);font-size:12px">Showing current season stats · Click player for details</td></tr>';
-    }
-  }
+  if (tfoot) tfoot.innerHTML = '<tr><td colspan="15" style="padding:12px;text-align:center;color:var(--muted);font-size:12px">'
+    +(hasStats ? 'Showing current season stats' : 'Stats available once season begins')+'</td></tr>';
 }
 
 function filterLiveRoster(pos, btn) {
@@ -316,10 +264,10 @@ function filterLiveRoster(pos, btn) {
 }
 
 function updateLivePayouts() {
-  const prize = totalEntries * 10 * 0.5;
+  const prize = LIVE_BOARD.length * 10 * 0.5;
   const he = document.getElementById('h-entries'), hp = document.getElementById('h-pot');
-  if (he) he.textContent = totalEntries;
-  if (hp) hp.textContent = '$' + Math.round(prize);
+  if (he) he.textContent = LIVE_BOARD.length || '—';
+  if (hp) hp.textContent = LIVE_BOARD.length ? '$' + Math.round(prize) : '—';
 }
 
 Promise.all([fetchNightlyStats(), fetchStandings()]).then(() => {
