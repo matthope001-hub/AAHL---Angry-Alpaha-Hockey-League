@@ -255,6 +255,13 @@ pre { background: var(--surface2); border: 1px solid var(--border); border-radiu
 .player-modal-overlay.open { background: rgba(13,6,8,0.85); pointer-events: all; backdrop-filter: blur(4px); }
 .player-modal { background: var(--surface); border: 1px solid var(--border2); border-top: 3px solid var(--accent); border-radius: var(--r2); width: 100%; max-width: 480px; overflow: hidden; opacity: 0; transform: scale(0.9) translateY(16px); transition: all 0.28s cubic-bezier(0.34,1.56,0.64,1); box-shadow: 0 32px 80px rgba(0,0,0,0.7); }
 .player-modal-overlay.open .player-modal { opacity: 1; transform: scale(1) translateY(0); }
+
+/* ── PLAYER MODAL HEADSHOT ── */
+.pm-headshot-wrap { flex-shrink:0; width:72px; height:72px; border-radius:50%; overflow:hidden; border:2px solid var(--border2); background:var(--surface3); display:flex; align-items:center; justify-content:center; }
+.pm-headshot { width:100%; height:100%; object-fit:cover; object-position:top center; }
+.pm-headshot-placeholder { font-family:'Teko',sans-serif; font-size:22px; font-weight:700; color:var(--muted); }
+.pm-head-info { flex:1; min-width:0; }
+
 .pm-head { background: var(--surface2); padding: 18px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .pm-name { font-size: 20px; font-weight: 800; }
 .pm-team-row { display: flex; align-items: center; gap: 8px; margin-top: 3px; }
@@ -546,7 +553,14 @@ pre { background: var(--surface2); border: 1px solid var(--border); border-radiu
   .form-row { grid-template-columns: 1fr; gap: 10px; }
   .modal-card { margin: 10px; max-height: 95vh; }
   .player-modal { max-width: calc(100vw - 32px); }
-  .pm-head { padding: 14px 16px; }
+  
+/* ── PLAYER MODAL HEADSHOT ── */
+.pm-headshot-wrap { flex-shrink:0; width:72px; height:72px; border-radius:50%; overflow:hidden; border:2px solid var(--border2); background:var(--surface3); display:flex; align-items:center; justify-content:center; }
+.pm-headshot { width:100%; height:100%; object-fit:cover; object-position:top center; }
+.pm-headshot-placeholder { font-family:'Teko',sans-serif; font-size:22px; font-weight:700; color:var(--muted); }
+.pm-head-info { flex:1; min-width:0; }
+
+.pm-head { padding: 14px 16px; }
   .pm-name { font-size: 18px; }
   .pm-stats-grid { padding: 12px 16px; gap: 8px; }
   .pm-stat-val { font-size: 20px; }
