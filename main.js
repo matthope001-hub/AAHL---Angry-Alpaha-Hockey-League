@@ -126,6 +126,7 @@ let IR_STATUS = {};
 let PLAYER_ID_MAP = {};
 
 const PLAYERS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1949508708&single=true&output=csv&v=2';
+const STANDINGS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=0&single=true&output=csv&v=2';
 
 async function fetchIRStatuses() {
   try {
@@ -196,91 +197,33 @@ const BOXES = [
   {id:24,label:'Goalie 6',type:'G',players:[{name:'Charlie Lindgren',team:'WSH',pts:40},{name:'Mackenzie Blackwood',team:'VAN',pts:35},{name:'Alex Lyon',team:'FLA',pts:44},{name:'Tristan Jarry',team:'PIT',pts:34},{name:'Jonathan Quick',team:'TOR',pts:27}]},
 ];
 
-const MOCK_BOARD = [
-  {name:'Alex Thornton',team:'The Slapshot Specials',pts:1842,trend:'+3'},
-  {name:'Sarah Kim',team:'Puck Norris',pts:1791,trend:'+1'},
-  {name:'Marcus Webb',team:'Ice Ice Maybe',pts:1744,trend:'-1'},
-  {name:'Priya Patel',team:'Alpaca My Bags',pts:1712,trend:'+2'},
-  {name:'Jake Morrison',team:'The Mighty Dux',pts:1698,trend:'-2'},
-  {name:'Amanda Chen',team:'Five Hole Club',pts:1655,trend:'='},
-  {name:'Dave Okafor',team:'Gretzky 2.0',pts:1601,trend:'+1'},
-  {name:'Chloe Russo',team:'Biscuit in the Basket',pts:1587,trend:'-1'},
-];
+// ══════════ LIVE STANDINGS ══════════
+let LIVE_BOARD = [];
 
-const HAT_TRICKS = [
-  {player:'Leon Draisaitl',  team:'EDM', pos:'F', count:2, owner:'Alex Thornton',  ownerTeam:'The Slapshot Specials', dates:['Oct 14','Apr 27']},
-  {player:'Auston Matthews',  team:'TOR', pos:'F', count:2, owner:'Sarah Kim',       ownerTeam:'Puck Norris',           dates:['Nov 3','Jan 18']},
-  {player:'Nathan MacKinnon', team:'COL', pos:'F', count:1, owner:'Marcus Webb',     ownerTeam:'Ice Ice Maybe',         dates:['Dec 9']},
-  {player:'Kirill Kaprizov',  team:'MIN', pos:'F', count:1, owner:'Priya Patel',     ownerTeam:'Alpaca My Bags',        dates:['Feb 2']},
-  {player:'Sidney Crosby',    team:'PIT', pos:'F', count:1, owner:'Dave Okafor',     ownerTeam:'Gretzky 2.0',           dates:['Mar 11']},
-];
+function parseStandingsCSV(csv) {
+  return csv.trim().split('\n').slice(1).map(line => {
+    const cols = line.split(',');
+    return {
+      rank:    parseInt(cols[0]) || 0,
+      name:    (cols[1] || '').trim(),
+      team:    (cols[2] || '').trim(),
+      pts:     parseFloat(cols[3]) || 0,
+      trend:   (cols[4] || '=').trim(),
+    };
+  }).filter(e => e.name);
+}
 
-const TEAM_ROSTERS = {
-  'Alex Thornton': { team:'The Slapshot Specials', picks:[
-    {box:'Forwards 1', pos:'F', name:'Leon Draisaitl',    nhl:'EDM', g:52, a:89, sog:246, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 2', pos:'F', name:'Auston Matthews',   nhl:'TOR', g:69, a:40, sog:311, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 3', pos:'F', name:'Jack Hughes',       nhl:'NJ',  g:37, a:55, sog:192, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 4', pos:'F', name:'Sidney Crosby',     nhl:'PIT', g:42, a:52, sog:209, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 5', pos:'F', name:'Aleksander Barkov', nhl:'FLA', g:31, a:55, sog:221, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 6', pos:'F', name:'Cole Caufield',     nhl:'MTL', g:28, a:37, sog:198, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 7', pos:'F', name:'Wyatt Johnston',    nhl:'DAL', g:29, a:37, sog:167, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 8', pos:'F', name:'Chris Kreider',     nhl:'NYR', g:39, a:27, sog:189, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 9', pos:'F', name:'Brad Marchand',     nhl:'BOS', g:28, a:48, sog:172, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 10',pos:'F', name:'Charlie McAvoy',    nhl:'BOS', g:11, a:48, sog:178, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 11',pos:'F', name:'Alex Ovechkin',     nhl:'WSH', g:36, a:28, sog:295, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 12',pos:'F', name:'Owen Tippett',      nhl:'PHI', g:27, a:30, sog:182, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Defense 1',  pos:'D', name:'Quinn Hughes',      nhl:'VAN', g:16, a:66, sog:189, pim:22, w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Defense 2',  pos:'D', name:'Luke Hughes',       nhl:'NJ',  g:16, a:51, sog:147, pim:30, w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Defense 3',  pos:'D', name:'Brent Burns',       nhl:'CAR', g:14, a:41, sog:198, pim:44, w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Defense 4',  pos:'D', name:'Rasmus Dahlin',     nhl:'BUF', g:17, a:49, sog:211, pim:28, w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Defense 5',  pos:'D', name:'Cale Makar',        nhl:'COL', g:24, a:53, sog:234, pim:18, w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Defense 6',  pos:'D', name:'Evan Bouchard',     nhl:'EDM', g:19, a:56, sog:254, pim:38, w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Goalie 1',   pos:'G', name:'Stuart Skinner',    nhl:'EDM', g:0,  a:0,  sog:0,   pim:0,  w:31,l:14,otl:4,so:3,sv:886},
-    {box:'Goalie 2',   pos:'G', name:'Sergei Bobrovsky',  nhl:'FLA', g:0,  a:0,  sog:0,   pim:0,  w:36,l:14,otl:4,so:6,sv:1421},
-    {box:'Goalie 3',   pos:'G', name:'Ilya Sorokin',      nhl:'NYI', g:0,  a:0,  sog:0,   pim:0,  w:24,l:24,otl:5,so:4,sv:1148},
-    {box:'Goalie 4',   pos:'G', name:'Kevin Lankinen',    nhl:'NSH', g:0,  a:0,  sog:0,   pim:0,  w:22,l:18,otl:3,so:2,sv:874},
-    {box:'Goalie 5',   pos:'G', name:'Joonas Korpisalo',  nhl:'CBJ', g:0,  a:0,  sog:0,   pim:0,  w:18,l:26,otl:4,so:2,sv:967},
-    {box:'Goalie 6',   pos:'G', name:'Alex Lyon',         nhl:'FLA', g:0,  a:0,  sog:0,   pim:0,  w:20,l:12,otl:3,so:1,sv:688},
-  ]},
-  'Sarah Kim': { team:'Puck Norris', picks:[
-    {box:'Forwards 1', pos:'F', name:'Nikita Kucherov',    nhl:'TB',  g:44, a:100,sog:231, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 2', pos:'F', name:'Mitch Marner',       nhl:'TOR', g:26, a:81, sog:198, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 3', pos:'F', name:'Kirill Kaprizov',    nhl:'MIN', g:36, a:51, sog:212, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 4', pos:'F', name:'Jesper Bratt',       nhl:'NJ',  g:28, a:55, sog:176, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 5', pos:'F', name:'Ryan Nugent-Hopkins', nhl:'EDM', g:27, a:56, sog:168, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 6', pos:'F', name:'Matt Boldy',          nhl:'MIN', g:28, a:35, sog:179, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 7', pos:'F', name:'Anze Kopitar',        nhl:'LA',  g:22, a:47, sog:141, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 8', pos:'F', name:'Bo Horvat',           nhl:'NYI', g:31, a:31, sog:192, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 9', pos:'F', name:'Matt Duchene',        nhl:'DAL', g:34, a:38, sog:177, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 10',pos:'F', name:'Morgan Rielly',       nhl:'TOR', g:12, a:45, sog:156, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 11',pos:'F', name:'Claude Giroux',       nhl:'OTT', g:27, a:42, sog:164, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Forwards 12',pos:'F', name:'Andrei Svechnikov',   nhl:'CAR', g:22, a:33, sog:148, pim:0,  w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Defense 1',  pos:'D', name:'Noah Dobson',         nhl:'NYI', g:15, a:45, sog:178, pim:24, w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Defense 2',  pos:'D', name:'MacKenzie Weegar',    nhl:'CGY', g:11, a:41, sog:165, pim:32, w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Defense 3',  pos:'D', name:'Travis Sanheim',      nhl:'PHI', g:12, a:37, sog:143, pim:38, w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Defense 4',  pos:'D', name:'Torey Krug',          nhl:'STL', g:13, a:44, sog:152, pim:30, w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Defense 5',  pos:'D', name:'Adam Fox',            nhl:'NYR', g:14, a:52, sog:187, pim:20, w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Defense 6',  pos:'D', name:'Jacob Trouba',        nhl:'NYR', g:8,  a:33, sog:144, pim:66, w:0,l:0,otl:0,so:0,sv:0},
-    {box:'Goalie 1',   pos:'G', name:'Connor Hellebuyck',   nhl:'WPG', g:0,  a:0,  sog:0,   pim:0,  w:37,l:18,otl:4,so:6,sv:1502},
-    {box:'Goalie 2',   pos:'G', name:'Alexander Georgiev',  nhl:'COL', g:0,  a:0,  sog:0,   pim:0,  w:31,l:15,otl:3,so:4,sv:1188},
-    {box:'Goalie 3',   pos:'G', name:'Cam Talbot',          nhl:'CGY', g:0,  a:0,  sog:0,   pim:0,  w:24,l:18,otl:5,so:3,sv:966},
-    {box:'Goalie 4',   pos:'G', name:'Philipp Grubauer',    nhl:'SEA', g:0,  a:0,  sog:0,   pim:0,  w:20,l:16,otl:4,so:2,sv:822},
-    {box:'Goalie 5',   pos:'G', name:'Semyon Varlamov',     nhl:'NYI', g:0,  a:0,  sog:0,   pim:0,  w:16,l:19,otl:4,so:1,sv:788},
-    {box:'Goalie 6',   pos:'G', name:'Charlie Lindgren',    nhl:'WSH', g:0,  a:0,  sog:0,   pim:0,  w:18,l:14,otl:3,so:2,sv:712},
-  ]},
-};
-
-function getDefaultRoster(entryName) {
-  const idx = MOCK_BOARD.findIndex(e=>e.name===entryName);
-  return BOXES.map(box => {
-    const p = box.players[idx % box.players.length];
-    const isG = box.type==='G', isD = box.type==='D';
-    return { box:box.label, pos:box.type, name:p.name, nhl:p.team,
-      g:isG?0:Math.floor(p.pts*0.35), a:isG?0:Math.floor(p.pts*0.55),
-      sog:isG?0:Math.floor(p.pts*1.8), pim:isD?Math.floor(Math.random()*40+10):0,
-      w:isG?Math.floor(p.pts*0.52):0, l:isG?Math.floor(p.pts*0.28):0,
-      otl:isG?Math.floor(p.pts*0.08):0, so:isG?Math.floor(p.pts*0.06):0, sv:isG?Math.floor(p.pts*18):0 };
-  });
+async function fetchStandings() {
+  try {
+    const res = await fetch(STANDINGS_CSV);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    LIVE_BOARD = parseStandingsCSV(text);
+    console.log('Standings loaded:', LIVE_BOARD.length, 'entries');
+  } catch(err) {
+    console.warn('Standings fetch failed:', err);
+    LIVE_BOARD = [];
+  }
 }
 
 // ══════════ NIGHTLY STATS ══════════
@@ -324,10 +267,6 @@ function calcPrevPts(s) {
   if (!s) return 0;
   if (s.pos === 'G') return roundPts(s.w*3+s.l*1+s.otl*1.5+s.so*2+s.sv*0.02);
   return roundPts((s.g||0)*1+(s.a||0)*1+(s.sog||0)*0.11+(s.pos==='D'?(s.pim||0)*0.25:0));
-}
-function rosterPts(p) {
-  if (p.pos==='G') return roundPts(p.w*3+p.l*1+p.otl*1.5+p.so*2+p.sv*0.02);
-  return roundPts(p.g*1+p.a*1+p.sog*0.11+(p.g>=3?3:0)+(p.pos==='D'?p.pim*0.25:0));
 }
 function nightlyPts(p) {
   if (p.pos==='G') return roundPts(p.wins*3+p.losses*1+p.otl*1.5+p.shutouts*2+p.saves*0.02);
@@ -382,11 +321,8 @@ function buildTicker() {
     `<span class="t-pts">+${nightlyPts(p)}pts</span>` +
     `</div>`;
 
-  // Triple the content so seamless loop works even with few scorers
   const inner = scorers.map(itemHTML).join('');
   const looped = inner + inner + inner;
-
-  // Both rows show ALL scorers; row2 scrolls opposite direction for visual interest
   reel.innerHTML =
     `<div class="t-row t-row1">${looped}</div>` +
     `<div class="t-row t-row2">${looped}</div>`;
@@ -395,27 +331,22 @@ function buildTicker() {
 // ══════════ LEADERBOARD ══════════
 function lbRowHTML(e, i) {
   const cls = i===0?'p1':i===1?'p2':i===2?'p3':'';
-  const t = e.trend;
+  const t = e.trend || '=';
   const tCls = t.startsWith('+')?'trend-up':t.startsWith('-')?'trend-dn':'trend-eq';
   const tLbl = t.startsWith('+')?'▲'+t.slice(1):t.startsWith('-')?'▼'+t.slice(1):'—';
-  const htCount = HAT_TRICKS.filter(h=>h.owner===e.name).reduce((s,h)=>s+h.count,0);
-  const htBadge = htCount > 0 ? `<span style="font-size:13px;margin-right:4px">${'🎩'.repeat(Math.min(htCount,3))}</span>` : '';
-  return `<div class="lb-row ${cls}"><div class="lb-pos">${i+1}</div><div class="lb-av">${initials(e.name)}</div><div class="lb-info"><div class="lb-name">${e.name}</div><div class="lb-team">${e.team}</div></div>${htBadge}<span class="lb-trend ${tCls}">${tLbl}</span><div class="lb-pts">${e.pts.toLocaleString()}</div></div>`;
-}
-
-function buildHatTrickHall() {
-  const el = document.getElementById('ht-hall-rows'); if (!el) return;
-  const sorted = [...HAT_TRICKS].sort((a,b)=>b.count-a.count||a.player.localeCompare(b.player));
-  const total = sorted.reduce((s,h)=>s+h.count,0);
-  const badge = document.getElementById('ht-total-badge');
-  if (badge) badge.textContent = total + ' this season';
-  if (!sorted.length) { el.innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">No hat tricks yet.</div>`; return; }
-  el.innerHTML = sorted.map((h,i) => `<div class="ht-row"><div class="ht-num">${i+1}</div><div class="ht-av">${h.player.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div><div class="ht-info"><div class="ht-player">${h.player}</div><div class="ht-meta">${h.team} · ${h.pos} · Drafted by ${h.owner}</div><div class="ht-entry-owner">${h.ownerTeam}</div><div style="font-size:10px;color:var(--muted2);font-family:'DM Mono',monospace;margin-top:3px">${h.dates.join(' · ')}</div></div><div class="ht-hats">${'🎩'.repeat(h.count)}</div><div class="ht-goals-col">${h.count}×</div></div>`).join('');
+  return `<div class="lb-row ${cls}"><div class="lb-pos">${i+1}</div><div class="lb-av">${initials(e.name)}</div><div class="lb-info"><div class="lb-name">${e.name}</div><div class="lb-team">${e.team}</div></div><span class="lb-trend ${tCls}">${tLbl}</span><div class="lb-pts">${e.pts.toLocaleString()}</div></div>`;
 }
 
 function buildBoards() {
-  const fl = document.getElementById('full-lb'); if (fl) fl.innerHTML = MOCK_BOARD.map((e,i)=>lbRowHTML(e,i)).join('');
-  const bc = document.getElementById('bd-count'); if (bc) bc.textContent = MOCK_BOARD.length + ' entries';
+  const fl = document.getElementById('full-lb');
+  if (!fl) return;
+  if (!LIVE_BOARD.length) {
+    fl.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);font-family:\'Teko\',sans-serif;font-size:13px">Season starts September 29 — standings will appear here.</div>';
+    const bc = document.getElementById('bd-count'); if (bc) bc.textContent = '—';
+    return;
+  }
+  fl.innerHTML = LIVE_BOARD.map((e,i) => lbRowHTML(e,i)).join('');
+  const bc = document.getElementById('bd-count'); if (bc) bc.textContent = LIVE_BOARD.length + ' entries';
 }
 
 // ══════════ PAYOUTS ══════════
@@ -452,76 +383,23 @@ function updateDivisionCount() {
 // ══════════ TEAM PANEL ══════════
 let currentFilter = 'ALL', currentRoster = [];
 function openTeamPanel(entryName) {
-  const entry = MOCK_BOARD.find(e=>e.name===entryName); if (!entry) return;
-  const rosterData = TEAM_ROSTERS[entryName];
-  const picks = rosterData ? rosterData.picks : getDefaultRoster(entryName);
-  currentRoster = picks;
+  const entry = LIVE_BOARD.find(e => e.name === entryName);
+  if (!entry) return;
   document.getElementById('tp-av').textContent = initials(entryName);
   document.getElementById('tp-tname').textContent = entry.team;
   document.getElementById('tp-owner').textContent = entryName;
-  const totalPts = picks.reduce((s,p)=>s+rosterPts(p),0);
-  document.getElementById('tp-meta').innerHTML = `<div class="tp-stat-pill"><div class="spv burg">${roundPts(totalPts)}</div><div class="spl">Total Pts</div></div><div class="tp-stat-pill"><div class="spv">${picks.reduce((s,p)=>s+(p.g||0),0)}</div><div class="spl">Goals</div></div><div class="tp-stat-pill"><div class="spv">${picks.reduce((s,p)=>s+(p.a||0),0)}</div><div class="spl">Assists</div></div><div class="tp-stat-pill"><div class="spv blue">${entry.pts.toLocaleString()}</div><div class="spl">Season Rank Pts</div></div>`;
-  document.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelector('.tp-tab').classList.add('active');
-  currentFilter = 'ALL'; renderRoster(picks, 'ALL');
+  document.getElementById('tp-meta').innerHTML =
+    `<div class="tp-stat-pill"><div class="spv burg">${entry.pts.toLocaleString()}</div><div class="spl">Pool Pts</div></div>` +
+    `<div class="tp-stat-pill"><div class="spv">${entry.rank || '—'}</div><div class="spl">Rank</div></div>`;
+  document.getElementById('tp-tbody').innerHTML =
+    `<tr><td colspan="15" style="text-align:center;padding:40px;color:var(--muted);font-family:'Teko',sans-serif;font-size:13px">Individual pick breakdown coming soon.</td></tr>`;
+  document.getElementById('tp-tfoot').innerHTML = '';
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 function closeTeamPanel() { const el = document.getElementById('modal-overlay'); if (el) el.classList.remove('open'); document.body.style.overflow = ''; }
 function overlayClick(e) { if (e.target === document.getElementById('modal-overlay')) closeTeamPanel(); }
-function filterRoster(pos, tab) { currentFilter = pos; document.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active')); tab.classList.add('active'); renderRoster(currentRoster, pos); }
-
-function renderRoster(picks, filter) {
-  const rows = filter==='ALL' ? picks : picks.filter(p=>p.pos===filter);
-  const ownerName = document.getElementById('tp-owner').textContent;
-  const htMap = {}; HAT_TRICKS.forEach(h=>{ if(h.owner===ownerName) htMap[h.player]=(htMap[h.player]||0)+h.count; });
-  
-  // Check if we have nightly stats
-  const hasNightlyStats = typeof NIGHTLY_STATS !== 'undefined' && NIGHTLY_STATS.length > 0;
-  
-  document.getElementById('tp-tbody').innerHTML = rows.map(p => {
-    // Look up current stats from NIGHTLY_STATS if available
-    const liveStats = hasNightlyStats ? NIGHTLY_STATS.find(s => s.name === (p.name || p.player)) : null;
-    
-    // Use live stats if available, otherwise fall back to hardcoded data
-    const g = liveStats?.goals ?? p.g ?? 0;
-    const a = liveStats?.assists ?? p.a ?? 0;
-    const sog = liveStats?.sog ?? p.sog ?? 0;
-    const pim = liveStats?.pim ?? p.pim ?? 0;
-    const w = liveStats?.wins ?? p.w ?? 0;
-    const l = liveStats?.losses ?? p.l ?? 0;
-    const otl = liveStats?.otl ?? p.otl ?? 0;
-    const so = liveStats?.shutouts ?? p.so ?? 0;
-    const sv = liveStats?.saves ?? p.sv ?? 0;
-    const nhlTeam = liveStats?.team ?? p.nhl ?? p.team ?? '—';
-    
-    // Calculate points using live stats or fallback
-    const statsObj = liveStats || { ...p, pos: p.pos, goals: g, assists: a, sog, pim, wins: w, losses: l, otl, shutouts: so, saves: sv };
-    const pts = liveStats ? nightlyPts(liveStats) : rosterPts(p);
-    const isHT = p.pos!=='G' && g >= 3;
-    const htCell = htMap[p.name] || htMap[p.player] ? '🎩'.repeat(Math.min(htMap[p.name]||htMap[p.player]||0,3)) : '';
-    
-    const sc = p.pos==='G'
-      ? `<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">${w}</td><td class="tp-stat-num">${l}</td><td class="tp-stat-num">${otl}</td><td class="tp-stat-num">${so}</td><td class="tp-stat-num">${sv.toLocaleString()}</td>`
-      : `<td class="tp-stat-num">${g}</td><td class="tp-stat-num">${a}</td><td class="tp-stat-num">${sog}</td><td class="tp-stat-num">${p.pos==='D'?pim:'—'}</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>`;
-    const nameCell = `<div class="tp-pname">${p.name || p.player}${isHT?' 🎩':''}${irBadge(p.name || p.player)}</div><div class="tp-box">${p.box}</div>`;
-    return `<tr style="${isHT?'background:rgba(111,38,61,0.06)':''}${IR_STATUS[p.name || p.player]?';opacity:0.75':''}"><td><span class="tp-pos-badge pos-${p.pos}">${p.pos}</span></td><td>${nameCell}</td><td><div class="tp-nhl">${nhlTeam}</div></td><td class="tp-box">${p.box.replace(/Forwards |Defense |Goalie /,'').padStart(2,'0')}</td>${sc}<td class="tp-ht-flag">${htCell}</td><td class="tp-pts-num">${pts}</td></tr>`;
-  }).join('');
-  
-  // Calculate totals using live stats where available
-  const totalPts = roundPts(rows.reduce((s,p) => {
-    const liveStats = hasNightlyStats ? NIGHTLY_STATS.find(s => s.name === (p.name || p.player)) : null;
-    return s + (liveStats ? nightlyPts(liveStats) : rosterPts(p));
-  }, 0));
-  const totalG = rows.reduce((s,p) => s + ((hasNightlyStats ? NIGHTLY_STATS.find(s => s.name === (p.name || p.player))?.goals : null) ?? p.g ?? 0), 0);
-  const totalA = rows.reduce((s,p) => s + ((hasNightlyStats ? NIGHTLY_STATS.find(s => s.name === (p.name || p.player))?.assists : null) ?? p.a ?? 0), 0);
-  const totalSOG = rows.reduce((s,p) => s + ((hasNightlyStats ? NIGHTLY_STATS.find(s => s.name === (p.name || p.player))?.sog : null) ?? p.sog ?? 0), 0);
-  const totalPIM = rows.reduce((s,p) => s + ((hasNightlyStats ? NIGHTLY_STATS.find(s => s.name === (p.name || p.player))?.pim : null) ?? p.pim ?? 0), 0);
-  const totalSV = rows.reduce((s,p) => s + ((hasNightlyStats ? NIGHTLY_STATS.find(s => s.name === (p.name || p.player))?.saves : null) ?? p.sv ?? 0), 0);
-  const totalW = rows.reduce((s,p) => s + ((hasNightlyStats ? NIGHTLY_STATS.find(s => s.name === (p.name || p.player))?.wins : null) ?? p.w ?? 0), 0);
-  
-  document.getElementById('tp-tfoot').innerHTML = `<tr class="tp-footer"><td></td><td style="font-size:13px;color:var(--muted)">${rows.length} players</td><td></td><td></td><td class="tp-stat-num">${totalG}</td><td class="tp-stat-num">${totalA}</td><td class="tp-stat-num">${totalSOG}</td><td class="tp-stat-num">${totalPIM}</td><td class="tp-stat-num">${totalW}W</td><td></td><td></td><td></td><td class="tp-stat-num">${totalSV.toLocaleString()}</td><td></td><td class="tp-pts-num">${totalPts}</td></tr>`;
-}
+function filterRoster(pos, tab) { currentFilter = pos; document.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active')); tab.classList.add('active'); }
 
 // ══════════ PLAYER INFO MODAL ══════════
 let playerModalContext = null;
@@ -530,7 +408,6 @@ function openPlayerModal(playerName, team, pos, boxId, radioEl) {
   document.getElementById('pm-name').textContent = playerName;
   document.getElementById('pm-nhl').textContent = team + ' · ' + (s?.pos || pos);
   const badge = document.getElementById('pm-pos-badge'); badge.textContent = pos; badge.className = `pm-pos-badge pm-pos-${pos}`;
-  // Hide headshot - NHL CDN no longer publicly accessible
   const headshotEl = document.getElementById('pm-headshot');
   if (headshotEl) headshotEl.style.display = 'none';
   const statsGrid = document.getElementById('pm-stats-grid');
@@ -673,10 +550,9 @@ function adminAdd() {
     const now = new Date();
     const hour = now.getHours();
     const day = now.getDay();
-    // NHL games typically 7pm-11pm ET, Tue-Sat
     const isWeekend = day === 0 || day === 6;
-    const isGameDay = isWeekend || (day >= 2 && day <= 5); // Tue-Sat + Sun
-    const isGameHour = hour >= 19 && hour <= 23; // 7pm-11pm
+    const isGameDay = isWeekend || (day >= 2 && day <= 5);
+    const isGameHour = hour >= 19 && hour <= 23;
     return isGameDay && isGameHour;
   }
   function updateLiveIndicator() {
@@ -691,61 +567,8 @@ function adminAdd() {
     }
   }
   updateLiveIndicator();
-  setInterval(updateLiveIndicator, 60000); // Check every minute
+  setInterval(updateLiveIndicator, 60000);
 })();
-
-// ══════════ PLAYER OWNERSHIP PERCENTAGES ══════════
-function calculateOwnership() {
-  // Mock data - in production, this would come from entries data
-  // Returns object: { 'Player Name': { count: 5, pct: 20.8 } }
-  const ownership = {};
-  const totalEntries = MOCK_BOARD?.length || 24;
-  
-  // Count how many times each player appears across all entries
-  MOCK_BOARD?.forEach(entry => {
-    entry.picks?.forEach(player => {
-      if (!ownership[player]) ownership[player] = { count: 0, pct: 0 };
-      ownership[player].count++;
-    });
-  });
-  
-  // Calculate percentages
-  Object.keys(ownership).forEach(player => {
-    ownership[player].pct = ((ownership[player].count / totalEntries) * 100).toFixed(1);
-  });
-  
-  return ownership;
-}
-
-function renderOwnershipBars() {
-  const ownership = calculateOwnership();
-  document.querySelectorAll('.popt').forEach(popt => {
-    const nameEl = popt.querySelector('.popt-name');
-    if (!nameEl) return;
-    const playerName = nameEl.textContent.trim();
-    const data = ownership[playerName];
-    if (data) {
-      // Add ownership bar
-      let bar = popt.querySelector('.ownership-bar');
-      if (!bar) {
-        bar = document.createElement('div');
-        bar.className = 'ownership-bar';
-        popt.insertBefore(bar, popt.firstChild);
-      }
-      bar.style.width = data.pct + '%';
-      
-      // Add percentage text
-      let pctEl = popt.querySelector('.ownership-pct');
-      if (!pctEl) {
-        pctEl = document.createElement('span');
-        pctEl.className = 'ownership-pct';
-        const content = popt.querySelector('.popt-content') || popt;
-        content.appendChild(pctEl);
-      }
-      pctEl.textContent = data.pct + '%';
-    }
-  });
-}
 
 // ══════════ THEME TOGGLE ══════════
 (function(){
@@ -756,7 +579,6 @@ function renderOwnershipBars() {
     document.documentElement.setAttribute('data-theme', theme);
     return theme;
   }
-  
   function toggleTheme() {
     const current = document.documentElement.getAttribute('data-theme') || 'dark';
     const next = current === 'dark' ? 'light' : 'dark';
@@ -764,8 +586,6 @@ function renderOwnershipBars() {
     localStorage.setItem('aahl-theme', next);
     return next;
   }
-  
-  // Add toggle button to header
   function addThemeToggle() {
     const nav = document.querySelector('nav');
     if (!nav || document.getElementById('theme-toggle')) return;
@@ -779,11 +599,9 @@ function renderOwnershipBars() {
       btn.innerHTML = theme === 'dark' ? '☀️' : '🌙';
     };
     nav.appendChild(btn);
-    // Set initial icon
     const current = document.documentElement.getAttribute('data-theme') || 'dark';
     btn.innerHTML = current === 'dark' ? '☀️' : '🌙';
   }
-  
   initTheme();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', addThemeToggle);
@@ -798,30 +616,21 @@ function renderOwnershipBars() {
   function shouldAutoRefresh() {
     const now = new Date();
     const hour = now.getHours();
-    return hour >= 19 && hour <= 23; // 7pm-11pm
+    return hour >= 19 && hour <= 23;
   }
   function startAutoRefresh() {
     if (refreshInterval) return;
-    console.log('Starting auto-refresh during game hours');
     refreshInterval = setInterval(() => {
       if (typeof loadData === 'function') loadData();
       if (typeof buildTicker === 'function') buildTicker();
-    }, 300000); // Refresh every 5 minutes
+    }, 300000);
   }
   function stopAutoRefresh() {
-    if (refreshInterval) {
-      clearInterval(refreshInterval);
-      refreshInterval = null;
-      console.log('Stopped auto-refresh');
-    }
+    if (refreshInterval) { clearInterval(refreshInterval); refreshInterval = null; }
   }
   function checkAndUpdate() {
-    if (shouldAutoRefresh()) {
-      startAutoRefresh();
-    } else {
-      stopAutoRefresh();
-    }
+    if (shouldAutoRefresh()) { startAutoRefresh(); } else { stopAutoRefresh(); }
   }
   checkAndUpdate();
-  setInterval(checkAndUpdate, 60000); // Check every minute
+  setInterval(checkAndUpdate, 60000);
 })();
