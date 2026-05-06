@@ -111,13 +111,6 @@
   </div>
 
   <div class="tab-panel active" id="tab-standings">
-    <div class="ht-hall" style="margin-bottom:20px">
-      <div class="ht-hall-head">
-        <div class="ht-hall-title"><span style="font-size:22px">🎩</span> Hat Trick Hall <span class="ht-count-badge" id="ht-total-badge">0 this season</span></div>
-        <span style="font-size:12px;color:var(--muted);font-family:'Teko',sans-serif">+3 bonus pts each</span>
-      </div>
-      <div id="ht-hall-rows"></div>
-    </div>
     <div class="card">
       <div class="card-head">
         <span class="card-title">All Entries</span>
@@ -217,9 +210,8 @@
   <div class="toast-body" id="toast-b"></div>
 </div>
 
-<script src="main.js?v=2"></script>
+<script src="main.js?v=3"></script>
 <script>
-// PLAYERS_CSV is defined in main.js
 let ALL_PLAYERS = [], skaterSort = {col:'pts',dir:-1}, goalieSort = {col:'pts',dir:-1}, skaterPos = 'ALL';
 
 function parsePlayersCSV(csv) {
@@ -355,14 +347,17 @@ function renderGoalies() {
   }).join('');
 }
 
-// Load data on page init
-fetchNightlyStats().then(() => {
-  buildTicker(); buildBoards(); buildHatTrickHall();
-}).catch(err => console.error('Nightly stats failed:', err));
-
-fetchPlayers().then(() => {
-  renderSkaters(); renderGoalies();
-}).catch(err => console.error('Players fetch failed:', err));
+// Load on init
+Promise.all([
+  fetchNightlyStats(),
+  fetchStandings(),
+  fetchPlayers()
+]).then(() => {
+  buildTicker();
+  buildBoards();
+  renderSkaters();
+  renderGoalies();
+}).catch(err => console.error('Data load error:', err));
 </script>
 <script>
 (function() {
