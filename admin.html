@@ -7,6 +7,45 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Teko:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" type="image/png" href="aahl-logo.png">
+<style>
+/* ── BOX EDITOR ── */
+.be-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; margin-top:16px; }
+.be-box { background:var(--surface); border:1px solid var(--border); border-radius:var(--r2); overflow:hidden; }
+.be-box-head { background:var(--surface2); padding:10px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+.be-box-label { font-family:'Teko',sans-serif; font-size:13px; font-weight:600; color:var(--text); }
+.be-box-type { font-family:'Teko',sans-serif; font-size:10px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+.be-players { padding:8px; }
+.be-player-row { display:grid; grid-template-columns:1fr 80px 52px 70px 28px; gap:6px; align-items:center; padding:5px 4px; border-bottom:1px solid var(--border); }
+.be-player-row:last-child { border-bottom:none; }
+.be-input { background:var(--surface2); border:1px solid var(--border2); border-radius:6px; padding:5px 8px; font-family:'Inter',sans-serif; font-size:12px; color:var(--text); outline:none; width:100%; transition:border-color 0.15s; }
+.be-input:focus { border-color:var(--burgundy); }
+.be-input.team { text-transform:uppercase; font-family:'Teko',sans-serif; font-size:12px; letter-spacing:0.5px; }
+.be-pos-select { background:var(--surface2); border:1px solid var(--border2); border-radius:6px; padding:5px 4px; font-family:'Teko',sans-serif; font-size:11px; color:var(--text); outline:none; width:100%; cursor:pointer; }
+.be-pts-input { background:var(--surface2); border:1px solid var(--border2); border-radius:6px; padding:5px 6px; font-family:'Teko',sans-serif; font-size:12px; color:var(--accent); outline:none; width:100%; text-align:right; }
+.be-pts-input:focus { border-color:var(--accent); }
+.be-del-btn { background:none; border:1px solid var(--border2); border-radius:6px; color:var(--muted); cursor:pointer; font-size:14px; width:26px; height:26px; display:grid; place-items:center; transition:all 0.15s; flex-shrink:0; padding:0; }
+.be-del-btn:hover { background:rgba(192,57,43,0.1); border-color:var(--red); color:var(--red); }
+.be-add-btn { width:100%; background:none; border:1px dashed var(--border2); border-radius:6px; padding:6px; font-family:'Teko',sans-serif; font-size:10px; color:var(--muted); cursor:pointer; letter-spacing:1px; text-transform:uppercase; transition:all 0.15s; margin-top:6px; }
+.be-add-btn:hover { border-color:var(--burgundy); color:var(--burgundy2); }
+.be-header-row { display:grid; grid-template-columns:1fr 80px 52px 70px 28px; gap:6px; padding:3px 4px 6px; }
+.be-header-row span { font-family:'Teko',sans-serif; font-size:9px; color:var(--muted2); letter-spacing:1px; text-transform:uppercase; }
+.be-col-right { text-align:right; }
+
+/* ── SAVE BAR ── */
+.be-save-bar { position:sticky; bottom:0; z-index:100; background:var(--surface2); border-top:1px solid var(--border2); padding:14px 24px; display:flex; align-items:center; justify-content:space-between; gap:16px; margin:0 -24px; }
+.be-status { font-family:'Teko',sans-serif; font-size:12px; color:var(--muted); }
+.be-status.saving { color:var(--gold); }
+.be-status.saved  { color:var(--green); }
+.be-status.error  { color:var(--red); }
+.be-actions { display:flex; gap:10px; }
+
+/* ── WEBHOOK CARDS ── */
+.wh-card { background:var(--surface2); border:1px solid var(--border); border-radius:var(--r); padding:16px 20px; margin-bottom:10px; display:flex; align-items:flex-start; gap:14px; }
+.wh-icon { font-size:24px; flex-shrink:0; margin-top:2px; }
+.wh-title { font-size:14px; font-weight:700; margin-bottom:4px; }
+.wh-desc { font-size:13px; color:var(--muted); line-height:1.6; }
+.wh-desc code { font-family:'DM Mono',monospace; font-size:11px; background:var(--surface3); padding:1px 6px; border-radius:4px; color:var(--accent); }
+</style>
 </head>
 <body>
 
@@ -27,7 +66,6 @@
   </div>
 </header>
 
-<!-- SPORTS TICKER -->
 <div class="ticker-wrap">
   <div class="ticker-tag">Last Night</div>
   <div class="ticker-viewport">
@@ -43,1078 +81,332 @@
     <div style="font-size:26px;font-weight:800">Admin &amp; Setup</div>
   </div>
 
-  <div class="admin-section-title">Step 1 — Create the Google Sheet</div>
-  <div class="card" style="margin-bottom:12px">
-    <div class="card-head"><span class="card-title">Setup Instructions</span><span class="free-tag">FREE · Google Account Required</span></div>
-    <div class="card-body" style="padding:0">
-      <div class="setup-step"><div class="setup-num">1</div><div>Go to <strong>sheets.google.com</strong> → click <strong>Blank spreadsheet</strong> → name it <strong>"AAHL 2026-27"</strong></div></div>
-      <div class="setup-step"><div class="setup-num">2</div><div>Create <strong>7 tabs</strong> at the bottom — right-click Sheet1 → Rename. Add tabs by clicking the <strong>+</strong> button.</div></div>
-      <div class="setup-step"><div class="setup-num">3</div><div>Go to <strong>Extensions → Apps Script</strong>. Delete the default code and paste the full script from Step 2 below.</div></div>
-      <div class="setup-step"><div class="setup-num">4</div><div>In Apps Script: click <strong>Triggers (clock icon)</strong> → Add Trigger → <code>fetchNightlyStats</code> → Time-driven → Day timer → 3am–4am EST.</div></div>
-      <div class="setup-step"><div class="setup-num">5</div><div>Back in Sheets: <strong>File → Share → Publish to web</strong> → Select the <strong>Standings</strong> tab → Publish. Copy the URL — that's your live public standings link.</div></div>
-      <div class="setup-step" style="border-bottom:none"><div class="setup-num">6</div><div>Paste your Sheet URL into the portal's entry form action and the Admin manual entry section so submissions route correctly.</div></div>
+  <!-- ══ BOX EDITOR ══ -->
+  <div class="admin-section-title">Draft Box Editor</div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-head">
+      <span class="card-title">Manage Draft Boxes</span>
+      <span style="font-size:12px;color:var(--muted);font-family:'Teko',sans-serif">24 boxes · 5 players each · saves to Google Sheet</span>
     </div>
-  </div>
+    <div style="padding:16px 20px 0">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+        <button class="btn btn-accent" style="font-size:12px;padding:8px 18px" onclick="loadBoxes()">↻ Load from Sheet</button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:8px 18px" onclick="loadFromMainJS()">Load from main.js defaults</button>
+        <div style="flex:1"></div>
+        <span class="be-status" id="be-status">Not loaded</span>
+      </div>
 
-  <div class="admin-section-title" style="margin-top:24px">Sheet Tab Structure — 7 Tabs Required</div>
-  <div class="sheets-tabs-grid">
-    <div class="sheet-tab-card">
-      <div class="stc-head stc-entries"><span class="stc-icon">📝</span><div><div class="stc-name">Entries</div><div class="stc-desc">One row per submission</div></div></div>
-      <div class="stc-cols">
-        <div class="stc-col-row"><span class="stc-col">A</span><span>EntryID</span></div>
-        <div class="stc-col-row"><span class="stc-col">B</span><span>FirstName</span></div>
-        <div class="stc-col-row"><span class="stc-col">C</span><span>LastName</span></div>
-        <div class="stc-col-row"><span class="stc-col">D</span><span>Email</span></div>
-        <div class="stc-col-row"><span class="stc-col">E</span><span>TeamName</span></div>
-        <div class="stc-col-row"><span class="stc-col">F</span><span>PaymentReceived (Y/N)</span></div>
-        <div class="stc-col-row"><span class="stc-col">G</span><span>SubmittedAt</span></div>
-        <div class="stc-col-row"><span class="stc-col">H–AE</span><span>Pick_Box1 … Pick_Box24</span></div>
-        <div class="stc-col-row"><span class="stc-col">AF</span><span>TotalPts (formula)</span></div>
-        <div class="stc-col-row"><span class="stc-col">AG</span><span>Rank (formula)</span></div>
+      <div id="be-grid" class="be-grid">
+        <div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted);font-family:'Teko',sans-serif;font-size:13px">
+          Click "Load from Sheet" to begin editing
+        </div>
       </div>
-    </div>
-    <div class="sheet-tab-card">
-      <div class="stc-head stc-players"><span class="stc-icon">🏒</span><div><div class="stc-name">Players</div><div class="stc-desc">Master player stat table</div></div></div>
-      <div class="stc-cols">
-        <div class="stc-col-row"><span class="stc-col">A</span><span>PlayerName</span></div>
-        <div class="stc-col-row"><span class="stc-col">B</span><span>NHLTeam</span></div>
-        <div class="stc-col-row"><span class="stc-col">C</span><span>Position (F/D/G)</span></div>
-        <div class="stc-col-row"><span class="stc-col">D</span><span>BoxNumber</span></div>
-        <div class="stc-col-row"><span class="stc-col">E–N</span><span>Goals, Assists, SOG, PIM, W, L, OTL, SO, SV, HatTricks</span></div>
-        <div class="stc-col-row stc-col-key"><span class="stc-col">O</span><span>TotalPts (formula)</span></div>
-      </div>
-    </div>
-    <div class="sheet-tab-card">
-      <div class="stc-head stc-standings"><span class="stc-icon">🏆</span><div><div class="stc-name">Standings</div><div class="stc-desc">Live ranked table — publish this tab</div></div></div>
-      <div class="stc-cols">
-        <div class="stc-col-row"><span class="stc-col">A</span><span>Rank</span></div>
-        <div class="stc-col-row"><span class="stc-col">B</span><span>EntryID</span></div>
-        <div class="stc-col-row"><span class="stc-col">C</span><span>TeamName</span></div>
-        <div class="stc-col-row"><span class="stc-col">D</span><span>OwnerName</span></div>
-        <div class="stc-col-row"><span class="stc-col">E</span><span>TotalPts</span></div>
-        <div class="stc-col-row"><span class="stc-col">F–G</span><span>PrevRank, RankChange</span></div>
-        <div class="stc-col-row stc-col-key"><span class="stc-col">J</span><span>TotalSaves (tiebreaker)</span></div>
-      </div>
-    </div>
-    <div class="sheet-tab-card">
-      <div class="stc-head stc-ht"><span class="stc-icon">🎩</span><div><div class="stc-name">HatTricks</div><div class="stc-desc">Every hat trick this season</div></div></div>
-      <div class="stc-cols">
-        <div class="stc-col-row"><span class="stc-col">A</span><span>Date</span></div>
-        <div class="stc-col-row"><span class="stc-col">B</span><span>PlayerName</span></div>
-        <div class="stc-col-row"><span class="stc-col">C–F</span><span>NHLTeam, Position, Goals, GameID</span></div>
-        <div class="stc-col-row stc-col-key"><span class="stc-col">H</span><span>BonusPtsAwarded</span></div>
-      </div>
-    </div>
-    <div class="sheet-tab-card">
-      <div class="stc-head stc-games"><span class="stc-icon">📅</span><div><div class="stc-name">ProcessedGames</div><div class="stc-desc">Duplicate guard</div></div></div>
-      <div class="stc-cols">
-        <div class="stc-col-row"><span class="stc-col">A</span><span>GameID</span></div>
-        <div class="stc-col-row"><span class="stc-col">B</span><span>Date</span></div>
-        <div class="stc-col-row"><span class="stc-col">C–D</span><span>HomeTeam, AwayTeam</span></div>
-        <div class="stc-col-row stc-col-key"><span class="stc-col">E</span><span>ProcessedAt</span></div>
-      </div>
-    </div>
-    <div class="sheet-tab-card">
-      <div class="stc-head stc-status"><span class="stc-icon">📡</span><div><div class="stc-name">AgentStatus</div><div class="stc-desc">Inter-agent communication log</div></div></div>
-      <div class="stc-cols">
-        <div class="stc-col-row"><span class="stc-col">A</span><span>Timestamp</span></div>
-        <div class="stc-col-row"><span class="stc-col">B</span><span>AgentID</span></div>
-        <div class="stc-col-row"><span class="stc-col">C</span><span>Status (✅ ⚠️ ❌ ⏸)</span></div>
-        <div class="stc-col-row"><span class="stc-col">D</span><span>Message</span></div>
-        <div class="stc-col-row stc-col-key"><span class="stc-col">E</span><span>RequiresAction (Y/N)</span></div>
-      </div>
-    </div>
-    <div class="sheet-tab-card">
-      <div class="stc-head stc-config"><span class="stc-icon">⚙️</span><div><div class="stc-name">Config</div><div class="stc-desc">Season settings — edit once</div></div></div>
-      <div class="stc-cols">
-        <div class="stc-col-row"><span class="stc-col">A2</span><span>SeasonYear → 2026-27</span></div>
-        <div class="stc-col-row"><span class="stc-col">A3</span><span>EntryFee → 10</span></div>
-        <div class="stc-col-row"><span class="stc-col">A4</span><span>CommissionerEmail</span></div>
-        <div class="stc-col-row"><span class="stc-col">A5</span><span>DigestDay → MONDAY</span></div>
-        <div class="stc-col-row stc-col-key"><span class="stc-col">A7</span><span>PicksLocked (TRUE/FALSE)</span></div>
+
+      <div class="be-save-bar">
+        <div>
+          <div style="font-size:13px;font-weight:600">Ready to save?</div>
+          <div class="be-status" id="be-status2" style="margin-top:2px">Changes will write to the Boxes sheet and update picks.html live</div>
+        </div>
+        <div class="be-actions">
+          <button class="btn btn-ghost" style="font-size:12px;padding:8px 18px" onclick="previewBoxes()">Preview JSON</button>
+          <button class="btn btn-accent" style="font-size:12px;padding:8px 18px" onclick="saveBoxes()">💾 Save to Sheet</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="admin-section-title" style="margin-top:32px">Step 2 — Apps Script</div>
-
-  <div class="card" style="margin-bottom:14px">
-    <div class="card-head"><span class="card-title">Full Inter-Agent System</span><span style="font-size:11px;color:var(--muted2);font-family:'DM Mono',monospace">Copy all into Apps Script</span></div>
-    <script type="text/plain" style="display:block;margin:0;border-radius:0;max-height:600px;overflow-y:auto;white-space:pre;font-family:'DM Mono',monospace;font-size:12px;background:var(--card);padding:16px">// ══════════════════════════════════════════════
-// AAHL APPS SCRIPT — Full Inter-Agent System
-// ══════════════════════════════════════════════
-const SS = SpreadsheetApp.getActiveSpreadsheet();
-const CONFIG = () => {
-  const cfg = SS.getSheetByName('Config').getDataRange().getValues();
-  return Object.fromEntries(cfg.map(r => [r[0], r[1]]));
-};
-
-// ── Agent Status Logger ──
-function agentLog(agentId, status, message, requiresAction = false) {
-  SS.getSheetByName('AgentStatus').appendRow([
-    new Date(), agentId, status, message, requiresAction ? 'Y' : 'N'
-  ]);
-}
-
-// ── Check if a previous agent completed successfully today ──
-function agentReady(agentId) {
-  const rows = SS.getSheetByName('AgentStatus').getDataRange().getValues();
-  const today = Utilities.formatDate(new Date(), 'EST', 'yyyy-MM-dd');
-  const todayRows = rows.filter(r =>
-    Utilities.formatDate(new Date(r[0]), 'EST', 'yyyy-MM-dd') === today &&
-    r[1] === agentId
-  );
-  if (!todayRows.length) return false;
-  return todayRows[todayRows.length - 1][2] === '✅';
-}
-
-// ── Alert commissioner ──
-function alertCommissioner(subject, body) {
-  const cfg = CONFIG();
-  MailApp.sendEmail(cfg['CommissionerEmail'], subject, body);
-}
-
-// ── Duplicate game guard ──
-function gameAlreadyProcessed(gameId) {
-  const rows = SS.getSheetByName('ProcessedGames').getDataRange().getValues();
-  return rows.some(r => String(r[0]) === String(gameId));
-}
-
-function markGameProcessed(gameId, date, home, away, homeScore, awayScore) {
-  SS.getSheetByName('ProcessedGames').appendRow([
-    gameId, date, home, away, homeScore, awayScore, new Date()
-  ]);
-}
-
-// ── Pool player name lookup ──
-function getPoolPlayerNames() {
-  const rows = SS.getSheetByName('Players').getDataRange().getValues();
-  return new Set(rows.slice(1).map(r => (r[0] || '').trim()));
-}
-
-// ── Read all entries from sheet ──
-function getEntries() {
-  const rows = SS.getSheetByName('Entries').getDataRange().getValues();
-  return rows.slice(1).map(r => ({
-    entryId:         r[0],
-    firstName:       r[1],
-    lastName:        r[2],
-    email:           r[3],
-    phone:           r[4],
-    teamName:        r[5],
-    payment:         r[6],
-    picks:           r.slice(8, 32),
-    divAtlantic:     (r[32] || '').toString().trim(),
-    divMetropolitan: (r[33] || '').toString().trim(),
-    divCentral:      (r[34] || '').toString().trim(),
-    divPacific:      (r[35] || '').toString().trim(),
-  })).filter(e => e.entryId);
-}
-
-// ══════════════════════════════════════════════
-// AGT-001 — Entry Form Receiver
-// ══════════════════════════════════════════════
-function doPost(e) {
-  try {
-    const data = JSON.parse(e.postData.contents);
-    const cfg = CONFIG();
-
-    if (cfg['PicksLocked'] === true || cfg['PicksLocked'] === 'TRUE') {
-      return ContentService.createTextOutput(
-        JSON.stringify({ success: false, error: 'Picks are locked.' })
-      ).setMimeType(ContentService.MimeType.JSON);
-    }
-
-    const sheet = SS.getSheetByName('Entries');
-    const id = 'AAHL-' + Utilities.formatDate(new Date(), 'EST', 'yyyyMMdd') + '-' +
-               Math.floor(Math.random() * 90000 + 10000);
-
-    sheet.appendRow([
-      id,
-      data.firstName, data.lastName,
-      data.email,
-      data.phone     || '',
-      data.teamName,
-      'N',
-      new Date(),
-      ...data.picks,
-      data.divisions?.atlantic     || '',
-      data.divisions?.metropolitan || '',
-      data.divisions?.central      || '',
-      data.divisions?.pacific      || '',
-    ]);
-
-    agentLog('AGT-001', '✅', `New entry: ${data.teamName} — ${data.firstName} ${data.lastName} (${data.email})`);
-    sendEntryConfirmation(data);
-    notifyNewEntry(data); // Discord/Slack notification
-
-    return ContentService.createTextOutput(
-      JSON.stringify({ success: true, entryId: id })
-    ).setMimeType(ContentService.MimeType.JSON);
-
-  } catch(err) {
-    agentLog('AGT-001', '❌', `Entry submission failed: ${err.message}`, true);
-    return ContentService.createTextOutput(
-      JSON.stringify({ success: false, error: err.message })
-    ).setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
-// ══════════════════════════════════════════════
-// AGT-002 — Stat Fetch + Anomaly Detection (Nightly 3 AM)
-// ══════════════════════════════════════════════
-function fetchNightlyStats() {
-  agentLog('AGT-002', '⏳', 'Starting nightly stat fetch');
-  const date = Utilities.formatDate(
-    new Date(Date.now() - 86400000), 'EST', 'yyyy-MM-dd'
-  );
-
-  const poolPlayers = getPoolPlayerNames();
-
-  try {
-    const sched = JSON.parse(UrlFetchApp
-      .fetch(`https://api-web.nhle.com/v1/schedule/${date}`)
-      .getContentText());
-
-    const games = sched.gameWeek?.[0]?.games || [];
-    if (!games.length) {
-      agentLog('AGT-002', '✅', `No games on ${date} — nothing to process`);
-      calculateStandings();
-      return;
-    }
-
-    let processed = 0, skipped = 0, anomalies = 0;
-
-    const nightlySheet = SS.getSheetByName('NightlyStats');
-    nightlySheet.clearContents();
-    nightlySheet.appendRow([
-      'PlayerName','Team','Pos','Game','Goals','Assists','SOG','PIM',
-      'Wins','Losses','OTL','Shutouts','Saves','PtsEarned','Date'
-    ]);
-
-    const nightlyRows = [];
-    const teamsPlayed = new Set();
-
-    games.forEach(game => {
-      if (gameAlreadyProcessed(game.id)) {
-        skipped++;
-        agentLog('AGT-002', '⚠️', `Game ${game.id} already processed — skipping`, false);
-        return;
-      }
-
-      const box = JSON.parse(UrlFetchApp
-        .fetch(`https://api-web.nhle.com/v1/gamecenter/${game.id}/boxscore`)
-        .getContentText());
-
-      const homeGoals = box.homeTeam?.score || 0;
-      const awayGoals = box.awayTeam?.score || 0;
-      const periodType = box.periodDescriptor?.periodType;
-      const isOT = periodType === 'OT' || periodType === 'SO';
-      const gameLabel = `${box.awayTeam?.abbrev} ${awayGoals} · ${box.homeTeam?.abbrev} ${homeGoals}`;
-
-      if (box.homeTeam?.abbrev) teamsPlayed.add(box.homeTeam.abbrev);
-      if (box.awayTeam?.abbrev) teamsPlayed.add(box.awayTeam.abbrev);
-
-      const idToName = {};
-      [box.homeTeam?.abbrev, box.awayTeam?.abbrev].forEach(abbrev => {
-        if (!abbrev) return;
-        try {
-          const roster = JSON.parse(UrlFetchApp
-            .fetch(`https://api-web.nhle.com/v1/roster/${abbrev}/20252026`)
-            .getContentText());
-          [...(roster.forwards||[]), ...(roster.defensemen||[]), ...(roster.goalies||[])]
-            .forEach(p => { idToName[p.id] = `${p.firstName.default} ${p.lastName.default}`; });
-        } catch(e) {
-          agentLog('AGT-002', '⚠️', `Roster fetch failed for ${abbrev}: ${e.message}`);
-        }
-      });
-
-      const pgStats = box.playerByGameStats || {};
-
-      ['awayTeam', 'homeTeam'].forEach(side => {
-        const teamAbbrev = box[side]?.abbrev;
-        const teamStats  = pgStats[side] || {};
-        const isHome     = side === 'homeTeam';
-        const teamWon    = isHome ? homeGoals > awayGoals : awayGoals > homeGoals;
-
-        [...(teamStats.forwards||[]), ...(teamStats.defense||[])].forEach(p => {
-          if (!p.toi || p.toi === '00:00') return;
-          const fullName = idToName[p.playerId] || '';
-          if (!fullName) return;
-
-          const pos = (teamStats.forwards||[]).some(f => f.playerId === p.playerId) ? 'F' : 'D';
-          const stats = {
-            name: fullName, team: teamAbbrev, pos,
-            goals: p.goals || 0, assists: p.assists || 0,
-            sog: p.sog || 0, pim: p.pim || 0,
-          };
-
-          if (stats.goals > 6 || stats.assists > 6) {
-            anomalies++;
-            agentLog('AGT-002', '⚠️',
-              `Suspicious: ${fullName} — ${stats.goals}G ${stats.assists}A in game ${game.id}`, true);
-            return;
-          }
-
-          updateSkaterStats(stats);
-          checkHatTrick(stats, game.id, date);
-
-          if (poolPlayers.has(fullName) && (stats.goals > 0 || stats.assists > 0 || stats.sog > 0)) {
-            const ht = stats.goals >= 3 ? 3 : 0;
-            const pimPts = pos === 'D' ? stats.pim * 0.25 : 0;
-            const pts = Math.round((stats.goals + stats.assists + stats.sog * 0.11 + ht + pimPts) * 100) / 100;
-            nightlyRows.push([
-              fullName, teamAbbrev, pos, gameLabel,
-              stats.goals, stats.assists, stats.sog, stats.pim,
-              0, 0, 0, 0, 0, pts, date
-            ]);
-          }
-        });
-
-        (teamStats.goalies || []).forEach(g => {
-          if (!g.toi || g.toi === '00:00') return;
-          const fullName = idToName[g.playerId] || '';
-          if (!fullName) return;
-
-          const goalieStats = {
-            name: fullName, team: teamAbbrev, pos: 'G',
-            wins:     teamWon && !isOT ? 1 : 0,
-            losses:   !teamWon && !isOT ? 1 : 0,
-            otl:      !teamWon && isOT ? 1 : 0,
-            shutouts: (g.savePctg === 1 && g.toi !== '00:00') ? 1 : 0,
-            saves:    g.saves || 0,
-          };
-          updateGoalieStats(goalieStats);
-
-          if (poolPlayers.has(fullName)) {
-            const pts = Math.round((
-              goalieStats.wins * 3 + goalieStats.losses * 1 + goalieStats.otl * 1.5 +
-              goalieStats.shutouts * 2 + goalieStats.saves * 0.02
-            ) * 100) / 100;
-            nightlyRows.push([
-              fullName, teamAbbrev, 'G', gameLabel,
-              0, 0, 0, 0,
-              goalieStats.wins, goalieStats.losses, goalieStats.otl,
-              goalieStats.shutouts, goalieStats.saves, pts, date
-            ]);
-          }
-        });
-      });
-
-      markGameProcessed(game.id, date,
-        box.homeTeam?.abbrev, box.awayTeam?.abbrev,
-        homeGoals, awayGoals);
-      processed++;
-    });
-
-    if (nightlyRows.length) {
-      nightlySheet.getRange(2, 1, nightlyRows.length, 15).setValues(nightlyRows);
-    }
-
-    updateIRStatuses([...teamsPlayed]);
-
-    agentLog('AGT-002', '✅',
-      `Complete — ${processed} games processed, ${skipped} skipped, ${anomalies} anomalies flagged` 
-    );
-
-    if (anomalies > 0) {
-      alertCommissioner(
-        'AAHL ⚠️ Stat Anomalies Detected',
-        `${anomalies} suspicious stat(s) flagged on ${date}. Check AgentStatus tab.` 
-      );
-    }
-
-    calculateStandings();
-
-  } catch(err) {
-    agentLog('AGT-002', '❌', `Fatal error: ${err.message}`, true);
-    alertCommissioner('AAHL ❌ Stat Fetch Failed', `AGT-002 failed on ${date}: ${err.message}`);
-  }
-}
-
-// ── IR Status Updater ──
-function updateIRStatuses(teams) {
-  const sheet = SS.getSheetByName('Players');
-  if (!sheet) { agentLog('AGT-002', '⚠️', 'Players sheet not found — IR update skipped'); return; }
-
-  const data   = sheet.getDataRange().getValues();
-  const header = data[0];
-  const IR_COL = 15;
-  if (header[IR_COL] !== 'OnIR') {
-    sheet.getRange(1, IR_COL + 1).setValue('OnIR');
-  }
-
-  const irSet = new Set();
-  const teamsChecked = [];
-
-  teams.forEach(abbrev => {
-    if (!abbrev) return;
-    try {
-      const url      = `https://api-web.nhle.com/v1/roster/${abbrev}/current`;
-      const response = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
-      if (response.getResponseCode() !== 200) {
-        agentLog('AGT-002', '⚠️', `IR roster fetch returned ${response.getResponseCode()} for ${abbrev}`);
-        return;
-      }
-      const roster = JSON.parse(response.getContentText());
-      ['forwards', 'defensemen', 'goalies'].forEach(group => {
-        (roster[group] || []).forEach(p => {
-          if (p.injuryStatus && p.injuryStatus !== 'ACTIVE') {
-            const firstName = (p.firstName && p.firstName.default) || '';
-            const lastName  = (p.lastName  && p.lastName.default)  || '';
-            const fullName  = (firstName + ' ' + lastName).trim();
-            if (fullName) irSet.add(fullName);
-          }
-        });
-      });
-      teamsChecked.push(abbrev);
-    } catch (e) {
-      agentLog('AGT-002', '⚠️', `IR fetch exception for ${abbrev}: ${e.message}`);
-    }
-  });
-
-  const irValues = [];
-  for (let i = 1; i < data.length; i++) {
-    const name = String(data[i][0] || '').trim();
-    if (!name) { irValues.push(['']); continue; }
-    irValues.push([irSet.has(name) ? 'TRUE' : 'FALSE']);
-  }
-
-  if (irValues.length > 0) {
-    sheet.getRange(2, IR_COL + 1, irValues.length, 1).setValues(irValues);
-  }
-
-  agentLog('AGT-002', '✅',
-    `IR statuses updated — ${irSet.size} players on IR across ${teamsChecked.length} teams checked` 
-  );
-}
-
-// ── Manual trigger to seed IR column ──
-function seedIRStatuses() {
-  const allTeams = [
-    'ANA','BOS','BUF','CAR','CBJ','CGY','CHI','COL','DAL','DET',
-    'EDM','FLA','LA','MIN','MTL','NJ','NSH','NYI','NYR','OTT',
-    'PHI','PIT','SEA','STL','TB','TOR','UTA','VAN','VGK','WSH','WPG','ARI'
-  ];
-  updateIRStatuses(allTeams);
-}
-
-// ── Populate PlayerIDs for headshots ──
-function populatePlayerIDs() {
-  // Helper to normalize names
-  function normalizeName(name) {
-    name = name.trim();
-    if (name.includes(',')) {
-      const parts = name.split(',').map(p => p.trim());
-      if (parts.length === 2) name = `${parts[1]} ${parts[0]}`;
-    }
-    return name;
-  }
-  
-  agentLog('AGT-002', '⏳', 'Starting PlayerID population');
-  const sheet = SS.getSheetByName('Players');
-  if (!sheet) { agentLog('AGT-002', '❌', 'Players sheet not found'); return; }
-  
-  const data = sheet.getDataRange().getValues();
-  const PLAYER_ID_COL = 16; // Column Q (0-indexed)
-  let updated = 0;
-  let missing = [];
-  
-  // Get all NHL rosters to build name→ID map (multiple keys for matching)
-  const nameToId = {};
-  // NHL API uses TBL not TB, NJD not NJ, LAK not LA
-  const allTeams = ['ANA','BOS','BUF','CAR','CBJ','CGY','CHI','COL','DAL','DET',
-    'EDM','FLA','LAK','MIN','MTL','NJD','NSH','NYI','NYR','OTT',
-    'PHI','PIT','SEA','STL','TBL','TOR','UTA','VAN','VGK','WSH','WPG'];
-  
-  // Debug: Store sample API names
-  let apiNameSamples = [];
-  
-  allTeams.forEach(abbrev => {
-    try {
-      const url = `https://api-web.nhle.com/v1/roster/${abbrev}/current`;
-      const response = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
-      if (response.getResponseCode() === 200) {
-        const roster = JSON.parse(response.getContentText());
-        [...(roster.forwards||[]), ...(roster.defensemen||[]), ...(roster.goalies||[])]
-          .forEach(p => {
-            const fullName = `${p.firstName.default} ${p.lastName.default}`;
-            nameToId[fullName] = p.id;
-            // Also store normalized version
-            nameToId[normalizeName(fullName)] = p.id;
-            // Store last name only for partial matching
-            nameToId[p.lastName.default.toLowerCase()] = p.id;
-            // Debug: collect samples
-            if (apiNameSamples.length < 5 && p.lastName.default === 'Kucherov') {
-              apiNameSamples.push(fullName + ' (ID: ' + p.id + ')');
-            }
-          });
-      }
-    } catch(e) { /* skip */ }
-  });
-  
-  // Debug log
-  console.log('API loaded ' + Object.keys(nameToId).length + ' name mappings');
-  console.log('Sample API names: ' + apiNameSamples.join(', '));
-  console.log('Looking for Kucherov: ' + (nameToId['Nikita Kucherov'] || 'NOT FOUND'));
-  
-  // Debug: Log first few sheet names
-  let sheetNameSamples = [];
-  for (let i = 1; i < Math.min(10, data.length); i++) {
-    if (data[i][0]) sheetNameSamples.push(data[i][0] + ' -> ' + normalizeName(data[i][0]));
-  }
-  console.log('Sheet name samples: ' + sheetNameSamples.join('; '));
-  
-  // Update PlayerID column
-  for (let i = 1; i < data.length; i++) {
-    const name = data[i][0];
-    const currentId = data[i][PLAYER_ID_COL];
-    if (!name || currentId) continue;
-    
-    const normalizedName = normalizeName(name);
-    let playerId = nameToId[name] || nameToId[normalizedName];
-    
-    // Debug logging for first few missing
-    if (!playerId && missing.length < 3) {
-      console.log('DEBUG: Name=' + name + ', Normalized=' + normalizedName + 
-                  ', LastName=' + name.split(' ').pop().toLowerCase() +
-                  ', HasKucherov=' + (nameToId['Nikita Kucherov'] ? 'YES' : 'NO'));
-    }
-    
-    // Try partial match if exact fails
-    if (!playerId) {
-      const lastName = name.split(' ').pop().toLowerCase();
-      playerId = nameToId[lastName];
-    }
-    
-    if (playerId) {
-      sheet.getRange(i + 1, PLAYER_ID_COL + 1).setValue(playerId);
-      updated++;
-    } else {
-      missing.push(name);
-    }
-  }
-  
-  agentLog('AGT-002', '✅', `PlayerIDs updated: ${updated} found, ${missing.length} missing`);
-  if (missing.length) {
-    console.log('Missing PlayerIDs for:', missing.join(', '));
-    // Create sheet with missing players for manual lookup
-    const missingSheet = SS.getSheetByName('MissingPlayerIDs') || SS.insertSheet('MissingPlayerIDs');
-    missingSheet.clear();
-    missingSheet.appendRow(['Player Name', 'NHL.com Search URL', 'PlayerID', 'Notes']);
-    missing.forEach(name => {
-      const searchUrl = `https://www.nhl.com/player/${name.toLowerCase().replace(/\s+/g, '-')}`;
-      missingSheet.appendRow([name, searchUrl, '', 'Find ID on nhl.com and paste here']);
-    });
-    agentLog('AGT-002', 'ℹ️', `Created 'MissingPlayerIDs' sheet with ${missing.length} players to look up`);
-  }
-}
-
-function updateSkaterStats(stats) {
-  const sheet = SS.getSheetByName('Players');
-  const rows = sheet.getDataRange().getValues();
-  const idx = rows.findIndex(r => r[0] === stats.name);
-  if (idx < 0) return;
-  const row = idx + 1;
-  sheet.getRange(row, 6).setValue((rows[idx][5] || 0) + stats.goals);
-  sheet.getRange(row, 7).setValue((rows[idx][6] || 0) + stats.assists);
-  sheet.getRange(row, 8).setValue((rows[idx][7] || 0) + stats.sog);
-  sheet.getRange(row, 9).setValue((rows[idx][8] || 0) + stats.pim);
-}
-
-function updateGoalieStats(stats) {
-  const sheet = SS.getSheetByName('Players');
-  const rows = sheet.getDataRange().getValues();
-  const idx = rows.findIndex(r => r[0] === stats.name);
-  if (idx < 0) return;
-  const row = idx + 1;
-  sheet.getRange(row, 10).setValue((rows[idx][9]  || 0) + stats.wins);
-  sheet.getRange(row, 11).setValue((rows[idx][10] || 0) + stats.losses);
-  sheet.getRange(row, 12).setValue((rows[idx][11] || 0) + stats.otl);
-  sheet.getRange(row, 13).setValue((rows[idx][12] || 0) + stats.shutouts);
-  sheet.getRange(row, 14).setValue((rows[idx][13] || 0) + stats.saves);
-}
-
-function checkHatTrick(stats, gameId, date) {
-  if (stats.goals < 3) return;
-  const htSheet = SS.getSheetByName('HatTricks');
-  const entries = getEntries();
-  const drafter = entries.find(e => e.picks.some(p => p === stats.name));
-  htSheet.appendRow([
-    date, stats.name, stats.team, stats.pos,
-    stats.goals, stats.assists, gameId,
-    drafter ? drafter.entryId : 'unowned',
-    drafter ? `${drafter.firstName} ${drafter.lastName}` : '—',
-    3
-  ]);
-  if (drafter) {
-    const pts = Math.round((stats.goals + stats.assists + stats.sog * 0.11 + 3) * 100) / 100;
-    sendHatTrickAlert(stats.name, stats.team, stats.goals, stats.assists, pts, drafter.teamName);
-  }
-}
-
-// ══════════════════════════════════════════════
-// AGT-003 — Scoring & Standings Agent
-// ══════════════════════════════════════════════
-function getDivisionLeaders() {
-  try {
-    const res = JSON.parse(UrlFetchApp
-      .fetch('https://api-web.nhle.com/v1/standings/now')
-      .getContentText());
-    const leaders = {};
-    (res.standings || []).forEach(team => {
-      const div = team.divisionName;
-      if (!leaders[div]) leaders[div] = (team.teamName?.default || '').trim();
-    });
-    agentLog('AGT-003', '⏳', `Division leaders: ${JSON.stringify(leaders)}`);
-    return leaders;
-  } catch(err) {
-    agentLog('AGT-003', '⚠️', `Division leaders fetch failed: ${err.message}`);
-    return {};
-  }
-}
-
-function calculateStandings() {
-  if (!agentReady('AGT-002')) {
-    agentLog('AGT-003', '⏸', 'Waiting — AGT-002 not complete. Retrying in 10 min.');
-    Utilities.sleep(600000);
-    if (!agentReady('AGT-002')) {
-      agentLog('AGT-003', '❌', 'AGT-002 still not ready — aborting', true);
-      alertCommissioner('AAHL ❌ Standings Not Updated',
-        'AGT-003 aborted — AGT-002 did not complete.');
-      return;
-    }
-  }
-
-  agentLog('AGT-003', '⏳', 'Recalculating standings');
-
-  const playersSheet = SS.getSheetByName('Players');
-  const playerRows = playersSheet.getDataRange().getValues();
-  const playerMap = {};
-  playerRows.slice(1).forEach(r => {
-    playerMap[r[0]] = {
-      pos: r[2], goals: r[5]||0, assists: r[6]||0, sog: r[7]||0, pim: r[8]||0,
-      wins: r[9]||0, losses: r[10]||0, otl: r[11]||0, shutouts: r[12]||0, saves: r[13]||0,
-      hatTricks: r[14]||0
-    };
-  });
-
-  const divLeaders = getDivisionLeaders();
-  const entries = getEntries();
-
-  const results = entries.map(entry => {
-    let totalPts = 0, totalG = 0, totalA = 0, totalSV = 0, totalHT = 0;
-
-    entry.picks.forEach(playerName => {
-      if (!playerName) return;
-      const p = playerMap[playerName];
-      if (!p) return;
-      let pts = 0;
-      if (p.pos === 'G') {
-        pts = p.wins*3 + p.losses*1 + p.otl*1.5 + p.shutouts*2 + p.saves*0.02;
-        totalSV += p.saves;
-      } else {
-        const ht = p.hatTricks > 0 ? p.hatTricks * 3 : 0;
-        const pim = p.pos === 'D' ? p.pim * 0.25 : 0;
-        pts = p.goals + p.assists + p.sog * 0.11 + ht + pim;
-        totalG += p.goals;
-        totalA += p.assists;
-        totalHT += p.hatTricks;
-      }
-      totalPts += pts;
-    });
-
-    let divBonus = 0;
-    const divPicks = {
-      'Atlantic':     entry.divAtlantic,
-      'Metropolitan': entry.divMetropolitan,
-      'Central':      entry.divCentral,
-      'Pacific':      entry.divPacific,
-    };
-    Object.entries(divPicks).forEach(([div, pickedTeam]) => {
-      if (!pickedTeam) return;
-      const leader = divLeaders[div] || '';
-      if (leader.toLowerCase() === pickedTeam.toLowerCase()) divBonus += 10;
-    });
-    totalPts += divBonus;
-
-    return {
-      entryId: entry.entryId, teamName: entry.teamName,
-      firstName: entry.firstName, lastName: entry.lastName,
-      email: entry.email,
-      totalPts: Math.round(totalPts * 100) / 100,
-      totalG, totalA, totalSV, totalHT,
-    };
-  });
-
-  results.sort((a, b) => b.totalPts - a.totalPts || b.totalSV - a.totalSV);
-
-  const standingsSheet = SS.getSheetByName('Standings');
-  const prevRows = standingsSheet.getDataRange().getValues();
-  const prevRankMap = {};
-  prevRows.slice(1).forEach(r => { prevRankMap[r[1]] = parseInt(r[0]) || 0; });
-
-  const now = new Date();
-  const newRows = results.map((e, i) => {
-    const rank = i + 1;
-    const prev = prevRankMap[e.entryId] || rank;
-    const change = prev - rank;
-    return [rank, e.entryId, e.teamName, `${e.firstName} ${e.lastName}`,
-      e.email, e.totalPts, prev, change, e.totalG, e.totalA, e.totalSV, e.totalHT, now];
-  });
-
-  const lastRow = standingsSheet.getLastRow();
-  if (lastRow > 1) standingsSheet.getRange(2, 1, lastRow - 1, 13).clearContent();
-  if (newRows.length) standingsSheet.getRange(2, 1, newRows.length, 13).setValues(newRows);
-
-  const leader = results[0] || {};
-  agentLog('AGT-003', '✅',
-    `Standings updated — ${results.length} entries ranked. Leader: ${leader.teamName || '—'} with ${leader.totalPts || 0} pts` 
-  );
-
-  const cfg = CONFIG();
-  const today = Utilities.formatDate(now, 'EST', 'EEEE').toUpperCase();
-  if (today === (cfg['DigestDay'] || 'MONDAY')) sendWeeklyDigest(results);
-}
-
-// ══════════════════════════════════════════════
-// AGT-004 — Comms Agent
-// ══════════════════════════════════════════════
-function sendEntryConfirmation(entry) {
-  agentLog('AGT-004', '⏳', `Sending confirmation to ${entry.email}`);
-
-  const boxLabels = [
-    'Forwards 1','Forwards 2','Forwards 3','Forwards 4','Forwards 5','Forwards 6',
-    'Forwards 7','Forwards 8','Forwards 9','Forwards 10','Forwards 11','Forwards 12',
-    'Defense 1','Defense 2','Defense 3','Defense 4','Defense 5','Defense 6',
-    'Goalie 1','Goalie 2','Goalie 3','Goalie 4','Goalie 5','Goalie 6'
-  ];
-
-  const picks = entry.picks || [];
-  const picksRows = picks.map((player, i) => {
-    if (!player) return '';
-    const label = boxLabels[i] || `Box ${i+1}`;
-    const pos = i < 12 ? 'F' : i < 18 ? 'D' : 'G';
-    const posColor = pos === 'F' ? '#2563eb' : pos === 'D' ? '#7c3aed' : '#059669';
-    return `<tr style="border-bottom:1px solid #e5e7eb">
-      <td style="padding:6px 10px;font-size:12px;color:#6b7280">${label}</td>
-      <td style="padding:6px 10px">
-        <span style="display:inline-block;background:${posColor};color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;margin-right:6px">${pos}</span>
-        ${player}
-      </td>
-    </tr>`;
-  }).filter(Boolean).join('');
-
-  const divs = entry.divisions || {};
-  const divRows = [
-    ['Atlantic',     divs.atlantic     || '—'],
-    ['Metropolitan', divs.metropolitan || '—'],
-    ['Central',      divs.central      || '—'],
-    ['Pacific',      divs.pacific      || '—'],
-  ].map(([div, team]) => `<tr style="border-bottom:1px solid #e5e7eb">
-    <td style="padding:6px 10px;font-size:12px;color:#6b7280">${div}</td>
-    <td style="padding:6px 10px;font-weight:600">${team}</td>
-  </tr>`).join('');
-
-  MailApp.sendEmail({
-    to: entry.email,
-    subject: '🏒 AAHL Entry Confirmed — ' + entry.teamName,
-    htmlBody: `
-      <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;color:#111">
-        <div style="background:#1a1a2e;padding:24px;text-align:center;border-radius:8px 8px 0 0">
-          <h1 style="color:#fff;margin:0;font-size:22px">🦙 Angry Alpaca Hockey League</h1>
-          <p style="color:#9ca3af;margin:6px 0 0">Entry Confirmation</p>
-        </div>
-        <div style="background:#f9fafb;padding:24px;border:1px solid #e5e7eb;border-top:none">
-          <h2 style="margin:0 0 4px">You're in, ${entry.firstName}! 🎉</h2>
-          <p style="color:#6b7280;margin:0 0 20px">Your entry <strong style="color:#111">${entry.teamName}</strong> has been received and locked in.</p>
-          <div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:6px;padding:12px 16px;margin-bottom:24px">
-            <strong>💳 Payment required:</strong> Send <strong>$10</strong> via e-transfer to
-            <strong style="color:#7c3aed">matt.hope@rocketmail.com</strong>
-            with your name in the memo to confirm your spot.
-          </div>
-          <h3 style="margin:0 0 8px;font-size:15px">Your 24 Player Picks</h3>
-          <table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;margin-bottom:24px">
-            <thead>
-              <tr style="background:#1a1a2e;color:#fff">
-                <th style="padding:8px 10px;text-align:left;font-size:12px;font-weight:600">Box</th>
-                <th style="padding:8px 10px;text-align:left;font-size:12px;font-weight:600">Player</th>
-              </tr>
-            </thead>
-            <tbody>${picksRows}</tbody>
-          </table>
-          <h3 style="margin:0 0 8px;font-size:15px">Division Winner Picks <span style="font-size:12px;color:#6b7280;font-weight:400">(+10 pts while your team leads)</span></h3>
-          <table style="width:100%;border-collapse:collapse;border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;margin-bottom:24px">
-            <thead>
-              <tr style="background:#1a1a2e;color:#fff">
-                <th style="padding:8px 10px;text-align:left;font-size:12px;font-weight:600">Division</th>
-                <th style="padding:8px 10px;text-align:left;font-size:12px;font-weight:600">Your Pick</th>
-              </tr>
-            </thead>
-            <tbody>${divRows}</tbody>
-          </table>
-          <p style="font-size:13px;color:#6b7280;margin:0">
-            Picks lock <strong>September 29, 2026</strong> (opening night). No changes after submission.<br>
-            Questions? Reply to this email or find us on Facebook.
-          </p>
-        </div>
-        <div style="background:#1a1a2e;padding:12px;text-align:center;border-radius:0 0 8px 8px">
-          <p style="color:#6b7280;font-size:11px;margin:0">AAHL — Angry Alpaca Hockey League 2026–27</p>
-        </div>
-      </div>
-    `
-  });
-
-  agentLog('AGT-004', '✅', `Confirmation with picks sent to ${entry.email}`);
-}
-
-function sendWeeklyDigest(standings) {
-  agentLog('AGT-004', '⏳', 'Building weekly digest');
-  const allEntries = getEntries();
-  const top3 = standings.slice(0, 3);
-  const rows = standings.map((e, i) =>
-    `<tr><td>${i+1}</td><td>${e.teamName}</td><td>${e.firstName} ${e.lastName}</td><td>${e.totalPts}</td></tr>` 
-  ).join('');
-  allEntries.forEach(e => {
-    MailApp.sendEmail({
-      to: e.email,
-      subject: `🦙 AAHL Weekly Update — ${top3[0]?.teamName} leads with ${top3[0]?.totalPts} pts`,
-      htmlBody: `
-        <h2>This Week in AAHL</h2>
-        <h3>🏆 Current Standings</h3>
-        <table border="1" cellpadding="6" style="border-collapse:collapse">
-          <tr><th>#</th><th>Team</th><th>Owner</th><th>Pts</th></tr>
-          ${rows}
-        </table>
-        <p>Prize pool: $${Math.round(allEntries.length * 10 * 0.5 * 0.5)} for 1st place.</p>
-      `
-    });
-  });
-  agentLog('AGT-004', '✅', `Weekly digest sent to ${allEntries.length} participants`);
-}
-
-function sendHatTrickAlert(playerName, team, goals, assists, ptsEarned, draftedBy) {
-  agentLog('AGT-004', '⏳', `Sending hat trick alert for ${playerName}`);
-  const allEntries = getEntries();
-  allEntries.forEach(e => {
-    MailApp.sendEmail({
-      to: e.email,
-      subject: `🎩 HAT TRICK — ${playerName} scored ${goals} goals last night!`,
-      htmlBody: `
-        <h2>🎩 Hat Trick Alert!</h2>
-        <p><strong>${playerName}</strong> (${team}) scored <strong>${goals} goals</strong>
-           and added ${assists} assists last night.</p>
-        <p>Drafted by: <strong>${draftedBy}</strong></p>
-        <p>Points earned: <strong>${ptsEarned}</strong> (incl. +3 hat trick bonus)</p>
-      `
-    });
-  });
-  agentLog('AGT-004', '✅', `Hat trick alert sent for ${playerName}`);
-}
-
-// ══════════════════════════════════════════════
-// WEBHOOK NOTIFICATIONS (Discord/Slack)
-// ══════════════════════════════════════════════
-function sendDiscordNotification(message, type = 'general') {
-  const webhookUrl = PropertiesService.getScriptProperties().getProperty('DISCORD_WEBHOOK_URL');
-  if (!webhookUrl) {
-    agentLog('AGT-004', '⚠️', 'Discord webhook URL not configured');
-    return;
-  }
-  
-  const colors = {
-    entry: 0x22d37a,    // Green for new entries
-    hatTrick: 0x6F263D, // Burgundy for hat tricks
-    standings: 0x236192, // Blue for standings updates
-    general: 0xA2AAAD   // Silver for general
-  };
-  
-  const payload = {
-    embeds: [{
-      title: message.title,
-      description: message.description,
-      color: colors[type] || colors.general,
-      timestamp: new Date().toISOString(),
-      footer: { text: 'Angry Alpaca Hockey League' }
-    }]
-  };
-  
-  if (message.fields) {
-    payload.embeds[0].fields = message.fields;
-  }
-  
-  try {
-    UrlFetchApp.fetch(webhookUrl, {
-      method: 'post',
-      contentType: 'application/json',
-      payload: JSON.stringify(payload)
-    });
-    agentLog('AGT-004', '✅', `Discord notification sent: ${message.title}`);
-  } catch (err) {
-    agentLog('AGT-004', '❌', `Discord webhook failed: ${err.message}`);
-  }
-}
-
-function sendSlackNotification(message, type = 'general') {
-  const webhookUrl = PropertiesService.getScriptProperties().getProperty('SLACK_WEBHOOK_URL');
-  if (!webhookUrl) {
-    agentLog('AGT-004', '⚠️', 'Slack webhook URL not configured');
-    return;
-  }
-  
-  const colors = {
-    entry: '#22d37a',
-    hatTrick: '#6F263D',
-    standings: '#236192',
-    general: '#A2AAAD'
-  };
-  
-  const payload = {
-    text: message.title,
-    blocks: [
-      {
-        type: 'header',
-        text: { type: 'plain_text', text: message.title, emoji: true }
-      },
-      {
-        type: 'section',
-        text: { type: 'mrkdwn', text: message.description }
-      }
-    ]
-  };
-  
-  if (message.fields) {
-    message.fields.forEach(field => {
-      payload.blocks.push({
-        type: 'section',
-        text: { type: 'mrkdwn', text: `*${field.name}*\n${field.value}` }
-      });
-    });
-  }
-  
-  try {
-    UrlFetchApp.fetch(webhookUrl, {
-      method: 'post',
-      contentType: 'application/json',
-      payload: JSON.stringify(payload)
-    });
-    agentLog('AGT-004', '✅', `Slack notification sent: ${message.title}`);
-  } catch (err) {
-    agentLog('AGT-004', '❌', `Slack webhook failed: ${err.message}`);
-  }
-}
-
-// Notify on new entry (call from doPost after successful entry)
-function notifyNewEntry(entry) {
-  const message = {
-    title: '🏒 New Entry Submitted!',
-    description: `**${entry.teamName}** submitted by ${entry.firstName} ${entry.lastName}`,
-    fields: [
-      { name: 'Email', value: entry.email, inline: true },
-      { name: 'Entries Total', value: `${getEntries().length} total entries`, inline: true }
-    ]
-  };
-  sendDiscordNotification(message, 'entry');
-  sendSlackNotification(message, 'entry');
-}
-
-// Notify on hat trick (call from processHatTricks)
-function notifyHatTrick(playerName, team, goals, draftedBy) {
-  const message = {
-    title: '🎩 HAT TRICK!',
-    description: `**${playerName}** (${team}) just scored ${goals} goals!`,
-    fields: [
-      { name: 'Drafted By', value: draftedBy.join(', ') || 'Undrafted', inline: true },
-      { name: 'Bonus Points', value: '+3 pts for each owner', inline: true }
-    ]
-  };
-  sendDiscordNotification(message, 'hatTrick');
-  sendSlackNotification(message, 'hatTrick');
-}
-
-// Notify on standings change (call from updateStandings)
-function notifyStandingsChange(top3) {
-  const message = {
-    title: '📊 Standings Update',
-    description: 'Current Top 3:',
-    fields: top3.map((e, i) => ({
-      name: `${i + 1}. ${e.team}`,
-      value: `${e.pts.toLocaleString()} pts (${e.owner})`,
-      inline: true
-    }))
-  };
-  sendDiscordNotification(message, 'standings');
-  sendSlackNotification(message, 'standings');
-}
-
-// ══════════════════════════════════════════════
-// DEBUG FUNCTIONS
-// ══════════════════════════════════════════════
-function debugNightlyNames() { Logger.log('Debug functions available in script editor'); }
-function debugAPINames() {}
-function debugRawSchedule() {}
-function debugBoxscore() {}
-function debugPlayerByGameStats() {}
-function debugFullNames() {}
-function debugSummary() {}
-function debugRoster() {}</script>
-  </div>
-
-  <div class="admin-section-title" style="margin-top:24px">Step 3 — Webhook Notifications (Optional)</div>
-  <div class="card" style="margin-bottom:12px">
+  <!-- ══ WEBHOOK NOTIFICATIONS ══ -->
+  <div class="admin-section-title">Webhook Notifications (Optional)</div>
+  <div class="card" style="margin-bottom:24px">
     <div class="card-head"><span class="card-title">Discord / Slack Integration</span><span class="free-tag">OPTIONAL</span></div>
     <div class="card-body" style="padding:12px 20px">
-      <div class="setup-step" style="padding:10px 0">
-        <div class="setup-num">1</div>
-        <div><strong>Discord:</strong> Server Settings → Integrations → Webhooks → New Webhook. Copy URL.</div>
+      <div class="wh-card">
+        <div class="wh-icon">🎮</div>
+        <div>
+          <div class="wh-title">Discord</div>
+          <div class="wh-desc">Server Settings → Integrations → Webhooks → New Webhook → Copy URL.<br>In Apps Script: File → Project Properties → Script Properties → add <code>DISCORD_WEBHOOK_URL</code>.</div>
+        </div>
       </div>
-      <div class="setup-step" style="padding:10px 0">
-        <div class="setup-num">2</div>
-        <div><strong>Slack:</strong> Apps → Incoming Webhooks → Add to Slack. Copy Webhook URL.</div>
-      </div>
-      <div class="setup-step" style="padding:10px 0;border-bottom:none">
-        <div class="setup-num">3</div>
-        <div>In Apps Script: <code>File → Project Properties → Script Properties</code>. Add <code>DISCORD_WEBHOOK_URL</code> and/or <code>SLACK_WEBHOOK_URL</code>.</div>
+      <div class="wh-card" style="margin-bottom:0">
+        <div class="wh-icon">💬</div>
+        <div>
+          <div class="wh-title">Slack</div>
+          <div class="wh-desc">Apps → Incoming Webhooks → Add to Slack → Copy Webhook URL.<br>In Apps Script: Script Properties → add <code>SLACK_WEBHOOK_URL</code>.</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="admin-section-title">Step 4 — Manual Tools</div>
-  <div class="grid2">
+  <!-- ══ HOSTING ══ -->
+  <div class="admin-section-title">Hosting</div>
+  <div class="grid2" style="margin-bottom:24px">
     <div class="card">
-      <div class="card-head"><span class="card-title">Manual Point Entry</span></div>
-      <div class="card-body">
-        <div class="field"><label>Player name</label><input type="text" id="ap" placeholder="e.g. Auston Matthews"></div>
-        <div class="field"><label>Points to add</label><input type="number" id="apts" placeholder="2" min="0" max="30"></div>
-        <button class="btn btn-accent" onclick="adminAdd()" style="width:100%;justify-content:center;margin-bottom:10px">Add Points</button>
-        <div id="alog" style="max-height:100px;overflow-y:auto;font-size:12px;color:var(--muted);font-family:'DM Mono',monospace"></div>
-      </div>
+      <div class="card-head"><span class="card-title">GitHub Pages</span><span class="free-tag">FREE</span></div>
+      <div class="card-body"><p style="font-size:13px;color:var(--muted);line-height:1.6">Push HTML files to a repo → Settings → Pages → Deploy from main branch. Done.</p></div>
     </div>
     <div class="card">
-      <div class="card-head"><span class="card-title">Hosting</span></div>
-      <div class="card-body" style="padding:12px 20px">
-        <div class="host-card" style="margin-bottom:10px">
-          <h4>GitHub Pages <span class="free-tag">FREE</span></h4>
-          <p>Push HTML files to a repo → Settings → Pages → Deploy. Done.</p>
-        </div>
-        <div class="host-card">
-          <h4>Netlify Drop <span class="free-tag">FREE</span></h4>
-          <p>Drag folder to netlify.com/drop. Live in 30 seconds.</p>
-        </div>
-      </div>
+      <div class="card-head"><span class="card-title">Netlify Drop</span><span class="free-tag">FREE</span></div>
+      <div class="card-body"><p style="font-size:13px;color:var(--muted);line-height:1.6">Drag folder to netlify.com/drop. Live in 30 seconds.</p></div>
     </div>
   </div>
 
 </div>
 </div>
 
-<!-- TOAST -->
+<!-- JSON PREVIEW MODAL -->
+<div class="modal-overlay" id="preview-overlay" onclick="if(event.target===this)closePreview()" style="display:none;pointer-events:none">
+  <div class="modal-card" style="max-width:700px;max-height:80vh">
+    <div class="tp-header" style="flex-shrink:0">
+      <div class="tp-header-left"><div class="tp-team-name">BOXES JSON Preview</div></div>
+      <button class="tp-close-btn" onclick="closePreview()">✕</button>
+    </div>
+    <div style="overflow-y:auto;flex:1;padding:20px">
+      <pre id="preview-json" style="font-size:11px;line-height:1.6;white-space:pre-wrap;word-break:break-all"></pre>
+    </div>
+    <div style="padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:10px;flex-shrink:0">
+      <button class="btn btn-accent" style="font-size:12px" onclick="copyJSON()">Copy JSON</button>
+      <button class="btn btn-ghost" style="font-size:12px" onclick="closePreview()">Close</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast">
   <div class="toast-title" id="toast-t"></div>
   <div class="toast-body" id="toast-b"></div>
 </div>
 
-<script src="main.js"></script>
-<script>buildTicker();</script>
+<script src="main.js?v=5"></script>
+<script>
+buildTicker();
+
+// ══════════ BOXES SHEET CONFIG ══════════
+// This sheet must be published as CSV: File → Share → Publish to web → Boxes tab → CSV
+// Columns: BoxID, BoxLabel, BoxType(F/D/G), PlayerName, NHLTeam, Position, PrevPts
+const BOXES_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=BOXES_GID&single=true&output=csv&t=' + Date.now();
+const WEBAPP_URL_BOXES = 'https://script.google.com/macros/s/AKfycbzqqijpX3BoRCDXMH5ZzWCkN2ZlALGJd_HBHMetPlXCir7_ue_WfEtqvo3NM0Z-xMhKUA/exec';
+
+// In-memory state
+let editorBoxes = [];
+
+const BOX_LABELS = [
+  'Forwards 1','Forwards 2','Forwards 3','Forwards 4','Forwards 5','Forwards 6',
+  'Forwards 7','Forwards 8','Forwards 9','Forwards 10','Forwards 11','Forwards 12',
+  'Defense 1','Defense 2','Defense 3','Defense 4','Defense 5','Defense 6',
+  'Goalie 1','Goalie 2','Goalie 3','Goalie 4','Goalie 5','Goalie 6'
+];
+const BOX_TYPES = ['F','F','F','F','F','F','F','F','F','F','F','F','D','D','D','D','D','D','G','G','G','G','G','G'];
+
+function setStatus(msg, cls='') {
+  ['be-status','be-status2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = msg;
+    el.className = 'be-status ' + cls;
+  });
+}
+
+// ── Load from Sheet ──
+async function loadBoxes() {
+  setStatus('Loading from sheet…', 'saving');
+  try {
+    const res = await fetch(BOXES_CSV_URL.replace('BOXES_GID', 'BOXES_GID'));
+    // If Boxes sheet not yet set up, fall back to main.js defaults
+    if (!res.ok) throw new Error('Sheet not found — loading defaults');
+    const text = await res.text();
+    const rows = text.trim().split('\n').slice(1).map(line => {
+      const cols = []; let cur = '', inQ = false;
+      for (const ch of line) {
+        if (ch==='"'){inQ=!inQ;}
+        else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+        else{cur+=ch;}
+      }
+      cols.push(cur.trim());
+      return { boxId:parseInt(cols[0])||0, label:(cols[1]||'').trim(), type:(cols[2]||'F').trim(),
+               name:(cols[3]||'').trim(), team:(cols[4]||'').trim(),
+               pos:(cols[5]||'F').trim(), pts:parseFloat(cols[6])||0 };
+    }).filter(r => r.boxId && r.name);
+    buildEditorFromRows(rows);
+    setStatus(`Loaded ${rows.length} players from sheet ✓`, 'saved');
+  } catch(err) {
+    console.warn('Sheet load failed:', err.message, '— using defaults');
+    loadFromMainJS();
+  }
+}
+
+// ── Load from main.js BOXES constant ──
+function loadFromMainJS() {
+  if (typeof BOXES === 'undefined') { setStatus('BOXES not found in main.js', 'error'); return; }
+  const rows = [];
+  BOXES.forEach(box => {
+    box.players.forEach(p => {
+      rows.push({ boxId:box.id, label:box.label, type:box.type,
+                  name:p.name, team:p.team, pos:box.type, pts:p.pts||0 });
+    });
+  });
+  buildEditorFromRows(rows);
+  setStatus(`Loaded ${rows.length} players from main.js defaults`, 'saved');
+}
+
+// ── Build editor UI from flat rows ──
+function buildEditorFromRows(rows) {
+  // Group by boxId
+  editorBoxes = [];
+  for (let i = 1; i <= 24; i++) {
+    const label = BOX_LABELS[i-1];
+    const type  = BOX_TYPES[i-1];
+    const players = rows.filter(r => r.boxId === i).map(r => ({
+      name: r.name, team: r.team, pos: r.pos || type, pts: r.pts
+    }));
+    // Ensure at least 5 slots
+    while (players.length < 5) players.push({ name:'', team:'', pos:type, pts:0 });
+    editorBoxes.push({ id:i, label, type, players });
+  }
+  renderEditor();
+}
+
+// ── Render all boxes ──
+function renderEditor() {
+  const grid = document.getElementById('be-grid');
+  grid.innerHTML = editorBoxes.map((box, bi) => `
+    <div class="be-box" id="be-box-${box.id}">
+      <div class="be-box-head">
+        <div>
+          <div class="be-box-label">${box.label}</div>
+        </div>
+        <span class="be-box-type">${box.type==='F'?'Forward':box.type==='D'?'Defense':'Goalie'}</span>
+      </div>
+      <div class="be-players">
+        <div class="be-header-row">
+          <span>Player Name</span>
+          <span>NHL Team</span>
+          <span>Pos</span>
+          <span class="be-col-right">Prev Pts</span>
+          <span></span>
+        </div>
+        ${box.players.map((p, pi) => renderPlayerRow(bi, pi, p, box.type)).join('')}
+        <button class="be-add-btn" onclick="addPlayer(${bi})">+ Add Player</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderPlayerRow(bi, pi, p, type) {
+  const posOptions = ['F','D','G'].map(v =>
+    `<option value="${v}" ${p.pos===v?'selected':''}>${v}</option>`
+  ).join('');
+  return `
+    <div class="be-player-row" id="pr-${bi}-${pi}">
+      <input class="be-input" type="text" placeholder="Player name"
+             value="${escHtml(p.name)}"
+             onchange="updatePlayer(${bi},${pi},'name',this.value)"
+             oninput="updatePlayer(${bi},${pi},'name',this.value)">
+      <input class="be-input team" type="text" placeholder="EDM" maxlength="4"
+             value="${escHtml(p.team)}"
+             onchange="updatePlayer(${bi},${pi},'team',this.value.toUpperCase())"
+             oninput="this.value=this.value.toUpperCase();updatePlayer(${bi},${pi},'team',this.value)">
+      <select class="be-pos-select" onchange="updatePlayer(${bi},${pi},'pos',this.value)">
+        ${posOptions}
+      </select>
+      <input class="be-pts-input" type="number" placeholder="0" step="0.1" min="0"
+             value="${p.pts||''}"
+             onchange="updatePlayer(${bi},${pi},'pts',parseFloat(this.value)||0)">
+      <button class="be-del-btn" onclick="removePlayer(${bi},${pi})" title="Remove">×</button>
+    </div>`;
+}
+
+function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+function updatePlayer(bi, pi, field, val) {
+  if (editorBoxes[bi] && editorBoxes[bi].players[pi]) {
+    editorBoxes[bi].players[pi][field] = val;
+  }
+}
+
+function addPlayer(bi) {
+  editorBoxes[bi].players.push({ name:'', team:'', pos:editorBoxes[bi].type, pts:0 });
+  // Re-render just this box
+  const box = editorBoxes[bi];
+  const playersDiv = document.querySelector(`#be-box-${box.id} .be-players`);
+  playersDiv.innerHTML =
+    `<div class="be-header-row"><span>Player Name</span><span>NHL Team</span><span>Pos</span><span class="be-col-right">Prev Pts</span><span></span></div>` +
+    box.players.map((p,pi) => renderPlayerRow(bi, pi, p, box.type)).join('') +
+    `<button class="be-add-btn" onclick="addPlayer(${bi})">+ Add Player</button>`;
+}
+
+function removePlayer(bi, pi) {
+  editorBoxes[bi].players.splice(pi, 1);
+  const box = editorBoxes[bi];
+  const playersDiv = document.querySelector(`#be-box-${box.id} .be-players`);
+  playersDiv.innerHTML =
+    `<div class="be-header-row"><span>Player Name</span><span>NHL Team</span><span>Pos</span><span class="be-col-right">Prev Pts</span><span></span></div>` +
+    box.players.map((p,pi) => renderPlayerRow(bi, pi, p, box.type)).join('') +
+    `<button class="be-add-btn" onclick="addPlayer(${bi})">+ Add Player</button>`;
+}
+
+// ── Build BOXES array for main.js ──
+function buildBoxesArray() {
+  return editorBoxes.map(box => ({
+    id: box.id,
+    label: box.label,
+    type: box.type,
+    players: box.players
+      .filter(p => p.name.trim())
+      .map(p => ({ name: p.name.trim(), team: p.team.trim(), pts: p.pts || 0 }))
+  }));
+}
+
+// ── Preview JSON ──
+function previewBoxes() {
+  if (!editorBoxes.length) { toast('No data', 'Load boxes first.'); return; }
+  const arr = buildBoxesArray();
+  document.getElementById('preview-json').textContent = JSON.stringify(arr, null, 2);
+  const overlay = document.getElementById('preview-overlay');
+  overlay.style.display = 'flex';
+  overlay.style.pointerEvents = 'all';
+  overlay.classList.add('open');
+}
+function closePreview() {
+  const overlay = document.getElementById('preview-overlay');
+  overlay.classList.remove('open');
+  setTimeout(() => { overlay.style.display = 'none'; overlay.style.pointerEvents = 'none'; }, 300);
+}
+function copyJSON() {
+  navigator.clipboard.writeText(document.getElementById('preview-json').textContent)
+    .then(() => toast('Copied!', 'JSON copied to clipboard.'));
+}
+
+// ── Save to Sheet via Apps Script ──
+async function saveBoxes() {
+  if (!editorBoxes.length) { toast('Nothing to save', 'Load boxes first.'); return; }
+  setStatus('Saving to sheet…', 'saving');
+
+  // Build flat rows: BoxID, BoxLabel, BoxType, PlayerName, NHLTeam, Position, PrevPts
+  const rows = [];
+  editorBoxes.forEach(box => {
+    box.players.filter(p => p.name.trim()).forEach(p => {
+      rows.push([box.id, box.label, box.type, p.name.trim(), p.team.trim(), p.pos, p.pts||0]);
+    });
+  });
+
+  try {
+    const res = await fetch(WEBAPP_URL_BOXES, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'saveBoxes', rows })
+    });
+    const result = await res.json();
+    if (result.success) {
+      setStatus(`Saved ${rows.length} players to sheet ✓`, 'saved');
+      toast('Saved!', `${rows.length} player rows written to Boxes sheet.`);
+    } else {
+      throw new Error(result.error || 'Unknown error');
+    }
+  } catch(err) {
+    setStatus('Save failed — see console', 'error');
+    toast('Save failed', err.message);
+    console.error(err);
+  }
+}
+</script>
 </body>
 </html>
