@@ -366,7 +366,8 @@ Promise.all([
   fetchNightlyStats(),
   fetchStandings(),
   fetchPlayers(),
-  fetchIRStatuses()
+  fetchIRStatuses(),
+  fetchPrevStats()
 ]).then(() => {
   buildTicker();
   buildBoards();
