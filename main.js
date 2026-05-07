@@ -294,6 +294,50 @@ async function fetchBoxesFromSheet() {
   }
 }
 
+// ══════════ PREV STATS — fetch from PrevStats sheet ══════════
+const PREV_STATS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=52517346&single=true&output=csv&t=' + Date.now();
+
+async function fetchPrevStats() {
+  try {
+    const res = await fetch(PREV_STATS_CSV);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    const lines = text.trim().split('\n').slice(1);
+    lines.forEach(line => {
+      const cols = []; let cur = '', inQ = false;
+      for (const ch of line) {
+        if (ch==='"'){inQ=!inQ;}
+        else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+        else{cur+=ch;}
+      }
+      cols.push(cur.trim());
+      const name = cols[0]; if (!name) return;
+      const pos  = (cols[2]||'').trim();
+      if (pos === 'G') {
+        PREV_STATS[name] = {
+          pos:'G',
+          w:  parseInt(cols[8])||0,
+          l:  parseInt(cols[9])||0,
+          otl:parseInt(cols[10])||0,
+          so: parseInt(cols[11])||0,
+          sv: parseInt(cols[12])||0,
+        };
+      } else {
+        PREV_STATS[name] = {
+          pos,
+          g:   parseInt(cols[4])||0,
+          a:   parseInt(cols[5])||0,
+          sog: parseInt(cols[6])||0,
+          pim: parseInt(cols[7])||0,
+        };
+      }
+    });
+    console.log('PrevStats loaded:', Object.keys(PREV_STATS).length, 'players');
+  } catch(err) {
+    console.warn('PrevStats fetch failed — using hardcoded fallback:', err.message);
+  }
+}
+
 // ══════════ NIGHTLY STATS ══════════
 const NIGHTLY_STATS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=615464608&single=true&output=csv&t=' + Date.now();
 let NIGHTLY_STATS = [];
