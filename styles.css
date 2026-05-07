@@ -502,86 +502,142 @@ pre { background: var(--surface2); border: 1px solid var(--border); border-radiu
   transform: translateY(-50%) scaleX(1);
 }
 
-/* ── MOBILE ── */
+/* ══════════════════════════════════════
+   MOBILE — < 640px
+   ══════════════════════════════════════ */
 @media(max-width:640px) {
-  .wrap { padding: 0 16px; }
-  .header-inner { height: 52px; padding: 0; }
-  .wordmark-text { font-size: 13px; }
-  .nav-btn { font-size: 11px; padding: 5px 9px; }
-  .ticker-wrap { height: 48px; }
+
+  /* ── Layout ── */
+  .wrap { padding: 0 14px; }
+  .page { padding-top: 0; padding-bottom: 60px; }
+
+  /* ── Header + Nav ── */
+  header { padding: 0 14px; }
+  .header-inner { height: auto; padding: 10px 0; flex-wrap: wrap; gap: 8px; }
+  .wordmark { flex: 1; }
+  .wordmark-text { font-size: 14px; }
+  .alpaca-runner { display: none; } /* hide on mobile — too cramped */
+  nav { width: 100%; display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+  .nav-btn { font-size: 11px; padding: 8px 4px; min-height: 36px; border-radius: 6px; text-align: center; }
+  .theme-toggle { display: none; } /* hide theme toggle on mobile */
+
+  /* ── Ticker ── */
+  .ticker-wrap { height: 34px; top: auto; position: relative; }
   .ticker-tag { font-size: 8px; padding: 0 10px; letter-spacing: 1.5px; }
-  .ticker-reel { height: 48px; }
-  .t-item { padding: 0 14px; gap: 5px; font-size: 10px; height: 24px; }
+  .ticker-reel { height: 34px; }
+  .t-item { padding: 0 12px; gap: 5px; font-size: 10px; height: 34px; }
   .t-stat { font-size: 8px; padding: 1px 4px; }
-  .page { padding-top: 48px; }
-  .home-topbar { flex-direction: column; align-items: flex-start; padding: 20px 0 16px; gap: 14px; }
-  .home-topbar-left h1 { font-size: 22px; }
-  .kpi-row { width: 100%; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
-  .kpi { min-width: 0; align-items: center; padding: 8px 10px; }
-  .kpi-val { font-size: 15px; }
-  .kpi-lbl { font-size: 9px; }
+  .t-pts { font-size: 11px; }
+
+  /* ── Home topbar ── */
+  .home-topbar { flex-direction: column; align-items: flex-start; padding: 16px 0 14px; gap: 12px; }
+  .home-topbar-left h1 { font-size: 26px; }
+  .kpi-row { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .kpi { min-width: 0; align-items: center; padding: 10px 12px; }
+  .kpi-val { font-size: 18px; }
+  .kpi-lbl { font-size: 10px; }
+
+  /* ── Stars of Night ── */
+  .stars-bar { flex-direction: column; align-items: stretch; padding: 12px 14px; gap: 10px; }
+  .stars-bar-label { font-size: 10px; }
+  .stars-list { flex-direction: column; gap: 8px; }
+  .sn-card { min-width: 0; width: 100%; padding: 10px 12px; }
+  .sn-name { font-size: 15px; }
+  .sn-team { font-size: 13px; }
+  .sn-star-label { font-size: 10px; }
+  .sn-chip { font-size: 11px; padding: 2px 8px; }
+  .sn-pts { font-size: 32px; }
+  .sn-hs-wrap { width: 56px; height: 56px; }
+  .stars-date { margin-left: 0; font-size: 11px; }
+
+  /* ── Home standings ── */
   .home-grid { grid-template-columns: 1fr; gap: 16px; }
-  .home-right { gap: 0; }
+  .home-right { gap: 12px; }
   .sc-cols { grid-template-columns: 28px 1fr 44px 64px; padding: 6px 14px; }
   .sc-cols span:nth-child(2), .sc-cols span:nth-child(4) { display: none; }
-  .sc-row  { grid-template-columns: 28px 1fr 44px 64px; padding: 9px 14px; }
+  .sc-row  { grid-template-columns: 28px 1fr 44px 64px; padding: 10px 14px; }
   .sc-av   { display: none; }
   .sc-ht   { display: none; }
-  .sc-name { font-size: 12px; }
-  .sc-team { font-size: 10px; }
-  .sc-pts  { font-size: 14px; }
-  .score-tbl td, .score-tbl th { padding: 7px 12px; }
-  .form-row { grid-template-columns: 1fr; }
-  .picks-bar { gap: 14px; }
-  .picks-bar .big { font-size: 28px; }
-  .draft-grid { grid-template-columns: 1fr; }
+  .sc-name { font-size: 13px; }
+  .sc-team { font-size: 11px; }
+  .sc-pts  { font-size: 16px; }
+  .lb-name { font-size: 15px; }
+  .lb-pts  { font-size: 20px; }
+
+  /* ── Form ── */
+  .form-row { grid-template-columns: 1fr; gap: 10px; }
+  .field label { font-size: 12px; }
+  .card-body { padding: 14px; }
+
+  /* ── Picks bar ── */
+  .picks-bar { padding: 12px 14px; gap: 14px; }
+  .picks-bar .big { font-size: 32px; }
+  .picks-bar .lbl { font-size: 13px; }
+  .chips { gap: 5px; }
+  .chip { font-size: 12px; padding: 4px 10px; }
+
+  /* ── Draft boxes ── */
+  .draft-grid { grid-template-columns: 1fr; gap: 10px; }
+  .box-name { font-size: 15px; }
+  .box-type { font-size: 11px; }
+  .popt { padding: 10px 12px; }
+  .popt-name { font-size: 15px; }
+  .popt-team { font-size: 12px; }
+  .popt-pts { font-size: 16px; }
+  .popt-pts-label { font-size: 11px; }
+  .player-info-btn { width: 40px; height: 40px; font-size: 15px; }
+  .player-opts { max-height: none; } /* no scroll cap on mobile — let page scroll naturally */
+
+  /* ── Player modal — full screen on mobile ── */
+  .player-modal-overlay { padding: 0; align-items: flex-end; }
+  .player-modal { max-width: 100%; border-radius: 20px 20px 0 0; max-height: 92vh; overflow-y: auto; transform: translateY(100%); }
+  .player-modal-overlay.open .player-modal { transform: translateY(0); }
+  .pm-name { font-size: 20px; }
+  .pm-nhl { font-size: 13px; }
+  .pm-stat-val { font-size: 24px; }
+  .pm-stat-lbl { font-size: 11px; }
+  .pm-pts-title { font-size: 11px; }
+  .pm-pts-item .pv { font-size: 16px; }
+  .pm-pts-item .pl { font-size: 11px; }
+  .pm-total-val { font-size: 32px; }
+  .pm-total-label { font-size: 14px; }
+  .pm-season-label { font-size: 10px; }
+  .pm-pick-btn { font-size: 16px; padding: 14px; }
+
+  /* ── Team modal — bottom sheet on mobile ── */
+  .modal-overlay { padding: 0; align-items: flex-end; }
+  .modal-card { max-width: 100%; border-radius: 20px 20px 0 0; max-height: 92vh; }
+  .tp-header { padding: 14px; }
+  .tp-team-name { font-size: 17px; }
+  .tp-table td, .tp-table th { padding: 9px 12px; font-size: 12px; }
+  .tp-tab { padding: 10px 14px; font-size: 10px; }
+
+  /* ── Division picks ── */
+  .div-grid { grid-template-columns: 1fr; }
+  .div-section { border-right: none; }
+  .div-name { font-size: 15px; }
+  .div-team-select { font-size: 15px; padding: 11px 12px; }
+  .div-picks-title { font-size: 16px; }
+
+  /* ── Scoring table ── */
+  .score-tbl td, .score-tbl th { padding: 8px 12px; font-size: 13px; }
+  .score-tbl .pts-val { font-size: 16px; }
+
+  /* ── Toast ── */
+  .toast { left: 14px; right: 14px; bottom: 14px; max-width: none; }
+  .toast-title { font-size: 15px; }
+  .toast-body { font-size: 13px; }
+
+  /* ── Submit btn ── */
+  .btn-gold { width: 100%; justify-content: center; font-size: 17px; padding: 16px; }
+}
   .grid2, .grid3 { grid-template-columns: 1fr; }
   .payout-estimate { overflow-x: auto; }
   .host-card { padding: 12px 16px; }
   pre { font-size: 11px; padding: 14px; }
 }
 
-/* ── MOBILE (<640px) ── */
-@media(max-width:640px) {
-  .header-inner { flex-wrap: wrap; height: auto; padding: 12px 16px; }
-  nav { flex-wrap: wrap; gap: 4px; margin-top: 8px; width: 100%; justify-content: center; }
-  .nav-btn { padding: 8px 12px; font-size: 12px; min-height: 40px; }
-  .wordmark-text { font-size: 14px; }
-  .wrap { padding: 0 16px; }
-  .page { padding-top: 32px; }
-  .card-body { padding: 16px; }
-  .form-row { grid-template-columns: 1fr; gap: 10px; }
-  .modal-card { margin: 10px; max-height: 95vh; }
-  .player-modal { max-width: calc(100vw - 32px); }
-  
-/* ── PLAYER MODAL HEADSHOT ── */
-.pm-headshot-wrap { flex-shrink:0; width:72px; height:72px; border-radius:50%; overflow:hidden; border:2px solid var(--border2); background:var(--surface3); display:flex; align-items:center; justify-content:center; }
-.pm-headshot { width:100%; height:100%; object-fit:cover; object-position:top center; }
-.pm-headshot-placeholder { font-family:'Teko',sans-serif; font-size:22px; font-weight:700; color:var(--muted); }
-.pm-head-info { flex:1; min-width:0; }
-
-.pm-head { padding: 14px 16px; }
-  .pm-name { font-size: 18px; }
-  .pm-stats-grid { padding: 12px 16px; gap: 8px; }
-  .pm-stat-val { font-size: 20px; }
-  .tp-header { padding: 14px 16px; }
-  .tp-team-name { font-size: 16px; }
-  .home-topbar { padding: 20px 0 16px; }
-  .home-topbar-left h1 { font-size: 24px; }
-  .kpi { padding: 6px 10px; min-width: 70px; }
-  .kpi-val { font-size: 16px; }
-  .draft-grid { grid-template-columns: 1fr; }
-  .box-wrap { margin-bottom: 8px; }
-  .player-opts { max-height: 300px; overflow-y: auto; }
-  .sc-cols { padding: 6px 12px; }
-  .sc-row { padding: 8px 12px; }
-  .sc-name { font-size: 12px; }
-  .sc-pts { font-size: 14px; }
-  .lb-row { padding: 10px 12px; gap: 10px; }
-  .toast { left: 16px; right: 16px; bottom: 16px; max-width: none; }
-  .ticker-wrap { top: auto; position: relative; }
-  .page { padding-top: 0; }
-}
+/* mobile styles consolidated below */
 
 /* ── TABLET ── */
 @media(min-width:641px) and (max-width:860px) {
@@ -593,6 +649,8 @@ pre { background: var(--surface2); border: 1px solid var(--border); border-radiu
   .sc-ht   { display: none; }
   .form-row { grid-template-columns: 1fr 1fr; }
   .draft-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+  .sn-card { min-width: 160px; }
+  .stars-list { flex-wrap: wrap; }
 }
 
 /* ── IR BADGE ── */
