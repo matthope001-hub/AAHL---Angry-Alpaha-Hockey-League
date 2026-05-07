@@ -49,6 +49,13 @@
     </div>
   </div>
 
+  <!-- ══ STARS OF THE NIGHT ══ -->
+  <div class="stars-bar" id="stars-bar" style="display:none">
+    <div class="stars-bar-label">⭐ Stars of the Night</div>
+    <div class="stars-list" id="stars-list"></div>
+    <div class="stars-date" id="stars-date"></div>
+  </div>
+
   <div class="home-grid">
     <div class="standings-card">
       <div class="sc-head">
@@ -271,6 +278,7 @@ function updateLivePayouts() {
 }
 
 Promise.all([fetchNightlyStats(), fetchStandings(), fetchIRStatuses(), fetchPrevStats()]).then(() => {
+  buildStarsOfNight();
   buildTicker();
   buildLiveStandings();
   updateLivePayouts();
