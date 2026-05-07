@@ -206,7 +206,7 @@ const BOXES = [
   {id:4,label:'Forwards 4',type:'F',players:[{name:'Sebastian Aho',team:'CAR',pts:90},{name:'Jesper Bratt',team:'NJ',pts:83},{name:'Sidney Crosby',team:'PIT',pts:94},{name:'Jake Guentzel',team:'CAR',pts:77},{name:'Clayton Keller',team:'ARI',pts:76}]},
   {id:5,label:'Forwards 5',type:'F',players:[{name:'Aleksander Barkov',team:'FLA',pts:86},{name:'Ryan Nugent-Hopkins',team:'EDM',pts:87},{name:'Kevin Fiala',team:'LA',pts:82},{name:'Dylan Larkin',team:'DET',pts:82},{name:'Steven Stamkos',team:'TB',pts:81}]},
   {id:6,label:'Forwards 6',type:'F',players:[{name:'Drake Batherson',team:'OTT',pts:82},{name:'Matt Boldy',team:'MIN',pts:75},{name:'Cole Caufield',team:'MTL',pts:82},{name:'Brandon Hagel',team:'TB',pts:74},{name:'Jordan Kyrou',team:'STL',pts:82}]},
-  {id:7,label:'Forwards 7',type:'F',players:[{name:'Wyatt Johnston',team:'DAL',pts:82},{name:'Anze Kopitar',team:'LA',pts:81},{name:'Nikolaj Ehlers',team:'WPG',pts:73},{name:'John Tavares',team:'TOR',pts:82},{name:'Alex Tuch',team:'BUF',pts:75}]},
+  {id:7,label:'Forwards 7',type:'F',players:[{name:'Wyatt Johnston',team:'DAL',pts:82},{name:'Mats Zuccarello',team:'MIN',pts:82},{name:'Nikolaj Ehlers',team:'WPG',pts:73},{name:'John Tavares',team:'TOR',pts:82},{name:'Alex Tuch',team:'BUF',pts:75}]},
   {id:8,label:'Forwards 8',type:'F',players:[{name:'Bo Horvat',team:'NYI',pts:81},{name:'Chris Kreider',team:'NYR',pts:82},{name:'Elias Lindholm',team:'VAN',pts:75},{name:'Tomas Hertl',team:'VGK',pts:72},{name:'Brock Nelson',team:'NYI',pts:82}]},
   {id:9,label:'Forwards 9',type:'F',players:[{name:'Quinton Byfield',team:'LA',pts:80},{name:'Matt Duchene',team:'DAL',pts:80},{name:'Joel Eriksson Ek',team:'MIN',pts:77},{name:'Brad Marchand',team:'BOS',pts:82},{name:'Jonathan Marchessault',team:'VGK',pts:82}]},
   {id:10,label:'Forwards 10',type:'F',players:[{name:"Ryan O'Reilly",team:'NSH',pts:69},{name:'Charlie McAvoy',team:'BOS',pts:74},{name:'Morgan Rielly',team:'TOR',pts:72},{name:'Shea Theodore',team:'VGK',pts:82},{name:'Zach Werenski',team:'CBJ',pts:71}]},
@@ -223,7 +223,7 @@ const BOXES = [
   {id:21,label:'Goalie 3',type:'G',players:[{name:'Cam Talbot',team:'CGY',pts:54},{name:'Jacob Markstrom',team:'CGY',pts:48},{name:'Ilya Sorokin',team:'NYI',pts:56},{name:'Filip Gustavsson',team:'MIN',pts:56},{name:'Linus Ullmark',team:'BOS',pts:41}]},
   {id:22,label:'Goalie 4',type:'G',players:[{name:'Laurent Brossoit',team:'VGK',pts:23},{name:'Kevin Lankinen',team:'NSH',pts:47},{name:'Philipp Grubauer',team:'SEA',pts:47},{name:'Lukas Dostal',team:'ANA',pts:44},{name:'Karel Vejmelka',team:'ARI',pts:47}]},
   {id:23,label:'Goalie 5',type:'G',players:[{name:'Joey Daccord',team:'SEA',pts:50},{name:'Semyon Varlamov',team:'NYI',pts:47},{name:'Joonas Korpisalo',team:'CBJ',pts:55},{name:'Ivan Fedotov',team:'PHI',pts:20},{name:'Thomas Greiss',team:'STL',pts:30}]},
-  {id:24,label:'Goalie 6',type:'G',players:[{name:'Charlie Lindgren',team:'WSH',pts:40},{name:'Mackenzie Blackwood',team:'VAN',pts:35},{name:'Alex Lyon',team:'FLA',pts:44},{name:'Tristan Jarry',team:'PIT',pts:34},{name:'Jonathan Quick',team:'TOR',pts:27}]},
+  {id:24,label:'Goalie 6',type:'G',players:[{name:'Charlie Lindgren',team:'WSH',pts:40},{name:'Mackenzie Blackwood',team:'VAN',pts:35},{name:'Alex Lyon',team:'FLA',pts:44},{name:'Tristan Jarry',team:'PIT',pts:34},{name:'Lukas Dostal',team:'ANA',pts:44}]},
 ];
 
 // ══════════ LIVE STANDINGS ══════════
@@ -258,7 +258,7 @@ async function fetchStandings() {
 }
 
 // ══════════ BOXES — fetch from sheet if available ══════════
-const BOXES_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=BOXES_GID&single=true&output=csv&t=' + Date.now();
+const BOXES_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1556726328&single=true&output=csv&t=' + Date.now();
 
 async function fetchBoxesFromSheet() {
   try {
