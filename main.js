@@ -257,6 +257,43 @@ async function fetchStandings() {
   }
 }
 
+// ══════════ BOXES — fetch from sheet if available ══════════
+const BOXES_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=BOXES_GID&single=true&output=csv&t=' + Date.now();
+
+async function fetchBoxesFromSheet() {
+  try {
+    const res = await fetch(BOXES_SHEET_CSV);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    const lines = text.trim().split('\n').slice(1);
+    const boxMap = {};
+    lines.forEach(line => {
+      const cols = []; let cur = '', inQ = false;
+      for (const ch of line) {
+        if (ch==='"'){inQ=!inQ;}
+        else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+        else{cur+=ch;}
+      }
+      cols.push(cur.trim());
+      const boxId = parseInt(cols[0])||0;
+      if (!boxId || !cols[3]) return;
+      if (!boxMap[boxId]) boxMap[boxId] = { id:boxId, label:cols[1], type:cols[2], players:[] };
+      boxMap[boxId].players.push({
+        name: cols[3], team: cols[4], pts: parseFloat(cols[6])||0
+      });
+    });
+    const boxes = Object.values(boxMap).sort((a,b) => a.id - b.id);
+    if (boxes.length) {
+      // Replace the hardcoded BOXES array at runtime
+      BOXES.length = 0;
+      boxes.forEach(b => BOXES.push(b));
+      console.log('Boxes loaded from sheet:', BOXES.length, 'boxes');
+    }
+  } catch(err) {
+    console.warn('Boxes sheet not available — using main.js defaults:', err.message);
+  }
+}
+
 // ══════════ NIGHTLY STATS ══════════
 const NIGHTLY_STATS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=615464608&single=true&output=csv&t=' + Date.now();
 let NIGHTLY_STATS = [];
