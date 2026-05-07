@@ -549,7 +549,7 @@ function buildDraft() {
   const draft = document.getElementById('draft'); if (!draft) return;
   draft.innerHTML = BOXES.map(box => {
     const typeLabel = box.type==='G'?'Goalie':box.type==='D'?'Defense':'Forward';
-    const players = [...box.players].sort((a,b) => (b.pts||0) - (a.pts||0)).map(p => {
+    const players = [...box.players].sort((a,b) => (calcPrevPts(PREV_STATS[b.name])||b.pts||0) - (calcPrevPts(PREV_STATS[a.name])||a.pts||0)).map(p => {
       const rid = `radio-${box.id}-${p.name.replace(/\W/g,'')}`;
       const displayPts = calcPrevPts(PREV_STATS[p.name]) || p.pts;
       const irTag = IR_STATUS[p.name] ? ' <span class="ir-badge" style="font-size:9px;padding:1px 5px;border-radius:3px;background:#c0392b;color:#fff;margin-left:4px">IR</span>' : '';
