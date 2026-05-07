@@ -297,12 +297,23 @@ async function fetchBoxesFromSheet() {
 // ══════════ PREV STATS — fetch from PrevStats sheet ══════════
 const PREV_STATS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=52517346&single=true&output=csv&t=' + Date.now();
 
+let PREV_SEASON_LABEL = '2025–26'; // updated by fetchPrevStats from sheet
+
 async function fetchPrevStats() {
   try {
     const res = await fetch(PREV_STATS_CSV);
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const text = await res.text();
     const lines = text.trim().split('\n').slice(1);
+    // Detect season from first row col 14 (Season col = 20252026 format)
+    if (lines.length) {
+      const firstCols = lines[0].split(',');
+      const seasonId = (firstCols[14]||'').trim();
+      if (seasonId.length === 8) {
+        const y1 = seasonId.slice(0,4), y2 = seasonId.slice(6,8);
+        PREV_SEASON_LABEL = `${y1}–${y2}`;
+      }
+    }
     lines.forEach(line => {
       const cols = []; let cur = '', inQ = false;
       for (const ch of line) {
@@ -517,6 +528,11 @@ function filterRoster(pos, tab) { currentFilter = pos; document.querySelectorAll
 let playerModalContext = null;
 function openPlayerModal(playerName, team, pos, boxId, radioEl) {
   const s = PREV_STATS[playerName]; playerModalContext = {boxId,playerName,radio:radioEl};
+  // Update season label dynamically
+  const seasonLabel = document.querySelector('.pm-season-label');
+  if (seasonLabel) seasonLabel.textContent = `${PREV_SEASON_LABEL} Season Stats (Prior Year)`;
+  const totalNote = document.querySelector('.pm-total-note');
+  if (totalNote) totalNote.textContent = `Based on ${PREV_SEASON_LABEL} stats`;
   document.getElementById('pm-name').textContent = playerName;
   document.getElementById('pm-nhl').textContent = team + ' · ' + (s?.pos || pos);
   const badge = document.getElementById('pm-pos-badge'); badge.textContent = pos; badge.className = `pm-pos-badge pm-pos-${pos}`;
