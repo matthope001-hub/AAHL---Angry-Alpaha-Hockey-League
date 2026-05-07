@@ -549,9 +549,9 @@ function buildDraft() {
   const draft = document.getElementById('draft'); if (!draft) return;
   draft.innerHTML = BOXES.map(box => {
     const typeLabel = box.type==='G'?'Goalie':box.type==='D'?'Defense':'Forward';
-    const players = [...box.players].sort((a,b) => (calcPrevPts(PREV_STATS[b.name])||b.pts||0) - (calcPrevPts(PREV_STATS[a.name])||a.pts||0)).map(p => {
+    const players = [...box.players].sort((a,b) => (b.pts||calcPrevPts(PREV_STATS[b.name])||0) - (a.pts||calcPrevPts(PREV_STATS[a.name])||0)).map(p => {
       const rid = `radio-${box.id}-${p.name.replace(/\W/g,'')}`;
-      const displayPts = calcPrevPts(PREV_STATS[p.name]) || p.pts;
+      const displayPts = p.pts || calcPrevPts(PREV_STATS[p.name]) || 0;
       const irTag = IR_STATUS[p.name] ? ' <span class="ir-badge" style="font-size:9px;padding:1px 5px;border-radius:3px;background:#c0392b;color:#fff;margin-left:4px">IR</span>' : '';
       return `<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px"><label class="popt" id="opt-${box.id}-${p.name.replace(/\W/g,'')}" style="flex:1;margin-bottom:0${IR_STATUS[p.name]?';opacity:0.55':''}"><input type="radio" name="b${box.id}" value="${p.name}" id="${rid}" onchange="pick(${box.id},'${p.name}',this)"><div style="flex:1"><div class="popt-name">${p.name}${irTag}</div><div class="popt-team">${p.team}</div></div><div style="text-align:right"><div class="popt-pts">${displayPts}</div><div class="popt-pts-label">prev pts</div></div></label><button class="player-info-btn" title="View ${p.name} stats" onclick="event.stopPropagation();openPlayerModal('${p.name.replace(/'/g,"\\'")}','${p.team}','${box.type}',${box.id},document.getElementById('${rid}'))">ℹ</button></div>`;
     }).join('');
