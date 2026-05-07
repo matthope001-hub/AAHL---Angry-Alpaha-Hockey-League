@@ -185,6 +185,49 @@ async function openLiveTeamPanel(teamName) {
 
   // Load picks from Entries sheet
   const ENTRIES_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=0&single=true&output=csv&v=2';
+  const PLAYERS_CSV_IDX = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1949508708&single=true&output=csv&t=' + Date.now();
+  let PLAYERS_MAP = {}; // name → {team,pos,goals,assists,sog,pim,wins,losses,otl,shutouts,saves,hatTricks,onIR}
+
+  async function fetchPlayersForPanel() {
+    try {
+      const res = await fetch(PLAYERS_CSV_IDX);
+      const text = await res.text();
+      text.trim().split('\n').slice(1).forEach(line => {
+        const cols = []; let cur = '', inQ = false;
+        for (const ch of line) {
+          if (ch==='"'){inQ=!inQ;}
+          else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+          else{cur+=ch;}
+        }
+        cols.push(cur.trim());
+        const name = (cols[0]||'').trim();
+        if (!name) return;
+        PLAYERS_MAP[name] = {
+          team:      (cols[1]||'').trim(),
+          pos:       (cols[2]||'').trim(),
+          goals:     parseInt(cols[5])||0,
+          assists:   parseInt(cols[6])||0,
+          sog:       parseInt(cols[7])||0,
+          pim:       parseInt(cols[8])||0,
+          wins:      parseInt(cols[9])||0,
+          losses:    parseInt(cols[10])||0,
+          otl:       parseInt(cols[11])||0,
+          shutouts:  parseInt(cols[12])||0,
+          saves:     parseInt(cols[13])||0,
+          hatTricks: parseInt(cols[14])||0,
+          onIR:      (cols[15]||'').trim().toUpperCase() === 'TRUE',
+        };
+      });
+    } catch(e) { console.warn('Players fetch failed:', e); }
+  }
+
+  function calcPlayerPoolPts(p) {
+    if (!p) return 0;
+    if (p.pos === 'G') return Math.round((p.wins*3 + p.losses + p.otl*1.5 + p.shutouts*2 + p.saves*0.02)*100)/100;
+    const ht = p.hatTricks > 0 ? p.hatTricks * 3 : 0;
+    const pim = p.pos === 'D' ? p.pim * 0.25 : 0;
+    return Math.round((p.goals + p.assists + p.sog*0.11 + ht + pim)*100)/100;
+  }
   const boxLabels = [
     'Forwards 1','Forwards 2','Forwards 3','Forwards 4','Forwards 5','Forwards 6',
     'Forwards 7','Forwards 8','Forwards 9','Forwards 10','Forwards 11','Forwards 12',
@@ -230,38 +273,32 @@ async function openLiveTeamPanel(teamName) {
 function renderLiveRoster(filter) {
   const tbody = document.getElementById('tp-tbody');
   let rows = filter === 'ALL' ? currentLiveRoster : currentLiveRoster.filter(p => p.pos === filter);
-  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="15" style="text-align:center;padding:30px">No players</td></tr>'; return; }
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px">No players</td></tr>'; return; }
 
-  const hasStats = typeof NIGHTLY_STATS !== 'undefined' && NIGHTLY_STATS.length > 0;
-  tbody.innerHTML = rows.map((p, i) => {
-    const isIR = (typeof IR_STATUS !== 'undefined' && IR_STATUS[p.name]) || false;
-    const ps = hasStats ? NIGHTLY_STATS.find(s => s.name === p.name) : null;
-    const pts = ps ? nightlyPts(ps) : 0;
-    const isHT = ps && ps.pos !== 'G' && (ps.goals || 0) >= 3;
+  let totalPts = 0;
+  tbody.innerHTML = rows.map(p => {
+    const ps  = PLAYERS_MAP[p.name] || null;
+    const pts = calcPlayerPoolPts(ps);
+    totalPts += pts;
+    const isIR = ps?.onIR || false;
+    const team = ps?.team || '—';
     let sc = '';
     if (p.pos === 'G') {
       sc = '<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'
          + '<td class="tp-stat-num">'+(ps?.wins||0)+'</td><td class="tp-stat-num">'+(ps?.losses||0)+'</td>'
          + '<td class="tp-stat-num">'+(ps?.otl||0)+'</td><td class="tp-stat-num">'+(ps?.shutouts||0)+'</td>'
-         + '<td class="tp-stat-num">'+(ps?.saves||0)+'</td><td class="tp-ht-flag"></td><td class="tp-pts-num">'+pts+'</td>';
+         + '<td class="tp-stat-num">'+(ps?.saves||0)+'</td>';
     } else {
       sc = '<td class="tp-stat-num">'+(ps?.goals||0)+'</td><td class="tp-stat-num">'+(ps?.assists||0)+'</td>'
          + '<td class="tp-stat-num">'+(ps?.sog||0)+'</td><td class="tp-stat-num">'+(p.pos==='D'?(ps?.pim||0):'—')+'</td>'
          + '<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'
-         + '<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'
-         + '<td class="tp-ht-flag">'+(isHT?'🎩':'')+'</td><td class="tp-pts-num">'+pts+'</td>';
+         + '<td class="tp-stat-num">—</td><td class="tp-stat-num">'+(ps?.hatTricks>0?'🎩':'—')+'</td>';
     }
-    return '<tr'+(isIR?' style="opacity:0.6"':'')+'>'
-      +'<td><span class="tp-pos-badge pos-'+p.pos+'">'+p.pos+'</span></td>'
-      +'<td><div class="tp-pname">'+p.name+(isIR?' <span class="ir-badge">IR</span>':'')+'</div><div class="tp-box">'+p.box+'</div></td>'
-      +'<td><div class="tp-nhl">'+(ps?.team||'—')+'</div></td>'
-      +'<td class="tp-box">'+(i+1)+'</td>'
-      +sc+'</tr>';
+    return '<tr'+(isIR?' style="opacity:0.55"':'')+'>'      +'<td><span class="tp-pos-badge pos-'+p.pos+'">'+p.pos+'</span></td>'      +'<td><div class="tp-pname">'+p.name+(isIR?' <span class="ir-badge">IR</span>':'')+'</div><div class="tp-box">'+p.box+'</div></td>'      +'<td><div class="tp-nhl">'+team+'</div></td>'      +sc      +'<td class="tp-pts-num" style="color:var(--burgundy2)">'+pts+'</td>'      +'</tr>';
   }).join('');
 
   const tfoot = document.getElementById('tp-tfoot');
-  if (tfoot) tfoot.innerHTML = '<tr><td colspan="15" style="padding:12px;text-align:center;color:var(--muted);font-size:12px">'
-    +(hasStats ? 'Showing current season stats' : 'Stats available once season begins')+'</td></tr>';
+  if (tfoot) tfoot.innerHTML = '<tr class="tp-footer">'    +'<td colspan="10" style="padding:12px 16px;font-family:'Teko',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Season Total</td>'    +'<td class="tp-pts-num" style="font-size:17px;color:var(--burgundy2);padding:12px 16px">'+Math.round(totalPts*100)/100+'</td>'    +'</tr>';
 }
 
 function filterLiveRoster(pos, btn) {
@@ -277,7 +314,7 @@ function updateLivePayouts() {
   if (hp) hp.textContent = LIVE_BOARD.length ? '$' + Math.round(prize) : '—';
 }
 
-Promise.all([fetchNightlyStats(), fetchStandings(), fetchIRStatuses(), fetchPrevStats()]).then(() => {
+Promise.all([fetchNightlyStats(), fetchStandings(), fetchIRStatuses(), fetchPrevStats(), fetchPlayersForPanel()]).then(() => {
   buildStarsOfNight();
   buildTicker();
   buildLiveStandings();
