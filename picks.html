@@ -130,10 +130,11 @@
 // Fetch IR statuses first so badges show correctly in draft boxes
 Promise.all([
   fetchIRStatuses(),
-  fetchNightlyStats()
+  fetchNightlyStats(),
+  fetchBoxesFromSheet()  // load boxes from Boxes sheet (falls back to main.js defaults)
 ]).then(() => {
   buildTicker();
-  buildDraft();       // renders after IR_STATUS is populated
+  buildDraft();
   buildDivisionPicks();
 });
 </script>
