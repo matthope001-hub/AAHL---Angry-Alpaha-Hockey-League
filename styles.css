@@ -597,3 +597,113 @@ pre { background: var(--surface2); border: 1px solid var(--border); border-radiu
 
 /* ── IR BADGE ── */
 .ir-badge { display:inline-block; font-family:"Teko",sans-serif; font-size:9px; font-weight:700; letter-spacing:0.5px; padding:1px 5px; border-radius:3px; background:#c0392b; color:#fff; margin-left:4px; vertical-align:middle; }
+
+/* ══════════════════════════════════════
+   STARS OF THE NIGHT
+   ══════════════════════════════════════ */
+.stars-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, #1a0a10 0%, #0d0608 100%);
+  border: 1px solid rgba(111,38,61,0.4);
+  border-radius: var(--r);
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.stars-bar-label {
+  font-family: 'Teko', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+  margin-right: 4px;
+}
+.stars-list {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+.stars-date {
+  font-family: 'Teko', sans-serif;
+  font-size: 11px;
+  color: var(--muted2);
+  white-space: nowrap;
+  margin-left: auto;
+}
+.sn-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 8px 12px;
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+}
+.sn-star-label {
+  position: absolute;
+  top: 5px;
+  left: 10px;
+  font-family: 'Teko', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.sn-hs-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--surface3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 8px;
+  border: 2px solid rgba(255,255,255,0.1);
+}
+.sn-hs { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+.sn-ini {
+  font-family: 'Teko', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.sn-info { flex: 1; min-width: 0; margin-top: 8px; }
+.sn-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sn-team { font-family: 'Teko', sans-serif; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+.sn-chips { display: flex; gap: 4px; flex-wrap: wrap; }
+.sn-chip {
+  font-family: 'Teko', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+}
+.sn-g   { background: rgba(37,99,235,0.25); color: #60a5fa; border: 1px solid rgba(37,99,235,0.3); }
+.sn-a   { background: rgba(124,58,237,0.25); color: #a78bfa; border: 1px solid rgba(124,58,237,0.3); }
+.sn-sog { background: rgba(255,255,255,0.08); color: var(--muted); border: 1px solid rgba(255,255,255,0.1); }
+.sn-w   { background: rgba(34,211,122,0.2); color: #4ade80; border: 1px solid rgba(34,211,122,0.3); }
+.sn-so  { background: rgba(245,200,66,0.2); color: #fbbf24; border: 1px solid rgba(245,200,66,0.3); }
+.sn-sv  { background: rgba(255,255,255,0.06); color: var(--muted); border: 1px solid rgba(255,255,255,0.08); }
+.sn-pim { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+.sn-ht  { background: rgba(245,200,66,0.3); color: #fbbf24; border: 1px solid rgba(245,200,66,0.4); }
+.sn-pts {
+  font-family: 'Teko', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--burgundy);
+  line-height: 1;
+  text-align: right;
+  margin-top: 8px;
+}
+.sn-pts-lbl { font-size: 11px; display: block; color: var(--muted); font-weight: 400; }
