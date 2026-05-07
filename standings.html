@@ -26,6 +26,7 @@
 .stats-table-wrap { background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden; }
 .stats-table { width:100%;border-collapse:collapse;font-size:13px; }
 .stats-table thead tr { background:var(--surface2);border-bottom:2px solid var(--border2); }
+.stats-table thead th { position:sticky;top:0;z-index:2;background:var(--surface2); }
 .stats-table th { padding:10px 14px;font-family:'Teko',sans-serif;font-size:9px;font-weight:500;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;text-align:left;white-space:nowrap;cursor:pointer;user-select:none;transition:color 0.12s; }
 .stats-table th.ra, .stats-table td.ra,
 .stats-table td.st-num { text-align: right; }
@@ -98,28 +99,17 @@
   <div style="padding-top:8px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
     <div>
       <div class="eyebrow">2026–27 season</div>
-      <div style="font-size:26px;font-weight:800">Stats &amp; Standings</div>
+      <div style="font-size:26px;font-weight:800">Player Stats</div>
     </div>
     <span class="live-dot">UPDATED NIGHTLY</span>
   </div>
 
   <div class="page-tabs">
-    <button class="page-tab active" onclick="switchTab('standings', this)">🏆 Standings</button>
-    <button class="page-tab" onclick="switchTab('skaters', this)">⛸ Skaters</button>
+    <button class="page-tab active" onclick="switchTab('skaters', this)">⛸ Skaters</button>
     <button class="page-tab" onclick="switchTab('goalies', this)">🥅 Goalies</button>
   </div>
 
-  <div class="tab-panel active" id="tab-standings">
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">All Entries</span>
-        <span style="font-size:12px;color:var(--muted);font-family:'Teko',sans-serif" id="bd-count">— entries</span>
-      </div>
-      <div id="full-lb"></div>
-    </div>
-  </div>
-
-  <div class="tab-panel" id="tab-skaters">
+  <div class="tab-panel active" id="tab-skaters">
     <div class="stats-controls">
       <div class="pos-tabs">
         <button class="pos-tab active skater" onclick="filterSkaterPos('ALL', this)">All</button>
@@ -128,7 +118,7 @@
       </div>
       <input class="stats-search" id="skater-search" placeholder="Search player…" oninput="renderSkaters()">
     </div>
-    <div class="stats-table-wrap">
+    <div class="stats-table-wrap" style="overflow-y:auto;max-height:600px;">
       <table class="stats-table" id="skater-table">
         <thead><tr>
           <th style="width:32px;text-align:center">#</th>
@@ -152,7 +142,7 @@
       <div style="font-size:12px;color:var(--muted);font-family:'Teko',sans-serif">Scoring: W×3 · L×1 · OTL×1.5 · SO×2 · SV×0.02</div>
       <input class="stats-search" id="goalie-search" placeholder="Search goalie…" oninput="renderGoalies()">
     </div>
-    <div class="stats-table-wrap">
+    <div class="stats-table-wrap" style="overflow-y:auto;max-height:600px;">
       <table class="stats-table" id="goalie-table">
         <thead><tr>
           <th style="width:32px;text-align:center">#</th>
@@ -260,6 +250,7 @@ function switchTab(tab, btn) {
   document.getElementById('tab-' + tab).classList.add('active');
   if (tab === 'skaters') { fetchPlayers().then(renderSkaters); }
   if (tab === 'goalies') { fetchPlayers().then(renderGoalies); }
+  if (tab === 'standings') { /* removed — standings now on home page only */ }
 }
 
 function sortSkaters(col) {
@@ -370,7 +361,6 @@ Promise.all([
   fetchPrevStats()
 ]).then(() => {
   buildTicker();
-  buildBoards();
   renderSkaters();
   renderGoalies();
 }).catch(err => console.error('Data load error:', err));
