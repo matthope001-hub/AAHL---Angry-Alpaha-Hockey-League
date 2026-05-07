@@ -405,6 +405,84 @@ function toast(title, body) {
   t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),4200);
 }
 
+
+// ══════════ STARS OF THE NIGHT ══════════
+function buildStarsOfNight() {
+  const bar  = document.getElementById('stars-bar');
+  const list = document.getElementById('stars-list');
+  const dateEl = document.getElementById('stars-date');
+  if (!bar || !list) return;
+
+  if (!NIGHTLY_STATS.length) { bar.style.display = 'none'; return; }
+
+  // Rank by pool pts earned last night, take top 3
+  const scored = NIGHTLY_STATS
+    .map(p => ({ ...p, pts: nightlyPts(p) }))
+    .filter(p => p.pts > 0)
+    .sort((a, b) => b.pts - a.pts)
+    .slice(0, 3);
+
+  if (!scored.length) { bar.style.display = 'none'; return; }
+
+  const starLabels = ['1st Star', '2nd Star', '3rd Star'];
+  const starColors = ['#f5c842', '#a8b8c8', '#cd7f32'];
+
+  list.innerHTML = scored.map((p, i) => {
+    const urls = getPlayerHeadshotUrls(p.name);
+    const ini  = initials(p.name);
+    const hsId = `star-hs-${i}`;
+
+    // Stat chips
+    let chips = '';
+    if (p.goals >= 3)  chips += `<span class="sn-chip sn-ht">🎩 HAT TRICK</span>`;
+    else if (p.goals)  chips += `<span class="sn-chip sn-g">${p.goals}G</span>`;
+    if (p.assists)     chips += `<span class="sn-chip sn-a">${p.assists}A</span>`;
+    if (p.sog)         chips += `<span class="sn-chip sn-sog">${p.sog}SOG</span>`;
+    if (p.wins)        chips += `<span class="sn-chip sn-w">${p.wins}W</span>`;
+    if (p.shutouts)    chips += `<span class="sn-chip sn-so">SO</span>`;
+    if (p.saves)       chips += `<span class="sn-chip sn-sv">${p.saves}SV</span>`;
+    if (p.pos==='D' && p.pim) chips += `<span class="sn-chip sn-pim">${p.pim}PIM</span>`;
+
+    return `
+      <div class="sn-card">
+        <div class="sn-star-label" style="color:${starColors[i]}">${starLabels[i]}</div>
+        <div class="sn-hs-wrap" id="${hsId}">
+          <span class="sn-ini">${ini}</span>
+        </div>
+        <div class="sn-info">
+          <div class="sn-name">${p.name}</div>
+          <div class="sn-team">${p.team} · ${p.pos}</div>
+          <div class="sn-chips">${chips}</div>
+        </div>
+        <div class="sn-pts">+${p.pts}<span class="sn-pts-lbl">pts</span></div>
+      </div>`;
+  }).join('');
+
+  // Inject headshots after render
+  scored.forEach((p, i) => {
+    const urls = getPlayerHeadshotUrls(p.name);
+    if (!urls.length) return;
+    const wrap = document.getElementById(`star-hs-${i}`);
+    if (!wrap) return;
+    function tryUrl(j) {
+      if (j >= urls.length) return;
+      const img = new Image();
+      img.onload = () => { wrap.innerHTML = `<img src="${urls[j]}" alt="${p.name}" class="sn-hs">`; };
+      img.onerror = () => tryUrl(j + 1);
+      img.src = urls[j];
+    }
+    tryUrl(0);
+  });
+
+  // Set date
+  if (dateEl && scored[0]?.game) {
+    const yesterday = new Date(Date.now() - 86400000);
+    dateEl.textContent = yesterday.toLocaleDateString('en-CA', {weekday:'long', month:'short', day:'numeric'});
+  }
+
+  bar.style.display = 'flex';
+}
+
 // ══════════ TICKER ══════════
 function tickerStatChips(p) {
   let chips = '';
