@@ -8,62 +8,74 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" type="image/png" href="aahl-logo.png">
 <style>
-.page-tabs { display:flex;gap:4px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:4px;margin-bottom:24px; }
-.page-tab { flex:1;padding:10px 16px;border-radius:8px;font-family:'Teko',sans-serif;font-size:11px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all 0.15s;text-align:center;border:none;background:none; }
+/* ── Page Tabs ── */
+.page-tabs { display:flex;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:5px;margin-bottom:24px; }
+.page-tab { flex:1;padding:12px 20px;border-radius:8px;font-family:'Teko',sans-serif;font-size:14px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all 0.15s;text-align:center;border:none;background:none; }
 .page-tab:hover { color:var(--text);background:var(--surface3); }
 .page-tab.active { background:var(--burgundy);color:#fff; }
 .tab-panel { display:none; }
 .tab-panel.active { display:block; }
+
+/* ── Controls ── */
 .stats-controls { display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap; }
-.pos-tabs { display:flex;gap:3px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:3px; }
-.pos-tab { padding:6px 16px;border-radius:6px;font-family:'Teko',sans-serif;font-size:10px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all 0.12s;border:none;background:none; }
+.pos-tabs { display:flex;gap:4px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:4px; }
+.pos-tab { padding:8px 20px;border-radius:6px;font-family:'Teko',sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all 0.12s;border:none;background:none; }
 .pos-tab:hover { color:var(--text); }
 .pos-tab.active { background:var(--surface3);color:var(--text);border:1px solid var(--border2); }
 .pos-tab.active.skater { background:rgba(111,38,61,0.2);color:var(--burgundy2);border-color:rgba(111,38,61,0.3); }
-.stats-search { background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:7px 12px;font-family:'Inter',sans-serif;font-size:13px;color:var(--text);outline:none;width:200px;transition:border-color 0.15s; }
+.stats-search { background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:9px 14px;font-family:'Inter',sans-serif;font-size:14px;color:var(--text);outline:none;width:240px;transition:border-color 0.15s; }
 .stats-search:focus { border-color:var(--burgundy); }
 .stats-search::placeholder { color:var(--muted); }
+
+/* ── Table ── */
 .stats-table-wrap { background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden; }
-.stats-table { width:100%;border-collapse:collapse;font-size:13px; }
+.stats-table { width:100%;border-collapse:collapse;font-size:15px; }
 .stats-table thead tr { background:var(--surface2);border-bottom:2px solid var(--border2); }
 .stats-table thead th { position:sticky;top:0;z-index:2;background:var(--surface2); }
-.stats-table th { padding:10px 14px;font-family:'Teko',sans-serif;font-size:9px;font-weight:500;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;text-align:left;white-space:nowrap;cursor:pointer;user-select:none;transition:color 0.12s; }
+.stats-table th { padding:12px 16px;font-family:'Teko',sans-serif;font-size:12px;font-weight:600;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;text-align:left;white-space:nowrap;cursor:pointer;user-select:none;transition:color 0.12s; }
 .stats-table th.ra, .stats-table td.ra,
-.stats-table td.st-num { text-align: right; }
-.stats-table th.ca, .stats-table td.ca { text-align: center; }
+.stats-table td.st-num { text-align:right; }
+.stats-table th.ca, .stats-table td.ca { text-align:center; }
 .stats-table th:hover { color:var(--text); }
 .stats-table th.sorted { color:var(--burgundy2); }
-.stats-table th .sort-arrow { margin-left:4px;opacity:0.4;font-size:8px; }
+.stats-table th .sort-arrow { margin-left:4px;opacity:0.4;font-size:10px; }
 .stats-table th.sorted .sort-arrow { opacity:1;color:var(--burgundy2); }
 .stats-table tbody tr { border-bottom:1px solid var(--border);transition:background 0.1s; }
 .stats-table tbody tr:last-child { border-bottom:none; }
 .stats-table tbody tr:hover { background:var(--surface2); }
-.stats-table tbody tr.ht-row { background:rgba(111,38,61,0.04); }
-.stats-table td { padding:10px 14px;white-space:nowrap; ; text-align:left }
-.st-rank { font-family:'Teko',sans-serif;font-size:11px;color:var(--muted);width:32px;text-align:center; }
+.stats-table tbody tr.ht-row { background:rgba(111,38,61,0.06); }
+.stats-table td { padding:12px 16px;white-space:nowrap;text-align:left; }
+
+/* ── Cell types ── */
+.st-rank { font-family:'Teko',sans-serif;font-size:15px;color:var(--muted);width:36px;text-align:center; }
 .st-rank.r1 { color:var(--gold);font-weight:700; }
 .st-rank.r2 { color:#9ca3af;font-weight:700; }
 .st-rank.r3 { color:#cd7f32;font-weight:700; }
-.st-name { font-weight:700;color:var(--text); }
-.st-sub { font-size:10px;color:var(--muted);font-family:'Teko',sans-serif;margin-top:1px; }
-.st-pos-badge { display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:4px;font-family:'Teko',sans-serif;font-size:9px;font-weight:700;color:#fff;flex-shrink:0; }
+.st-name { font-size:15px;font-weight:700;color:var(--text); }
+.st-sub { font-size:12px;color:var(--muted);font-family:'Teko',sans-serif;margin-top:2px;letter-spacing:0.3px; }
+.st-pos-badge { display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:5px;font-family:'Teko',sans-serif;font-size:12px;font-weight:700;color:#fff;flex-shrink:0; }
 .pos-F { background:var(--surface3);color:var(--muted); }
 .pos-D { background:var(--burgundy); }
 .pos-G { background:var(--accent); }
-.st-num { font-family:'Teko',sans-serif;font-size:13px;text-align:right;color:var(--muted); }
-.stats-table td.ra { text-align: right; }
-.stats-table td.ca { text-align: center; }
-.st-num.highlight { color:var(--text);font-weight:600; }
-.st-pts { font-family:'Teko',sans-serif;font-size:14px;font-weight:800;text-align:right;color:var(--burgundy2); }
-.st-box { font-family:'Teko',sans-serif;font-size:10px;color:var(--muted2);text-align:center; }
-.st-ht { text-align:center;font-size:12px; }
-.stats-empty { padding:40px;text-align:center;color:var(--muted);font-size:13px;font-family:'Teko',sans-serif; }
+.st-num { font-family:'Teko',sans-serif;font-size:16px;text-align:right;color:var(--muted); }
+.stats-table td.ra { text-align:right; }
+.stats-table td.ca { text-align:center; }
+.st-num.highlight { color:var(--text);font-weight:700; }
+.st-pts { font-family:'Teko',sans-serif;font-size:18px;font-weight:800;text-align:right;color:var(--burgundy2); }
+.st-box { font-family:'Teko',sans-serif;font-size:13px;color:var(--muted2);text-align:center; }
+.st-ht { text-align:center;font-size:14px; }
+.stats-empty { padding:48px;text-align:center;color:var(--muted);font-size:15px;font-family:'Teko',sans-serif; }
+
+/* ── Mobile ── */
 @media(max-width:640px) {
   .stats-controls { flex-direction:column;align-items:flex-start; }
   .stats-search { width:100%; }
-  .stats-table th,.stats-table td { padding:8px 10px;font-size:11px; }
+  .stats-table th { padding:10px 12px;font-size:11px; }
+  .stats-table td { padding:10px 12px;font-size:13px; }
   .stats-table .hide-mob { display:none; }
-  .page-tab { font-size:10px;padding:8px 10px; }
+  .page-tab { font-size:12px;padding:10px 12px; }
+  .st-name { font-size:13px; }
+  .st-pts { font-size:15px; }
 }
 </style>
 </head>
