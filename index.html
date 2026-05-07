@@ -203,7 +203,7 @@ async function openLiveTeamPanel(teamName) {
     const entryRow = rows.find(r => r.includes(entry.entry));
     if (!entryRow) throw new Error('Entry not found');
     const cols = parseCSVLine(entryRow);
-    const picks = cols.slice(7, 31);
+    const picks = cols.slice(8, 32);
     currentLiveRoster = picks.map((name, i) => ({
       name: name.trim(),
       pos: i < 12 ? 'F' : i < 18 ? 'D' : 'G',
