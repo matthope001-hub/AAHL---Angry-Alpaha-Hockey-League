@@ -131,7 +131,8 @@
 Promise.all([
   fetchIRStatuses(),
   fetchNightlyStats(),
-  fetchBoxesFromSheet()  // load boxes from Boxes sheet (falls back to main.js defaults)
+  fetchBoxesFromSheet(),
+  fetchPrevStats()
 ]).then(() => {
   buildTicker();
   buildDraft();
