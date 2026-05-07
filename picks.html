@@ -125,12 +125,17 @@
   <div class="toast-body" id="toast-b"></div>
 </div>
 
-<script src="main.js"></script>
+<script src="main.js?v=6"></script>
 <script>
-fetchIRStatuses(); // Load player IDs for headshots
-fetchNightlyStats().then(() => buildTicker());
-buildDraft();
-buildDivisionPicks();
+// Fetch IR statuses first so badges show correctly in draft boxes
+Promise.all([
+  fetchIRStatuses(),
+  fetchNightlyStats()
+]).then(() => {
+  buildTicker();
+  buildDraft();       // renders after IR_STATUS is populated
+  buildDivisionPicks();
+});
 </script>
 </body>
 </html>
