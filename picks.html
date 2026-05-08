@@ -37,6 +37,8 @@
 <div class="page on">
 <div class="wrap">
 
+  <div id="picks-lock-banner" style="display:none"></div>
+
   <div style="padding-top:8px;margin-bottom:28px">
     <div class="eyebrow">Entry form</div>
     <div style="font-size:26px;font-weight:800">Make Your Picks</div>
@@ -89,7 +91,7 @@
 
   <div style="text-align:center;margin-top:32px">
     <button class="btn btn-gold" style="font-size:16px;padding:14px 40px" onclick="submitEntry()">Submit Entry →</button>
-    <div style="margin-top:10px;font-size:12px;color:var(--muted2)">Picks lock September 29, 2026 · No trades after submission</div>
+    <div style="margin-top:10px;font-size:12px;color:var(--muted2)">Picks lock September 29, 2026 at 7pm ET · No changes after submission</div>
   </div>
 
 </div>
@@ -135,6 +137,7 @@ Promise.all([
   fetchPrevStats()
 ]).then(() => {
   buildTicker();
+  buildPicksLockBanner();
   buildDraft();
   buildDivisionPicks();
 });
