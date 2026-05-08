@@ -175,8 +175,7 @@ async function buildDivisionTracker() {
     // Parse entries to get division picks (cols 32-35 = Atlantic,Metro,Central,Pacific)
     const entryText = await entriesRes.text();
     const divPicks = { Atlantic:[], Metropolitan:[], Central:[], Pacific:[] };
-    entryText.trim().split('
-').slice(1).forEach(line => {
+    entryText.trim().split('\n').slice(1).forEach(line => {
       const cols = []; let cur='', inQ=false;
       for(const ch of line){if(ch==='"'){inQ=!inQ;}else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}else{cur+=ch;}}
       cols.push(cur.trim());
