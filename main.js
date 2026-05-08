@@ -295,7 +295,7 @@ async function fetchBoxesFromSheet() {
 }
 
 // ══════════ PREV STATS — fetch from PrevStats sheet ══════════
-const PREV_STATS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=52517346&single=true&output=csv&t=' + Date.now();
+const PREV_STATS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1431377363&single=true&output=csv&t=' + Date.now();
 
 let PREV_SEASON_LABEL = '2025–26'; // updated by fetchPrevStats from sheet
 
