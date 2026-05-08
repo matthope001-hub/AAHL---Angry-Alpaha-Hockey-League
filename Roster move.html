@@ -103,6 +103,7 @@
       <button class="nav-btn" onclick="window.location.href='picks.html'">My Picks</button>
       <button class="nav-btn" onclick="window.location.href='standings.html'">Stats</button>
       <button class="nav-btn" onclick="window.location.href='rules.html'">Rules</button>
+      <button class="nav-btn active">Moves</button>
       <button class="nav-btn" onclick="window.location.href='admin.html'">Admin</button>
     </nav>
   </div>
@@ -244,14 +245,21 @@ const MAX_MOVES = 2;
 
 // ── Pre-fill from URL params (from confirmation email link) ──
 window.addEventListener('DOMContentLoaded', () => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('entryId')) document.getElementById('auth-entry-id').value = params.get('entryId');
-  if (params.get('email'))   document.getElementById('auth-email').value = params.get('email');
-  if (params.get('token'))   document.getElementById('auth-token').value = params.get('token');
-  if (params.get('entryId') && params.get('token')) authenticate();
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('entryId')) document.getElementById('auth-entry-id').value = params.get('entryId');
+    if (params.get('email'))   document.getElementById('auth-email').value = params.get('email');
+    if (params.get('token'))   document.getElementById('auth-token').value = params.get('token');
 
-  fetchIRStatuses();
-  fetchPrevStats();
+    // Fetch background data
+    if (typeof fetchIRStatuses === 'function') fetchIRStatuses();
+    if (typeof fetchPrevStats === 'function') fetchPrevStats();
+
+    // Auto-authenticate if URL params present
+    if (params.get('entryId') && params.get('token')) {
+      setTimeout(authenticate, 800); // give main.js time to init
+    }
+  } catch(e) { console.warn('Init error:', e); }
 });
 
 async function authenticate() {
