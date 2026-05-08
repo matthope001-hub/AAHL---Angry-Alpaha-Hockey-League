@@ -118,9 +118,52 @@
 
 /* Print friendly */
 @media print {
-  header, .ticker-wrap, .confirm-actions, .payment-card { display: none; }
-  body { background: white; color: black; }
-  .confirm-hero { border: 1px solid #ddd; background: none; }
+  /* Hide everything except picks content */
+  header, .ticker-wrap, .confirm-actions, .payment-card,
+  .picks-group-head, #roster-move-note { display: none !important; }
+
+  /* Force white background */
+  body, .confirm-wrap { background: white !important; color: #111 !important; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* Single page */
+  @page { margin: 10mm 12mm; size: A4 portrait; }
+
+  /* Compact hero */
+  .confirm-hero {
+    border: 1px solid #ddd !important; background: none !important;
+    padding: 12px 16px !important; margin-bottom: 10px !important;
+    display: flex !important; align-items: center !important;
+    justify-content: space-between !important; border-radius: 8px !important;
+  }
+  .confirm-checkmark { width: 36px !important; height: 36px !important; font-size: 18px !important; margin: 0 10px 0 0 !important; flex-shrink: 0; }
+  .confirm-title { font-size: 18px !important; margin: 0 !important; }
+  .confirm-subtitle { font-size: 11px !important; margin: 0 !important; }
+  .confirm-entry-id { font-size: 10px !important; margin-top: 4px !important; display: block !important; }
+
+  /* Three-column picks layout for print */
+  .picks-section { margin-bottom: 8px !important; }
+  .section-head { font-size: 9px !important; padding-bottom: 4px !important; margin-bottom: 6px !important; }
+  .print-picks-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
+    gap: 6px !important;
+  }
+  .picks-group { margin-bottom: 0 !important; border: 1px solid #ddd !important; border-radius: 6px !important; }
+  .picks-table td { padding: 4px 8px !important; font-size: 11px !important; border-color: #eee !important; }
+  .pt-box { font-size: 10px !important; width: 70px !important; }
+  .pt-pos-badge { width: 16px !important; height: 16px !important; font-size: 8px !important; }
+
+  /* Compact division picks */
+  .div-confirm-grid { grid-template-columns: repeat(4,1fr) !important; gap: 4px !important; }
+  .div-confirm-item { padding: 6px 8px !important; border: 1px solid #ddd !important; }
+  .div-confirm-name { font-size: 9px !important; }
+  .div-confirm-pick { font-size: 11px !important; }
+
+  /* Remove shadows, animations */
+  .confirm-wrap { padding: 0 !important; max-width: 100% !important; }
+  .page { padding: 0 !important; }
+  .wrap { padding: 0 !important; }
 }
 
 @media(max-width:640px) {
@@ -179,19 +222,21 @@
   <div class="picks-section">
     <div class="section-head">Your 24 Player Picks</div>
 
-    <div class="picks-group">
-      <div class="picks-group-head">⛸ Forwards</div>
-      <table class="picks-table" id="fwd-table"></table>
-    </div>
+    <div class="print-picks-grid">
+      <div class="picks-group">
+        <div class="picks-group-head">⛸ Forwards</div>
+        <table class="picks-table" id="fwd-table"></table>
+      </div>
 
-    <div class="picks-group">
-      <div class="picks-group-head">🛡 Defense</div>
-      <table class="picks-table" id="def-table"></table>
-    </div>
+      <div class="picks-group">
+        <div class="picks-group-head">🛡 Defense</div>
+        <table class="picks-table" id="def-table"></table>
+      </div>
 
-    <div class="picks-group">
-      <div class="picks-group-head">🥅 Goalies</div>
-      <table class="picks-table" id="gol-table"></table>
+      <div class="picks-group">
+        <div class="picks-group-head">🥅 Goalies</div>
+        <table class="picks-table" id="gol-table"></table>
+      </div>
     </div>
   </div>
 
@@ -202,7 +247,8 @@
   </div>
 
   <!-- Roster Move note -->
-  <div style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r2);padding:16px 20px;margin-bottom:20px">
+  <div id="roster-move-note">
+  <div id="roster-move-note" style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r2);padding:16px 20px;margin-bottom:20px">
     <div style="font-size:14px;font-weight:700;margin-bottom:4px">🔄 Roster Moves</div>
     <div style="font-size:13px;color:var(--muted);line-height:1.5">
       You have <strong style="color:var(--text)">2 roster moves</strong> available during the season to swap an injured or underperforming player.
