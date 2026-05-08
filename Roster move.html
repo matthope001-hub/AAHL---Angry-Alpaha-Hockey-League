@@ -230,9 +230,9 @@
 
 <script src="main.js?v=6"></script>
 <script>
-const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzqqijpX3BoRCDXMH5ZzWCkN2ZlALGJd_HBHMetPlXCir7_ue_WfEtqvo3NM0Z-xMhKUA/exec';
-const BOXES_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1556726328&single=true&output=csv&t=' + Date.now();
-const ENTRIES_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=0&single=true&output=csv&t=' + Date.now();
+// WEBAPP_URL defined in main.js — no redeclaration needed
+const RM_BOXES_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1556726328&single=true&output=csv&t=' + Date.now();
+const RM_ENTRIES_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=0&single=true&output=csv&t=' + Date.now();
 
 let authData = null;
 let myRoster = []; // [{name, boxNumber, boxLabel, pos, pts}]
@@ -271,7 +271,7 @@ async function authenticate() {
 
   // Load entry from entries CSV to verify
   try {
-    const res = await fetch(ENTRIES_CSV);
+    const res = await fetch(RM_ENTRIES_CSV);
     const text = await res.text();
     const lines = text.trim().split('\n').slice(1);
     let found = null;
@@ -309,7 +309,7 @@ async function authenticate() {
 }
 
 async function loadBoxes() {
-  const res = await fetch(BOXES_CSV);
+  const res = await fetch(RM_BOXES_CSV);
   const text = await res.text();
   const lines = text.trim().split('\n').slice(1);
   boxesData = {};
