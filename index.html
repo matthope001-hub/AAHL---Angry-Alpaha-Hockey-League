@@ -175,6 +175,52 @@ function buildLiveStandings() {
 
 let currentLiveRoster = [];
 
+// ── Players panel data (top-level so fetchPlayersForPanel is accessible at init) ──
+const ENTRIES_CSV_IDX = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=0&single=true&output=csv&v=2';
+const PLAYERS_CSV_IDX = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1949508708&single=true&output=csv&t=' + Date.now();
+let PLAYERS_MAP = {};
+
+async function fetchPlayersForPanel() {
+  try {
+    const res = await fetch(PLAYERS_CSV_IDX);
+    const text = await res.text();
+    text.trim().split('\n').slice(1).forEach(line => {
+      const cols = []; let cur = '', inQ = false;
+      for (const ch of line) {
+        if (ch==='"'){inQ=!inQ;}
+        else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+        else{cur+=ch;}
+      }
+      cols.push(cur.trim());
+      const name = (cols[0]||'').trim();
+      if (!name) return;
+      PLAYERS_MAP[name] = {
+        team:      (cols[1]||'').trim(),
+        pos:       (cols[2]||'').trim(),
+        goals:     parseInt(cols[5])||0,
+        assists:   parseInt(cols[6])||0,
+        sog:       parseInt(cols[7])||0,
+        pim:       parseInt(cols[8])||0,
+        wins:      parseInt(cols[9])||0,
+        losses:    parseInt(cols[10])||0,
+        otl:       parseInt(cols[11])||0,
+        shutouts:  parseInt(cols[12])||0,
+        saves:     parseInt(cols[13])||0,
+        hatTricks: parseInt(cols[14])||0,
+        onIR:      (cols[15]||'').trim().toUpperCase() === 'TRUE',
+      };
+    });
+  } catch(e) { console.warn('Players fetch failed:', e); }
+}
+
+function calcPlayerPoolPts(p) {
+  if (!p) return 0;
+  if (p.pos === 'G') return Math.round((p.wins*3 + p.losses + p.otl*1.5 + p.shutouts*2 + p.saves*0.02)*100)/100;
+  const ht = p.hatTricks > 0 ? p.hatTricks * 3 : 0;
+  const pim = p.pos === 'D' ? p.pim * 0.25 : 0;
+  return Math.round((p.goals + p.assists + p.sog*0.11 + ht + pim)*100)/100;
+}
+
 async function openLiveTeamPanel(teamName) {
   const entry = LIVE_BOARD.find(e => e.name === teamName);
   if (!entry) return;
@@ -187,51 +233,7 @@ async function openLiveTeamPanel(teamName) {
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  // Load picks from Entries sheet
-  const ENTRIES_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=0&single=true&output=csv&v=2';
-  const PLAYERS_CSV_IDX = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1949508708&single=true&output=csv&t=' + Date.now();
-  let PLAYERS_MAP = {}; // name → {team,pos,goals,assists,sog,pim,wins,losses,otl,shutouts,saves,hatTricks,onIR}
-
-  async function fetchPlayersForPanel() {
-    try {
-      const res = await fetch(PLAYERS_CSV_IDX);
-      const text = await res.text();
-      text.trim().split('\n').slice(1).forEach(line => {
-        const cols = []; let cur = '', inQ = false;
-        for (const ch of line) {
-          if (ch==='"'){inQ=!inQ;}
-          else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
-          else{cur+=ch;}
-        }
-        cols.push(cur.trim());
-        const name = (cols[0]||'').trim();
-        if (!name) return;
-        PLAYERS_MAP[name] = {
-          team:      (cols[1]||'').trim(),
-          pos:       (cols[2]||'').trim(),
-          goals:     parseInt(cols[5])||0,
-          assists:   parseInt(cols[6])||0,
-          sog:       parseInt(cols[7])||0,
-          pim:       parseInt(cols[8])||0,
-          wins:      parseInt(cols[9])||0,
-          losses:    parseInt(cols[10])||0,
-          otl:       parseInt(cols[11])||0,
-          shutouts:  parseInt(cols[12])||0,
-          saves:     parseInt(cols[13])||0,
-          hatTricks: parseInt(cols[14])||0,
-          onIR:      (cols[15]||'').trim().toUpperCase() === 'TRUE',
-        };
-      });
-    } catch(e) { console.warn('Players fetch failed:', e); }
-  }
-
-  function calcPlayerPoolPts(p) {
-    if (!p) return 0;
-    if (p.pos === 'G') return Math.round((p.wins*3 + p.losses + p.otl*1.5 + p.shutouts*2 + p.saves*0.02)*100)/100;
-    const ht = p.hatTricks > 0 ? p.hatTricks * 3 : 0;
-    const pim = p.pos === 'D' ? p.pim * 0.25 : 0;
-    return Math.round((p.goals + p.assists + p.sog*0.11 + ht + pim)*100)/100;
-  }
+  // Players data loaded via fetchPlayersForPanel() at page init
   const boxLabels = [
     'Forwards 1','Forwards 2','Forwards 3','Forwards 4','Forwards 5','Forwards 6',
     'Forwards 7','Forwards 8','Forwards 9','Forwards 10','Forwards 11','Forwards 12',
