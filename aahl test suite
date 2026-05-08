@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AAHL Test Suite</title>
+<link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080406;--surface:#100709;--surface2:#1a0c10;
+  --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.10);
+  --text:#f0eaec;--muted:#8a7880;--muted2:#6a5860;
+  --green:#1db870;--red:#d63031;--gold:#c4a35a;--blue:#2176ae;--burg:#7d2a42;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;}
+.hdr{background:rgba(8,4,6,0.95);border-bottom:1px solid var(--border2);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;}
+.hdr-title{font-family:'Teko',sans-serif;font-size:20px;font-weight:700;letter-spacing:2px;}
+.hdr-title span{color:var(--burg);}
+.hdr-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+.run-btn{background:var(--burg);color:#fff;border:none;font-family:'Teko',sans-serif;font-size:14px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:10px 24px;border-radius:8px;cursor:pointer;transition:all 0.15s;}
+.run-btn:hover{background:#9d3555;}
+.run-btn:disabled{opacity:0.5;cursor:not-allowed;}
+.progress-wrap{height:3px;background:var(--surface2);}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--burg),var(--blue));transition:width 0.3s ease;width:0%;}
+.summary{display:flex;border-bottom:1px solid var(--border2);background:var(--surface);}
+.sum-item{flex:1;padding:12px 20px;text-align:center;border-right:1px solid var(--border);}
+.sum-item:last-child{border-right:none;}
+.sum-val{font-family:'Teko',sans-serif;font-size:28px;font-weight:700;line-height:1;}
+.sum-lbl{font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-top:3px;}
+.wrap{max-width:900px;margin:0 auto;padding:24px;}
+.suite{margin-bottom:24px;}
+.suite-title{font-family:'Teko',sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border2);}
+.test-row{display:grid;grid-template-columns:20px 1fr auto;gap:12px;align-items:start;padding:9px 14px;border-bottom:1px solid var(--border);border-radius:6px;margin-bottom:3px;background:var(--surface);font-size:12px;transition:background 0.1s;}
+.test-row.pass{background:rgba(29,184,112,0.04);}
+.test-row.fail{background:rgba(214,48,49,0.06);}
+.test-row.running{background:rgba(196,163,90,0.04);}
+.test-icon{font-size:13px;margin-top:1px;}
+.test-name{font-size:12px;font-weight:500;margin-bottom:2px;}
+.test-detail{font-size:10px;color:var(--muted);line-height:1.5;}
+.test-detail.error{color:var(--red);}
+.test-detail.success{color:var(--green);}
+.test-time{font-size:10px;color:var(--muted2);white-space:nowrap;}
+.log-wrap{background:var(--surface);border:1px solid var(--border2);border-radius:10px;overflow:hidden;margin-top:24px;}
+.log-head{padding:10px 16px;border-bottom:1px solid var(--border);font-family:'Teko',sans-serif;font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;display:flex;justify-content:space-between;}
+.log-body{padding:12px 16px;max-height:200px;overflow-y:auto;}
+.log-entry{font-size:11px;color:var(--muted);line-height:1.8;}
+.log-entry.err{color:var(--red);}
+.log-entry.ok{color:var(--green);}
+.log-entry.inf{color:var(--blue);}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div>
+    <div class="hdr-title">AAHL <span>TEST SUITE</span></div>
+    <div class="hdr-sub" id="hdr-status">Ready · <span id="test-count">0</span> tests</div>
+  </div>
+  <button class="run-btn" id="run-btn" onclick="runAll()">&#9654; Run All Tests</button>
+</div>
+<div class="progress-wrap"><div class="progress-fill" id="progress"></div></div>
+<div class="summary">
+  <div class="sum-item"><div class="sum-val" id="s-total" style="color:var(--text)">0</div><div class="sum-lbl">Total</div></div>
+  <div class="sum-item"><div class="sum-val" id="s-pass" style="color:var(--green)">0</div><div class="sum-lbl">Passed</div></div>
+  <div class="sum-item"><div class="sum-val" id="s-fail" style="color:var(--red)">0</div><div class="sum-lbl">Failed</div></div>
+  <div class="sum-item"><div class="sum-val" id="s-time" style="color:var(--muted);font-size:18px">—</div><div class="sum-lbl">Duration</div></div>
+</div>
+<div class="wrap" id="test-wrap"></div>
+<div class="wrap" style="padding-top:0">
+  <div class="log-wrap">
+    <div class="log-head"><span>Console Log</span><span id="log-count" style="color:var(--muted2)">0 entries</span></div>
+    <div class="log-body" id="log-body"><div class="log-entry">Run tests to see output</div></div>
+  </div>
+</div>
+<script>
+const BASE='https://matthope001-hub.github.io/AAHL---Angry-Alpaha-Hockey-League';
+const WEBAPP='https://script.google.com/macros/s/AKfycbzqqijpX3BoRCDXMH5ZzWCkN2ZlALGJd_HBHMetPlXCir7_ue_WfEtqvo3NM0Z-xMhKUA/exec';
+const SH='https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub';
+
+const SUITES=[
+  {name:'🌐 Page Availability',tests:[
+    {name:'index.html',fn:()=>pg('')},
+    {name:'picks.html',fn:()=>pg('/picks.html')},
+    {name:'standings.html',fn:()=>pg('/standings.html')},
+    {name:'rules.html',fn:()=>pg('/rules.html')},
+    {name:'admin.html',fn:()=>pg('/admin.html')},
+    {name:'roster-move.html',fn:()=>pg('/roster-move.html')},
+    {name:'confirmation.html',fn:()=>pg('/confirmation.html')},
+    {name:'styles.css',fn:()=>pg('/styles.css')},
+    {name:'main.js',fn:()=>pg('/main.js')},
+  ]},
+  {name:'📊 Google Sheets CSV',tests:[
+    {name:'Entries sheet reachable',fn:()=>csv(SH+'?gid=0&single=true&output=csv')},
+    {name:'Standings sheet reachable',fn:()=>csv(SH+'?gid=1410587271&single=true&output=csv')},
+    {name:'Players sheet reachable',fn:()=>csv(SH+'?gid=1949508708&single=true&output=csv')},
+    {name:'NightlyStats sheet reachable',fn:()=>csv(SH+'?gid=615464608&single=true&output=csv')},
+    {name:'Boxes sheet reachable',fn:()=>csv(SH+'?gid=1556726328&single=true&output=csv')},
+    {name:'PrevStats sheet reachable',fn:()=>csv(SH+'?gid=52517346&single=true&output=csv')},
+    {name:'Entries has data rows',fn:()=>csvRows(SH+'?gid=0&single=true&output=csv',1)},
+    {name:'Boxes has 24+ player rows',fn:()=>csvRows(SH+'?gid=1556726328&single=true&output=csv',24)},
+    {name:'Players has 24+ rows',fn:()=>csvRows(SH+'?gid=1949508708&single=true&output=csv',24)},
+    {name:'PrevStats has 100+ rows',fn:()=>csvRows(SH+'?gid=52517346&single=true&output=csv',100)},
+  ]},
+  {name:'🤖 Apps Script API',tests:[
+    {name:'Web App reachable',fn:()=>api('')},
+    {name:'getBoxes returns 24 boxes',fn:()=>apiCheck('getBoxes',d=>d.boxes&&d.boxes.length>=24,'need 24 boxes')},
+    {name:'All boxes have players',fn:()=>apiCheck('getBoxes',d=>d.boxes&&d.boxes.every(b=>b.players&&b.players.length>0),'empty boxes found')},
+    {name:'getPendingMoves responds',fn:()=>apiCheck('getPendingMoves',d=>Array.isArray(d.moves),'moves array expected')},
+    {name:'getApprovedMoves responds',fn:()=>apiCheck('getApprovedMoves',d=>Array.isArray(d.moves),'moves array expected')},
+    {name:'getAgentLog responds',fn:()=>apiCheck('getAgentLog',d=>Array.isArray(d.rows),'rows array expected')},
+  ]},
+  {name:'🏒 NHL API',tests:[
+    {name:'NHL schedule API reachable',fn:()=>ext('https://api-web.nhle.com/v1/schedule/now')},
+    {name:'EDM roster has forwards',fn:()=>ext('https://api-web.nhle.com/v1/roster/EDM/current',d=>d.forwards&&d.forwards.length>0)},
+    {name:'WPG roster has forwards',fn:()=>ext('https://api-web.nhle.com/v1/roster/WPG/current',d=>d.forwards&&d.forwards.length>0)},
+    {name:'NHL stats API reachable',fn:()=>ext('https://api.nhle.com/stats/rest/en/skater/summary?limit=1&cayenneExp=seasonId%3D20252026')},
+  ]},
+  {name:'📋 Data Integrity',tests:[
+    {name:'Boxes header has BoxID',fn:()=>csvHeader(SH+'?gid=1556726328&single=true&output=csv','BoxID')},
+    {name:'Players header has PlayerName',fn:()=>csvHeader(SH+'?gid=1949508708&single=true&output=csv','PlayerName')},
+    {name:'PrevStats header has PlayerName',fn:()=>csvHeader(SH+'?gid=52517346&single=true&output=csv','PlayerName')},
+    {name:'Standings points all non-negative',fn:()=>checkPts()},
+    {name:'No duplicate Entry IDs',fn:()=>checkDupeIDs()},
+    {name:'Boxes have 5 players each',fn:()=>checkBoxCounts()},
+  ]},
+  {name:'🔤 main.js Content',tests:[
+    {name:'Has WEBAPP_URL',fn:()=>jsHas('WEBAPP_URL')},
+    {name:'Has correct Boxes gid (1556726328)',fn:()=>jsHas('1556726328')},
+    {name:'Has correct PrevStats gid (52517346)',fn:()=>jsHas('52517346')},
+    {name:'Has fetchNightlyStats',fn:()=>jsHas('fetchNightlyStats')},
+    {name:'Has fetchStandings',fn:()=>jsHas('fetchStandings')},
+    {name:'Has fetchIRStatuses',fn:()=>jsHas('fetchIRStatuses')},
+    {name:'Has fetchPrevStats',fn:()=>jsHas('fetchPrevStats')},
+    {name:"No font-family:'Teko' bug",fn:()=>jsNot("font-family:'Teko'")},
+    {name:'No BOXES_GID placeholder',fn:()=>jsNot('BOXES_GID')},
+  ]},
+];
+
+// Helpers
+async function pg(path){const r=await fetch(BASE+path,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);return r.status+' OK';}
+async function csv(url){const r=await fetch(url+'&t='+Date.now(),{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const t=await r.text();if(!t.trim())throw new Error('Empty');return t.split('\n').length+' rows';}
+async function csvRows(url,min){const r=await fetch(url+'&t='+Date.now(),{cache:'no-store'});const t=await r.text();const rows=t.trim().split('\n').slice(1).filter(Boolean);if(rows.length<min)throw new Error('Only '+rows.length+', need '+min+'+');return rows.length+' rows';}
+async function csvHeader(url,col){const r=await fetch(url+'&t='+Date.now(),{cache:'no-store'});const t=await r.text();const h=t.split('\n')[0];if(!h.includes(col))throw new Error('"'+col+'" not in header');return 'Found "'+col+'"';}
+async function api(action){const url=action?WEBAPP+'?action='+action:WEBAPP;const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();if(d.error)throw new Error(d.error);return 'API OK';}
+async function apiCheck(action,fn,err){const r=await fetch(WEBAPP+'?action='+action,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const d=await r.json();if(!fn(d))throw new Error(err);const k=Object.keys(d).find(k=>Array.isArray(d[k]));return k?d[k].length+' '+k:'OK';}
+async function ext(url,fn){const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);if(fn){const d=await r.json();if(!fn(d))throw new Error('Validation failed');}return r.status+' OK';}
+async function checkPts(){const r=await fetch(SH+'?gid=1410587271&single=true&output=csv&t='+Date.now());const t=await r.text();const rows=t.trim().split('\n').slice(1).filter(Boolean);let neg=0;rows.forEach(l=>{const pts=parseFloat(l.split(',')[5]);if(pts<0)neg++;});if(neg>0)throw new Error(neg+' entries have negative pts');return rows.length+' entries OK';}
+async function checkDupeIDs(){const r=await fetch(SH+'?gid=0&single=true&output=csv&t='+Date.now());const t=await r.text();const ids=t.trim().split('\n').slice(1).map(l=>l.split(',')[0].trim()).filter(Boolean);const dupes=ids.filter((id,i)=>ids.indexOf(id)!==i);if(dupes.length)throw new Error('Dupes: '+dupes.join(', '));return ids.length+' unique IDs';}
+async function checkBoxCounts(){const r=await fetch(SH+'?gid=1556726328&single=true&output=csv&t='+Date.now());const t=await r.text();const rows=t.trim().split('\n').slice(1).filter(Boolean);const c={};rows.forEach(l=>{const id=l.split(',')[0];c[id]=(c[id]||0)+1;});const wrong=Object.entries(c).filter(([,n])=>n!==5);if(wrong.length)throw new Error('Wrong counts: '+wrong.map(([k,v])=>'Box'+k+'('+v+')').join(', '));return Object.keys(c).length+' boxes x5';}
+let _js=null;
+async function getJS(){if(!_js){const r=await fetch(BASE+'/main.js?t='+Date.now(),{cache:'no-store'});_js=await r.text();}return _js;}
+async function jsHas(s){const js=await getJS();if(!js.includes(s))throw new Error('"'+s+'" not found');return 'Found';}
+async function jsNot(s){const js=await getJS();if(js.includes(s))throw new Error('"'+s+'" should not be present');return 'Clean';}
+
+// Runner
+let res={pass:0,fail:0,total:0},logs=[];
+function log(msg,type=''){logs.push({msg,type});const el=document.getElementById('log-body');el.innerHTML=logs.map(l=>'<div class="log-entry '+l.type+'">'+l.msg+'</div>').join('');el.scrollTop=el.scrollHeight;document.getElementById('log-count').textContent=logs.length+' entries';}
+function updateUI(done,total){document.getElementById('s-pass').textContent=res.pass;document.getElementById('s-fail').textContent=res.fail;document.getElementById('s-total').textContent=res.total;document.getElementById('progress').style.width=(done/total*100)+'%';}
+
+function renderSuites(){
+  const wrap=document.getElementById('test-wrap');
+  let n=0;
+  wrap.innerHTML=SUITES.map(s=>`<div class="suite"><div class="suite-title">${s.name}</div>${s.tests.map((t,i)=>`<div class="test-row" id="tr${n+i}"><div class="test-icon" id="ti${n+i}">○</div><div class="test-body"><div class="test-name">${t.name}</div><div class="test-detail" id="td${n+i}">Waiting</div></div><div class="test-time" id="tt${n+i}">—</div></div>`).join('')}</div>`+(n+=s.tests.length,'')).join('');
+  document.getElementById('test-count').textContent=n;
+  document.getElementById('s-total').textContent=n;
+}
+
+async function runAll(){
+  const btn=document.getElementById('run-btn');
+  btn.disabled=true;btn.textContent='Running...';
+  logs=[];res={pass:0,fail:0,total:0};_js=null;
+  document.getElementById('log-body').innerHTML='';
+  document.getElementById('progress').style.width='0%';
+  document.getElementById('progress').style.background='linear-gradient(90deg,var(--burg),var(--blue))';
+  const t0=Date.now();
+  let done=0,idx=0;
+  const total=SUITES.reduce((a,s)=>a+s.tests.length,0);
+  res.total=total;
+
+  for(const suite of SUITES){
+    log('▶ '+suite.name,'inf');
+    for(let i=0;i<suite.tests.length;i++,idx++){
+      const t=suite.tests[i];
+      const row=document.getElementById('tr'+idx);
+      const icon=document.getElementById('ti'+idx);
+      const detail=document.getElementById('td'+idx);
+      const time=document.getElementById('tt'+idx);
+      row.className='test-row running';icon.textContent='⏳';detail.textContent='Running...';detail.className='test-detail';
+      const ts=Date.now();
+      try{
+        const r=await t.fn();const ms=Date.now()-ts;
+        row.className='test-row pass';icon.textContent='✅';
+        detail.textContent=r||'Passed';detail.className='test-detail success';
+        time.textContent=ms+'ms';res.pass++;
+        log('  ✅ '+t.name+' ('+ms+'ms)','ok');
+      }catch(e){
+        const ms=Date.now()-ts;
+        row.className='test-row fail';icon.textContent='❌';
+        detail.textContent=e.message;detail.className='test-detail error';
+        time.textContent=ms+'ms';res.fail++;
+        log('  ❌ '+t.name+': '+e.message,'err');
+      }
+      done++;updateUI(done,total);
+    }
+  }
+  const ms=Date.now()-t0;
+  document.getElementById('s-time').textContent=(ms/1000).toFixed(1)+'s';
+  document.getElementById('hdr-status').textContent=res.pass+'/'+total+' passed · '+res.fail+' failed · '+(ms/1000).toFixed(1)+'s';
+  document.getElementById('progress').style.width='100%';
+  document.getElementById('progress').style.background=res.fail>0?'var(--red)':'var(--green)';
+  log('── Done: '+res.pass+' passed, '+res.fail+' failed in '+(ms/1000).toFixed(1)+'s ──',res.fail>0?'err':'ok');
+  btn.disabled=false;btn.textContent=res.fail>0?'↺ Re-run':'✓ Re-run';
+}
+
+renderSuites();
+</script>
+</body>
+</html>
