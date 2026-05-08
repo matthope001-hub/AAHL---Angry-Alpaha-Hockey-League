@@ -12,28 +12,28 @@
 .be-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; margin-top:16px; }
 .be-box { background:var(--surface); border:1px solid var(--border); border-radius:var(--r2); overflow:hidden; }
 .be-box-head { background:var(--surface2); padding:10px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-.be-box-label { font-family:'Teko',sans-serif; font-size:13px; font-weight:600; color:var(--text); }
-.be-box-type { font-family:'Teko',sans-serif; font-size:10px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+.be-box-label { font-family:Teko,sans-serif; font-size:13px; font-weight:600; color:var(--text); }
+.be-box-type { font-family:Teko,sans-serif; font-size:10px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
 .be-players { padding:8px; }
 .be-player-row { display:grid; grid-template-columns:1fr 80px 52px 70px 28px; gap:6px; align-items:center; padding:5px 4px; border-bottom:1px solid var(--border); }
 .be-player-row:last-child { border-bottom:none; }
 .be-input { background:var(--surface2); border:1px solid var(--border2); border-radius:6px; padding:5px 8px; font-family:'Inter',sans-serif; font-size:12px; color:var(--text); outline:none; width:100%; transition:border-color 0.15s; }
 .be-input:focus { border-color:var(--burgundy); }
-.be-input.team { text-transform:uppercase; font-family:'Teko',sans-serif; font-size:12px; letter-spacing:0.5px; }
-.be-pos-select { background:var(--surface2); border:1px solid var(--border2); border-radius:6px; padding:5px 4px; font-family:'Teko',sans-serif; font-size:11px; color:var(--text); outline:none; width:100%; cursor:pointer; }
-.be-pts-input { background:var(--surface2); border:1px solid var(--border2); border-radius:6px; padding:5px 6px; font-family:'Teko',sans-serif; font-size:12px; color:var(--accent); outline:none; width:100%; text-align:right; }
+.be-input.team { text-transform:uppercase; font-family:Teko,sans-serif; font-size:12px; letter-spacing:0.5px; }
+.be-pos-select { background:var(--surface2); border:1px solid var(--border2); border-radius:6px; padding:5px 4px; font-family:Teko,sans-serif; font-size:11px; color:var(--text); outline:none; width:100%; cursor:pointer; }
+.be-pts-input { background:var(--surface2); border:1px solid var(--border2); border-radius:6px; padding:5px 6px; font-family:Teko,sans-serif; font-size:12px; color:var(--accent); outline:none; width:100%; text-align:right; }
 .be-pts-input:focus { border-color:var(--accent); }
 .be-del-btn { background:none; border:1px solid var(--border2); border-radius:6px; color:var(--muted); cursor:pointer; font-size:14px; width:26px; height:26px; display:grid; place-items:center; transition:all 0.15s; flex-shrink:0; padding:0; }
 .be-del-btn:hover { background:rgba(192,57,43,0.1); border-color:var(--red); color:var(--red); }
-.be-add-btn { width:100%; background:none; border:1px dashed var(--border2); border-radius:6px; padding:6px; font-family:'Teko',sans-serif; font-size:10px; color:var(--muted); cursor:pointer; letter-spacing:1px; text-transform:uppercase; transition:all 0.15s; margin-top:6px; }
+.be-add-btn { width:100%; background:none; border:1px dashed var(--border2); border-radius:6px; padding:6px; font-family:Teko,sans-serif; font-size:10px; color:var(--muted); cursor:pointer; letter-spacing:1px; text-transform:uppercase; transition:all 0.15s; margin-top:6px; }
 .be-add-btn:hover { border-color:var(--burgundy); color:var(--burgundy2); }
 .be-header-row { display:grid; grid-template-columns:1fr 80px 52px 70px 28px; gap:6px; padding:3px 4px 6px; }
-.be-header-row span { font-family:'Teko',sans-serif; font-size:9px; color:var(--muted2); letter-spacing:1px; text-transform:uppercase; }
+.be-header-row span { font-family:Teko,sans-serif; font-size:9px; color:var(--muted2); letter-spacing:1px; text-transform:uppercase; }
 .be-col-right { text-align:right; }
 
 /* ── SAVE BAR ── */
 .be-save-bar { position:sticky; bottom:0; z-index:100; background:var(--surface2); border-top:1px solid var(--border2); padding:14px 24px; display:flex; align-items:center; justify-content:space-between; gap:16px; margin:0 -24px; }
-.be-status { font-family:'Teko',sans-serif; font-size:12px; color:var(--muted); }
+.be-status { font-family:Teko,sans-serif; font-size:12px; color:var(--muted); }
 .be-status.saving { color:var(--gold); }
 .be-status.saved  { color:var(--green); }
 .be-status.error  { color:var(--red); }
@@ -86,7 +86,7 @@
   <div class="card" style="margin-bottom:24px">
     <div class="card-head">
       <span class="card-title">Manage Draft Boxes</span>
-      <span style="font-size:12px;color:var(--muted);font-family:'Teko',sans-serif">24 boxes · 5 players each · saves to Google Sheet</span>
+      <span style="font-size:12px;color:var(--muted);font-family:Teko,sans-serif">24 boxes · 5 players each · saves to Google Sheet</span>
     </div>
     <div style="padding:16px 20px 0">
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
@@ -97,7 +97,7 @@
       </div>
 
       <div id="be-grid" class="be-grid">
-        <div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted);font-family:'Teko',sans-serif;font-size:13px">
+        <div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--muted);font-family:Teko,sans-serif;font-size:13px">
           Click "Load from Sheet" to begin editing
         </div>
       </div>
@@ -167,7 +167,24 @@
       <button class="btn btn-accent" style="font-size:12px" onclick="copyJSON()">Copy JSON</button>
       <button class="btn btn-ghost" style="font-size:12px" onclick="closePreview()">Close</button>
     </div>
+  
+  <!-- ══ ROSTER MOVES ══ -->
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-head">
+      <span class="card-title">🔄 Roster Moves</span>
+      <button class="btn btn-sm" onclick="loadPendingMoves()" style="font-size:11px;padding:6px 14px">Refresh</button>
+    </div>
+    <div class="card-body">
+      <div id="rm-stats" style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+        <div class="kpi" style="min-width:100px"><div class="kpi-val" id="rm-pending-count">—</div><div class="kpi-lbl">Pending</div></div>
+        <div class="kpi" style="min-width:100px"><div class="kpi-val" id="rm-approved-count">—</div><div class="kpi-lbl">Approved</div></div>
+      </div>
+      <div id="rm-pending-list">
+        <div style="text-align:center;padding:24px;color:var(--muted);font-family:Teko,sans-serif;font-size:13px">Click Refresh to load pending moves</div>
+      </div>
+    </div>
   </div>
+</div>
 </div>
 
 <div class="toast" id="toast">
@@ -407,6 +424,90 @@ async function saveBoxes() {
     console.error(err);
   }
 }
+
+// ══ ROSTER MOVES ADMIN ══
+async function loadPendingMoves() {
+  document.getElementById('rm-pending-list').innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">Loading…</div>';
+  try {
+    const res = await fetch(WEBAPP_URL + '?action=getPendingMoves');
+    const data = await res.json();
+    const moves = data.moves || [];
+    const pending = moves.filter(m => m.status === 'PENDING' || !m.status);
+
+    document.getElementById('rm-pending-count').textContent = pending.length;
+
+    if (!pending.length) {
+      document.getElementById('rm-pending-list').innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);font-family:Teko,sans-serif;font-size:13px">No pending roster moves ✓</div>';
+      return;
+    }
+
+    document.getElementById('rm-pending-list').innerHTML = pending.map(m => `
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:200px">
+            <div style="font-weight:700;font-size:14px">${m.teamName}</div>
+            <div style="font-size:12px;color:var(--muted)">${m.ownerEmail}</div>
+            <div style="margin-top:6px;font-size:13px">
+              <span style="color:#f87171;font-weight:700">${m.oldPlayer}</span>
+              <span style="color:var(--muted);margin:0 6px">→</span>
+              <span style="color:#4ade80;font-weight:700">${m.newPlayer}</span>
+            </div>
+            <div style="font-family:Teko,sans-serif;font-size:11px;color:var(--muted);margin-top:2px">${m.boxLabel} · Requested ${m.requestDate}</div>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button onclick="adminApproveMove('${m.moveId}','${m.token}')"
+              style="background:#22d37a;color:#000;border:none;padding:10px 18px;border-radius:6px;font-family:Teko,sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer">
+              ✅ APPROVE
+            </button>
+            <button onclick="adminRejectMove('${m.moveId}','${m.token}')"
+              style="background:var(--surface3);color:var(--text);border:1px solid var(--border2);padding:10px 18px;border-radius:6px;font-family:Teko,sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer">
+              ❌ REJECT
+            </button>
+          </div>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    document.getElementById('rm-pending-list').innerHTML = '<div style="color:#f87171;padding:16px">Failed to load: ' + e.message + '</div>';
+  }
+}
+
+async function adminApproveMove(moveId, token) {
+  if (!confirm('Approve this roster move?')) return;
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'approveMove', moveId, token })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alert('✅ Move approved! Effective date: ' + data.effectiveDate);
+      loadPendingMoves();
+    } else {
+      alert('Error: ' + data.error);
+    }
+  } catch(e) { alert('Failed: ' + e.message); }
+}
+
+async function adminRejectMove(moveId, token) {
+  const reason = prompt('Reason for rejection (optional):') || '';
+  if (reason === null) return; // cancelled
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'rejectMove', moveId, token, reason })
+    });
+    const data = await res.json();
+    if (data.success) {
+      alert('❌ Move rejected.');
+      loadPendingMoves();
+    } else {
+      alert('Error: ' + data.error);
+    }
+  } catch(e) { alert('Failed: ' + e.message); }
+}
+
 </script>
 </body>
 </html>
