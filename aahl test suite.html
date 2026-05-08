@@ -100,6 +100,7 @@ const SUITES=[
     {name:'Boxes has 24+ player rows',fn:()=>csvRows(SH+'?gid=1556726328&single=true&output=csv',24)},
     {name:'Players has 24+ rows',fn:()=>csvRows(SH+'?gid=1949508708&single=true&output=csv',24)},
     {name:'PrevStats has 100+ rows',fn:()=>csvRows(SH+'?gid=52517346&single=true&output=csv',100)},
+    {name:'AgentStatus sheet reachable',fn:()=>csv(SH+'?gid=1431377363&single=true&output=csv')},
   ]},
   {name:'🤖 Apps Script API',tests:[
     {name:'Web App reachable',fn:()=>api('')},
