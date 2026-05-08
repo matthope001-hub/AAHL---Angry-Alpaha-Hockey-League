@@ -95,11 +95,11 @@ const SUITES=[
     {name:'Players sheet reachable',fn:()=>csv(SH+'?gid=1949508708&single=true&output=csv')},
     {name:'NightlyStats sheet reachable',fn:()=>csv(SH+'?gid=615464608&single=true&output=csv')},
     {name:'Boxes sheet reachable',fn:()=>csv(SH+'?gid=1556726328&single=true&output=csv')},
-    {name:'PrevStats sheet reachable',fn:()=>csv(SH+'?gid=52517346&single=true&output=csv')},
+    {name:'PrevStats sheet reachable',fn:()=>csv(SH+'?gid=1431377363&single=true&output=csv')},
     {name:'Entries has data rows',fn:()=>csvRows(SH+'?gid=0&single=true&output=csv',1)},
     {name:'Boxes has 24+ player rows',fn:()=>csvRows(SH+'?gid=1556726328&single=true&output=csv',24)},
     {name:'Players has 24+ rows',fn:()=>csvRows(SH+'?gid=1949508708&single=true&output=csv',24)},
-    {name:'PrevStats has 100+ rows',fn:()=>csvRows(SH+'?gid=52517346&single=true&output=csv',100)},
+    {name:'PrevStats has 100+ rows',fn:()=>csvRows(SH+'?gid=1431377363&single=true&output=csv',100)},
     {name:'AgentStatus sheet reachable',fn:()=>csv(SH+'?gid=1431377363&single=true&output=csv')},
   ]},
   {name:'🤖 Apps Script API',tests:[
@@ -119,7 +119,7 @@ const SUITES=[
   {name:'📋 Data Integrity',tests:[
     {name:'Boxes header has BoxID',fn:()=>csvHeader(SH+'?gid=1556726328&single=true&output=csv','BoxID')},
     {name:'Players header has PlayerName',fn:()=>csvHeader(SH+'?gid=1949508708&single=true&output=csv','PlayerName')},
-    {name:'PrevStats header has PlayerName',fn:()=>csvHeader(SH+'?gid=52517346&single=true&output=csv','PlayerName')},
+    {name:'PrevStats header has PlayerName',fn:()=>csvHeader(SH+'?gid=1431377363&single=true&output=csv','PlayerName')},
     {name:'Standings points all non-negative',fn:()=>checkPts()},
     {name:'No duplicate Entry IDs',fn:()=>checkDupeIDs()},
     {name:'Boxes have 5 players each',fn:()=>checkBoxCounts()},
@@ -127,7 +127,7 @@ const SUITES=[
   {name:'🔤 main.js Content',tests:[
     {name:'Has WEBAPP_URL',fn:()=>jsHas('WEBAPP_URL')},
     {name:'Has correct Boxes gid (1556726328)',fn:()=>jsHas('1556726328')},
-    {name:'Has correct PrevStats gid (52517346)',fn:()=>jsHas('52517346')},
+    {name:'Has correct PrevStats gid (1431377363)',fn:()=>jsHas('1431377363')},
     {name:'Has fetchNightlyStats',fn:()=>jsHas('fetchNightlyStats')},
     {name:'Has fetchStandings',fn:()=>jsHas('fetchStandings')},
     {name:'Has fetchIRStatuses',fn:()=>jsHas('fetchIRStatuses')},
