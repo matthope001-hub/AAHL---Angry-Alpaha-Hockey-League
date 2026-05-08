@@ -146,7 +146,7 @@
         Your Entry ID and auth token were included in your picks confirmation email from <strong>matt.hope@rocketmail.com</strong>. Can't find it? Contact the commissioner.
       </div>
     </div>
-    <button class="btn btn-gold" onclick="authenticate()" style="width:100%">Verify & Continue →</button>
+    <button class="btn btn-gold" onclick="if(typeof authenticate==='function'){authenticate();}else{alert('Page not loaded correctly. Please hard refresh (Ctrl+Shift+R) and try again.');}" style="width:100%">Verify & Continue →</button>
   </div>
 
   <!-- STEP 2: Select player to replace -->
@@ -228,7 +228,7 @@
   <div class="toast-body" id="toast-b"></div>
 </div>
 
-<script src="main.js?v=6"></script>
+<script src="main.js?v=7" onerror="console.warn('main.js failed to load')"></script>
 <script>
 // WEBAPP_URL defined in main.js — no redeclaration needed
 const RM_BOXES_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1556726328&single=true&output=csv&t=' + Date.now();
