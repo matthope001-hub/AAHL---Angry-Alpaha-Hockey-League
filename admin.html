@@ -184,6 +184,59 @@
       </div>
     </div>
   </div>
+
+  <!-- ══ ENTRIES & PAYMENT ══ -->
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-head">
+      <span class="card-title">📋 Entries & Payment</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm btn-ghost" onclick="loadEntries()">Refresh</button>
+        <span style="font-family:'Teko',sans-serif;font-size:11px;color:var(--muted);padding:6px 0" id="entry-summary"></span>
+      </div>
+    </div>
+    <div class="card-body" style="padding:0">
+      <div id="entries-list">
+        <div style="text-align:center;padding:24px;color:var(--muted);font-family:Teko,sans-serif;font-size:13px">Click Refresh to load entries</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ AGENT STATUS LOG ══ -->
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-head">
+      <span class="card-title">🤖 Agent Status Log</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-sm btn-ghost" onclick="loadAgentLog()">Refresh</button>
+        <select id="agent-filter" onchange="filterAgentLog()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:4px 8px;font-size:12px;color:var(--text);outline:none">
+          <option value="">All Agents</option>
+          <option value="AGT-002">AGT-002 Stats</option>
+          <option value="AGT-003">AGT-003 Standings</option>
+          <option value="AGT-004">AGT-004 Comms</option>
+          <option value="AGT-005">AGT-005 Boxes</option>
+          <option value="AGT-006">AGT-006 Health</option>
+          <option value="AGT-007">AGT-007 Backup</option>
+          <option value="PIPELINE">Pipeline</option>
+          <option value="ROSTER">Roster</option>
+        </select>
+      </div>
+    </div>
+    <div class="card-body" style="padding:0;max-height:400px;overflow-y:auto" id="agent-log-wrap">
+      <div style="text-align:center;padding:24px;color:var(--muted);font-family:Teko,sans-serif;font-size:13px">Click Refresh to load agent log</div>
+    </div>
+  </div>
+
+  <!-- ══ MANUAL ACTIONS ══ -->
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-head"><span class="card-title">⚡ Manual Actions</span></div>
+    <div class="card-body">
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="triggerRecalc()">🔄 Recalculate Standings</button>
+        <button class="btn btn-ghost btn-sm" onclick="triggerHealthCheck()">🏥 Run Health Check</button>
+        <button class="btn btn-ghost btn-sm" onclick="triggerBackup()">💾 Run Backup Now</button>
+      </div>
+      <div id="action-result" style="margin-top:12px;font-size:13px;color:var(--muted)"></div>
+    </div>
+  </div>
 </div>
 </div>
 
@@ -506,6 +559,194 @@ async function adminRejectMove(moveId, token) {
       alert('Error: ' + data.error);
     }
   } catch(e) { alert('Failed: ' + e.message); }
+}
+
+
+// ══ ENTRIES & PAYMENT ══
+const ENTRIES_CSV_ADMIN = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=0&single=true&output=csv&t=' + Date.now();
+const AGENT_STATUS_CSV  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=AgentStatus_GID&single=true&output=csv&t=' + Date.now();
+
+let allEntries = [];
+
+function parseCSVLine(line) {
+  const cols = []; let cur = '', inQ = false;
+  for (const ch of line) {
+    if (ch==='"'){inQ=!inQ;}
+    else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
+    else{cur+=ch;}
+  }
+  cols.push(cur.trim());
+  return cols;
+}
+
+async function loadEntries() {
+  document.getElementById('entries-list').innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">Loading…</div>';
+  try {
+    const res = await fetch(ENTRIES_CSV_ADMIN);
+    const text = await res.text();
+    const lines = text.trim().split('\n').slice(1);
+    allEntries = lines.map(l => {
+      const c = parseCSVLine(l);
+      return {
+        entryId:   (c[0]||'').trim(),
+        firstName: (c[1]||'').trim(),
+        lastName:  (c[2]||'').trim(),
+        email:     (c[3]||'').trim(),
+        teamName:  (c[5]||'').trim(),
+        paid:      (c[6]||'').trim() === 'Y',
+        date:      (c[7]||'').trim(),
+      };
+    }).filter(e => e.entryId);
+
+    const paid = allEntries.filter(e => e.paid).length;
+    const unpaid = allEntries.length - paid;
+    document.getElementById('entry-summary').textContent =
+      `${allEntries.length} entries · ${paid} paid · ${unpaid} unpaid`;
+
+    renderEntries(allEntries);
+  } catch(e) {
+    document.getElementById('entries-list').innerHTML =
+      `<div style="color:var(--red);padding:16px">Failed: ${e.message}</div>`;
+  }
+}
+
+function renderEntries(entries) {
+  const el = document.getElementById('entries-list');
+  if (!entries.length) {
+    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No entries yet</div>';
+    return;
+  }
+  el.innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr 160px 80px 80px;padding:8px 16px;border-bottom:1px solid var(--border2);font-family:Teko,sans-serif;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;background:var(--surface2)">
+      <span>Team</span><span>Owner</span><span>Email</span><span>Date</span><span style="text-align:right">Payment</span>
+    </div>` +
+    entries.map(e => `
+    <div style="display:grid;grid-template-columns:1fr 1fr 160px 80px 80px;padding:11px 16px;border-bottom:1px solid var(--border);align-items:center;font-size:13px" id="entry-row-${e.entryId}">
+      <span style="font-weight:600">${e.teamName}</span>
+      <span style="color:var(--muted)">${e.firstName} ${e.lastName}</span>
+      <span style="font-size:12px;color:var(--muted2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${e.email}">${e.email}</span>
+      <span style="font-family:Teko,sans-serif;font-size:11px;color:var(--muted2)">${e.date.slice(0,10)}</span>
+      <div style="text-align:right">
+        ${e.paid
+          ? '<span style="font-family:Teko,sans-serif;font-size:11px;font-weight:700;color:var(--green);padding:3px 8px;background:rgba(29,184,112,0.1);border:1px solid rgba(29,184,112,0.25);border-radius:100px">PAID</span>'
+          : `<button onclick="markPaid('${e.entryId}')" style="font-family:Teko,sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;padding:4px 10px;background:rgba(196,163,90,0.15);color:var(--gold);border:1px solid rgba(196,163,90,0.3);border-radius:100px;cursor:pointer">MARK PAID</button>`
+        }
+      </div>
+    </div>`).join('');
+}
+
+async function markPaid(entryId) {
+  if (!confirm('Mark this entry as paid?')) return;
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'markPayment', entryId, paid: true })
+    });
+    const data = await res.json();
+    if (data.success) {
+      // Update locally
+      const entry = allEntries.find(e => e.entryId === entryId);
+      if (entry) entry.paid = true;
+      const row = document.getElementById(`entry-row-${entryId}`);
+      if (row) {
+        row.querySelector('button')?.replaceWith(
+          Object.assign(document.createElement('span'), {
+            style: 'font-family:Teko,sans-serif;font-size:11px;font-weight:700;color:var(--green);padding:3px 8px;background:rgba(29,184,112,0.1);border:1px solid rgba(29,184,112,0.25);border-radius:100px',
+            textContent: 'PAID'
+          })
+        );
+      }
+      const paid = allEntries.filter(e => e.paid).length;
+      document.getElementById('entry-summary').textContent =
+        `${allEntries.length} entries · ${paid} paid · ${allEntries.length - paid} unpaid`;
+    } else {
+      alert('Error: ' + data.error);
+    }
+  } catch(e) { alert('Failed: ' + e.message); }
+}
+
+// ══ AGENT STATUS LOG ══
+let allLogRows = [];
+
+async function loadAgentLog() {
+  document.getElementById('agent-log-wrap').innerHTML =
+    '<div style="text-align:center;padding:24px;color:var(--muted)">Loading…</div>';
+  try {
+    // Fetch AgentStatus sheet
+    const res = await fetch(WEBAPP_URL + '?action=getAgentLog');
+    const data = await res.json();
+    allLogRows = (data.rows || []).reverse(); // newest first
+    renderAgentLog(allLogRows);
+  } catch(e) {
+    document.getElementById('agent-log-wrap').innerHTML =
+      `<div style="color:var(--red);padding:16px">Failed: ${e.message}<br><small>Make sure getAgentLog is in your Apps Script doGet</small></div>`;
+  }
+}
+
+function filterAgentLog() {
+  const filter = document.getElementById('agent-filter').value;
+  const filtered = filter ? allLogRows.filter(r => r.agent === filter) : allLogRows;
+  renderAgentLog(filtered);
+}
+
+function renderAgentLog(rows) {
+  const el = document.getElementById('agent-log-wrap');
+  if (!rows.length) {
+    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No log entries</div>';
+    return;
+  }
+  const statusColor = s => s==='✅'?'var(--green)':s==='❌'?'var(--red)':s==='⚠️'?'var(--gold)':'var(--muted)';
+  el.innerHTML = rows.slice(0,200).map(r => `
+    <div style="display:grid;grid-template-columns:140px 70px 24px 1fr;gap:10px;padding:9px 16px;border-bottom:1px solid var(--border);font-size:12px;align-items:start">
+      <span style="font-family:Teko,sans-serif;font-size:10px;color:var(--muted2)">${r.timestamp||''}</span>
+      <span style="font-family:Teko,sans-serif;font-size:11px;font-weight:600;color:var(--muted)">${r.agent||''}</span>
+      <span style="font-size:14px">${r.status||''}</span>
+      <span style="color:${statusColor(r.status)};line-height:1.4">${r.message||''}</span>
+    </div>`).join('');
+}
+
+// ══ MANUAL ACTIONS ══
+async function triggerRecalc() {
+  const el = document.getElementById('action-result');
+  el.textContent = '⏳ Triggering standings recalculation…';
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'manualRecalc' })
+    });
+    const data = await res.json();
+    el.textContent = data.success ? '✅ Standings recalculated' : '❌ ' + data.error;
+  } catch(e) { el.textContent = '❌ ' + e.message; }
+}
+
+async function triggerHealthCheck() {
+  const el = document.getElementById('action-result');
+  el.textContent = '⏳ Running health check…';
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'manualHealthCheck' })
+    });
+    const data = await res.json();
+    el.textContent = data.success ? '✅ Health check complete — check Agent Log' : '❌ ' + data.error;
+  } catch(e) { el.textContent = '❌ ' + e.message; }
+}
+
+async function triggerBackup() {
+  const el = document.getElementById('action-result');
+  el.textContent = '⏳ Running backup…';
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'manualBackup' })
+    });
+    const data = await res.json();
+    el.textContent = data.success ? '✅ Backup complete' : '❌ ' + data.error;
+  } catch(e) { el.textContent = '❌ ' + e.message; }
 }
 
 </script>
