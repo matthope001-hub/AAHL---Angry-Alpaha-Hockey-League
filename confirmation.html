@@ -118,27 +118,27 @@
 
 /* Print friendly */
 @media print {
-  * { color: #000 !important; background: #fff !important; border-color: #ddd !important; box-shadow: none !important; }
-  header, .ticker-wrap, .confirm-actions, .payment-card, #roster-move-note { display: none !important; }
-  @page { margin: 12mm; }
-  .confirm-hero { border: 1px solid #ddd; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; }
-  .confirm-checkmark { background: #111 !important; width: 32px; height: 32px; font-size: 16px; margin-right: 10px; }
-  .confirm-title { font-size: 16px; }
-  .confirm-subtitle, .confirm-entry-id { font-size: 11px; }
+  * { color: #000 !important; background: #fff !important; border-color: #ddd !important; box-shadow: none !important; -webkit-print-color-adjust: exact; }
+  header, .ticker-wrap, .confirm-actions, .payment-card, #roster-move-note, .confirm-hero { display: none !important; }
+  @page { margin: 10mm; size: letter; }
+
+  /* Simple text header instead of the styled hero */
+  .print-header { display: block !important; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 14px; }
+
+  .picks-section { margin-bottom: 10px !important; }
+  .section-head { font-size: 9px; margin-bottom: 6px; }
   .print-picks-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
   .picks-group { border: 1px solid #ddd; border-radius: 4px; }
   .picks-group-head { display: none; }
   .picks-table td { padding: 3px 8px; font-size: 11px; border-bottom: 1px solid #eee; }
   .pt-pos-badge { width: 14px; height: 14px; font-size: 8px; }
-  .section-head { font-size: 9px; margin-bottom: 6px; }
-  .div-confirm-grid { grid-template-columns: repeat(4,1fr); gap: 6px; }
+  .div-confirm-grid { grid-template-columns: repeat(4,1fr) !important; gap: 6px; }
   .div-confirm-item { border: 1px solid #ddd; border-radius: 4px; padding: 6px 8px; }
   .div-confirm-name { font-size: 9px; }
-  .div-confirm-pick { font-size: 11px; }
-  .confirm-wrap { padding: 0; }
-  .wrap { padding: 0; }
-  .page { padding: 0; }
+  .div-confirm-pick { font-size: 12px; font-weight: bold; }
+  .confirm-wrap, .wrap, .page { padding: 0 !important; }
 }
+
 
 @media(max-width:640px) {
   .div-confirm-grid { grid-template-columns: 1fr; }
@@ -177,6 +177,17 @@
       A confirmation email has been sent to <strong id="confirm-email"></strong>.
     </div>
     <div class="confirm-entry-id" id="confirm-entry-id">Loading…</div>
+  </div>
+
+  <!-- Print-only header -->
+  <div class="print-header" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:baseline">
+      <div>
+        <div style="font-size:18px;font-weight:800" id="ph-title">AAHL 2026–27 — My Picks</div>
+        <div style="font-size:12px;color:#444;margin-top:2px" id="ph-sub"></div>
+      </div>
+      <div style="font-size:10px;color:#666" id="ph-id"></div>
+    </div>
   </div>
 
   <!-- Payment -->
@@ -283,6 +294,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
   // Fill hero
   document.getElementById('confirm-name').textContent   = data.firstName;
+  // Populate print header
+  const ph = document.getElementById('ph-title');
+  const ps = document.getElementById('ph-sub');
+  const pi = document.getElementById('ph-id');
+  if (ph) ph.textContent = `AAHL 2026–27 — ${data.teamName}`;
+  if (ps) ps.textContent = `${data.firstName} ${data.lastName} · ${data.email}`;
+  if (pi) pi.textContent = `Entry ID: ${data.entryId}`;
   document.getElementById('confirm-team').textContent   = data.teamName;
   document.getElementById('confirm-email').textContent  = data.email;
   document.getElementById('confirm-entry-id').textContent = `Entry ID: ${data.entryId}`;
