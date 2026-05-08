@@ -110,11 +110,11 @@ const SUITES=[
     {name:'getApprovedMoves responds',fn:()=>apiCheck('getApprovedMoves',d=>Array.isArray(d.moves),'moves array expected')},
     {name:'getAgentLog responds',fn:()=>apiCheck('getAgentLog',d=>Array.isArray(d.rows),'rows array expected')},
   ]},
-  {name:'🏒 NHL API',tests:[
-    {name:'NHL schedule API reachable',fn:()=>ext('https://api-web.nhle.com/v1/schedule/now')},
-    {name:'EDM roster has forwards',fn:()=>ext('https://api-web.nhle.com/v1/roster/EDM/current',d=>d.forwards&&d.forwards.length>0)},
-    {name:'WPG roster has forwards',fn:()=>ext('https://api-web.nhle.com/v1/roster/WPG/current',d=>d.forwards&&d.forwards.length>0)},
-    {name:'NHL stats API reachable',fn:()=>ext('https://api.nhle.com/stats/rest/en/skater/summary?limit=1&cayenneExp=seasonId%3D20252026')},
+  {name:'🏒 NHL API (via Apps Script)',tests:[
+    {name:'AGT-002 last run logged',fn:()=>apiCheck('getAgentLog',d=>d.rows&&d.rows.some(r=>r.agent==='AGT-002'),'AGT-002 never logged — check nightly trigger')},
+    {name:'AGT-003 last run logged',fn:()=>apiCheck('getAgentLog',d=>d.rows&&d.rows.some(r=>r.agent==='AGT-003'),'AGT-003 never logged — standings not calculated')},
+    {name:'No pipeline errors today',fn:()=>apiCheck('getAgentLog',d=>{const errs=d.rows&&d.rows.filter(r=>r.status==='❌'&&r.agent==='PIPELINE');return!errs||errs.length===0;},'Pipeline errors found — check AgentStatus')},
+    {name:'NightlyStats has data',fn:()=>csvRows(SH+'?gid=615464608&single=true&output=csv',1)},
   ]},
   {name:'📋 Data Integrity',tests:[
     {name:'Boxes header has BoxID',fn:()=>csvHeader(SH+'?gid=1556726328&single=true&output=csv','BoxID')},
