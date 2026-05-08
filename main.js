@@ -637,7 +637,7 @@ function buildDivisionPicks() {
   const grid = document.getElementById('div-grid'); if (!grid) return;
   grid.innerHTML = Object.entries(DIVISIONS).map(([divName, div]) => {
     const options = div.teams.map(t => `<option value="${t}">${t}</option>`).join('');
-    return `<div class="div-section"><div class="div-conf-label">${div.conf}ern Conference</div><div class="div-name">${divName} Division</div><select class="div-team-select" id="div-${divName}" onchange="pickDivision('${divName}', this)"><option value="">— Pick division winner —</option>${options}</select><div class="div-pts-note">+10 pts while your team leads their division</div></div>`;
+    return `<div class="div-section"><div class="div-conf-label">${div.conf}ern Conference</div><div class="div-name">${divName} Division</div><select class="div-team-select" id="div-${divName}" onchange="pickDivision('${divName}', this)"><option value="">— Pick division winner —</option>${options}</select><div class="div-pts-note">+10 pts if your team wins the division</div></div>`;
   }).join('');
 }
 function pickDivision(divName, sel) { divisionPicks[divName] = sel.value || null; sel.classList.toggle('picked', !!sel.value); updateDivisionCount(); }
