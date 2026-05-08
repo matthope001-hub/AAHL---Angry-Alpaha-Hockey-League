@@ -108,7 +108,7 @@
             <tr><td>Shutout</td><td class="pts-val" style="text-align:right">2</td></tr>
             <tr><td>Save</td><td class="pts-val" style="text-align:right">0.02</td></tr>
             <tr><td colspan="2" class="sec-lbl">Division Bonus</td></tr>
-            <tr><td>Division leader (live)</td><td class="pts-val" style="text-align:right">+10</td></tr>
+            <tr><td>Division winner (season end)</td><td class="pts-val" style="text-align:right">+10</td></tr>
           </tbody>
         </table>
       </div>
@@ -211,7 +211,7 @@ async function buildDivisionTracker() {
         </div>
       </div>`;
     }).join('') +
-    `<div style="padding:7px 14px;font-family:Teko,sans-serif;font-size:9px;color:var(--muted2)">+10 pts while your picked team leads their division</div>`;
+    `<div style="padding:7px 14px;font-family:Teko,sans-serif;font-size:9px;color:var(--muted2)">+10 pts if your picked team wins the division</div>`;
 
     card.style.display = 'block';
   } catch(e) {
