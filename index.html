@@ -350,7 +350,7 @@ async function openLiveTeamPanel(teamName) {
   }
 
   try {
-    const res = await fetch(ENTRIES_CSV);
+    const res = await fetch(ENTRIES_CSV_IDX);
     const text = await res.text();
     const rows = text.trim().split('\n').slice(1);
     const entryRow = rows.find(r => r.includes(entry.entry));
