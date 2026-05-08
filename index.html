@@ -37,15 +37,22 @@
 <div class="page on">
 <div class="wrap">
 
+  
+  <!-- ══ ACTIVITY FEED ══ -->
+  <div id="activity-feed" style="display:none" class="mb-16">
+    <div class="mini-head" style="border-radius:var(--r) var(--r) 0 0;border-bottom:none;margin-bottom:0">Recent Activity</div>
+    <div id="activity-list" class="mini-card" style="border-radius:0 0 var(--r) var(--r);border-top:none;display:flex;flex-direction:column;gap:0"></div>
+  </div>
+
   <div class="home-topbar">
     <div class="home-topbar-left">
       <div class="eyebrow">NHL 2026–27 Regular Season</div>
       <h1>AAHL Box Pick<em>'Em</em></h1>
     </div>
     <div class="kpi-row">
-      <div class="kpi"><div class="kpi-val blue" id="h-entries">—</div><div class="kpi-lbl">Entries</div></div>
-      <div class="kpi"><div class="kpi-val burg" id="h-pot">—</div><div class="kpi-lbl">Prize Pool</div></div>
-      <div class="kpi"><div class="kpi-val slvr">Sep 29</div><div class="kpi-lbl">Deadline</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--accent)" id="h-entries">—</div><div class="kpi-lbl">Entries</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--burgundy3)" id="h-pot">—</div><div class="kpi-lbl">Prize Pool</div></div>
+      <div class="kpi"><div class="kpi-val">Sep 29</div><div class="kpi-lbl">Deadline</div></div>
     </div>
   </div>
 
@@ -60,7 +67,7 @@
     <div class="standings-card">
       <div class="sc-head">
         <span class="sc-title">Current Standings</span>
-        <span class="live-dot" style="font-size:10px">Live</span>
+        <span class="live-dot">Live</span>
       </div>
       <div class="sc-cols">
         <span></span><span></span>
@@ -148,24 +155,21 @@ function buildLiveStandings() {
   const el = document.getElementById('home-standings');
   if (!el) return;
   if (!LIVE_BOARD.length) {
-    el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">No entries yet — be the first!</div>';
+    el.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);font-family:\'Teko\',sans-serif;font-size:13px;letter-spacing:1px">No entries yet — be the first!</div>';
     return;
   }
   const last = LIVE_BOARD.length - 1;
   el.innerHTML = LIVE_BOARD.map((e, i) => {
-    const rowCls = i===0?'r1':i===1?'r2':i===2?'r3':i===last?'rl':'';
-    const pos = i===last ? '<span style="font-size:9px;letter-spacing:0px">LAST</span>' : (i+1);
+    const isFirst = i === 0, isLast = i === last;
+    const rowCls = isFirst?'r1':i===1?'r2':i===2?'r3':isLast?'rl':'';
+    const posDisplay = isLast
+      ? '<span style="font-family:\'Teko\',sans-serif;font-size:8px;letter-spacing:1px;color:var(--muted)">LAST</span>'
+      : (i+1);
     const tv = parseInt(e.trend) || 0;
-    const mvCls = tv>0?'up':tv<0?'dn':'eq';
+    const mvCls = tv>0?'trend-up':tv<0?'trend-dn':'trend-eq';
     const mvLbl = tv>0?'▲'+tv:tv<0?'▼'+Math.abs(tv):'—';
     const ini = initials(e.name);
-    return '<div class="sc-row '+rowCls+'" onclick="openLiveTeamPanel(\''+e.name.replace(/'/g,"\\'")+'\')" style="cursor:pointer">'
-      +'<div class="sc-pos">'+pos+'</div>'
-      +'<div class="sc-av">'+ini+'</div>'
-      +'<div class="sc-info"><div class="sc-name">'+e.name+'</div></div>'
-      +'<div class="sc-ht"></div>'
-      +'<div class="sc-mv '+mvCls+'">'+mvLbl+'</div>'
-      +'<div class="sc-pts">'+e.pts.toLocaleString()+'</div></div>';
+    return '<div class="sc-row '+rowCls+'" onclick="openLiveTeamPanel(\''+e.name.replace(/'/g,"\\'")+'\')">'      +'<div class="sc-pos '+rowCls+'">'+posDisplay+'</div>'      +'<div class="sc-av">'+ini+'</div>'      +'<div class="sc-info"><div class="sc-name">'+e.name+'</div><div class="sc-team">'+(e.owner||'')+'</div></div>'      +'<div class="sc-ht"></div>'      +'<div><span class="lb-trend '+mvCls+'">'+mvLbl+'</span></div>'      +'<div class="sc-pts '+rowCls+'">'+e.pts.toLocaleString()+'</div></div>';
   }).join('');
 }
 
@@ -317,6 +321,7 @@ function updateLivePayouts() {
 Promise.all([fetchNightlyStats(), fetchStandings(), fetchIRStatuses(), fetchPrevStats(), fetchPlayersForPanel()]).then(() => {
   buildStarsOfNight();
   buildTicker();
+  loadActivityFeed();
   buildLiveStandings();
   updateLivePayouts();
 });
