@@ -83,6 +83,13 @@
     </div>
 
     <div class="home-right">
+      <div class="mini-card" id="div-tracker" style="display:none">
+        <div class="mini-head" style="display:flex;align-items:center;justify-content:space-between">
+          <span>Division Leaders</span>
+          <span style="font-family:Teko,sans-serif;font-size:9px;color:var(--gold);letter-spacing:1px">+10 PTS BONUS</span>
+        </div>
+        <div id="div-tracker-body"></div>
+      </div>
       <div class="mini-card">
         <div class="mini-head">Scoring Reference</div>
         <table class="score-tbl">
@@ -152,6 +159,66 @@
 // ── HOME PAGE: standings display & team panel ──
 // All data fetching (fetchStandings, fetchNightlyStats, LIVE_BOARD, NIGHTLY_STATS) lives in main.js
 
+
+
+async function buildDivisionTracker() {
+  try {
+    // Fetch division leaders and entries division picks in parallel
+    const [leadersRes, entriesRes] = await Promise.all([
+      fetch(WEBAPP_URL + '?action=getDivisionLeaders'),
+      fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=0&single=true&output=csv&t=' + Date.now())
+    ]);
+
+    const leadData = await leadersRes.json();
+    if (!leadData.success || !leadData.leaders) return;
+
+    // Parse entries to get division picks (cols 32-35 = Atlantic,Metro,Central,Pacific)
+    const entryText = await entriesRes.text();
+    const divPicks = { Atlantic:[], Metropolitan:[], Central:[], Pacific:[] };
+    entryText.trim().split('
+').slice(1).forEach(line => {
+      const cols = []; let cur='', inQ=false;
+      for(const ch of line){if(ch==='"'){inQ=!inQ;}else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}else{cur+=ch;}}
+      cols.push(cur.trim());
+      if(cols[32]) divPicks.Atlantic.push(cols[32].trim().toLowerCase());
+      if(cols[33]) divPicks.Metropolitan.push(cols[33].trim().toLowerCase());
+      if(cols[34]) divPicks.Central.push(cols[34].trim().toLowerCase());
+      if(cols[35]) divPicks.Pacific.push(cols[35].trim().toLowerCase());
+    });
+
+    const card = document.getElementById('div-tracker');
+    const body = document.getElementById('div-tracker-body');
+    if (!card || !body) return;
+
+    const divOrder = ['Atlantic','Metropolitan','Central','Pacific'];
+    const leaders = leadData.leaders;
+
+    body.innerHTML = divOrder.map(div => {
+      const leader = leaders[div];
+      if (!leader) return '';
+      const leaderTeam = (leader.team||'').toLowerCase();
+      const pickCount = (divPicks[div]||[]).filter(p => p === leaderTeam).length;
+      const total = (divPicks[div]||[]).length;
+
+      return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border)">
+        <div style="flex:1;min-width:0">
+          <div style="font-family:Teko,sans-serif;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px">${div}</div>
+          <div style="font-size:14px;font-weight:700">${leader.team}</div>
+          <div style="font-family:Teko,sans-serif;font-size:10px;color:var(--muted)">${leader.pts} pts · ${leader.gp} GP</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-family:Teko,sans-serif;font-size:22px;font-weight:700;color:${pickCount>0?'var(--gold)':'var(--muted)'};line-height:1">${pickCount}</div>
+          <div style="font-family:Teko,sans-serif;font-size:9px;color:var(--muted)">of ${total} earning</div>
+        </div>
+      </div>`;
+    }).join('') +
+    `<div style="padding:7px 14px;font-family:Teko,sans-serif;font-size:9px;color:var(--muted2)">+10 pts while your picked team leads their division</div>`;
+
+    card.style.display = 'block';
+  } catch(e) {
+    console.warn('Division tracker failed:', e);
+  }
+}
 
 async function loadActivityFeed() {
   try {
@@ -355,6 +422,7 @@ Promise.all([fetchNightlyStats(), fetchStandings(), fetchIRStatuses(), fetchPrev
   buildStarsOfNight();
   buildTicker();
   loadActivityFeed();
+  buildDivisionTracker();
   buildLiveStandings();
   updateLivePayouts();
 });
