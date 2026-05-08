@@ -511,7 +511,7 @@ function buildPicksLockBanner() {
     banner.innerHTML = `
       <div style="background:linear-gradient(135deg,rgba(125,42,66,0.2),rgba(8,4,6,0.95));border:1px solid rgba(125,42,66,0.4);border-radius:var(--r2);padding:32px 24px;text-align:center;margin-bottom:24px">
         <div style="font-size:40px;margin-bottom:12px">🔒</div>
-        <div style="font-family:'Teko',sans-serif;font-size:28px;font-weight:700;letter-spacing:1px;margin-bottom:6px">PICKS ARE LOCKED</div>
+        <div style="font-family:Teko,sans-serif;font-size:28px;font-weight:700;letter-spacing:1px;margin-bottom:6px">PICKS ARE LOCKED</div>
         <div style="font-size:14px;color:var(--muted);max-width:400px;margin:0 auto;line-height:1.6">
           The 2026–27 AAHL season is underway. Pick submissions are now closed.<br>
           Check the <a href="index.html" style="color:var(--burgundy3)">standings</a> to see how your team is doing.
@@ -533,12 +533,12 @@ function buildPicksLockBanner() {
     const color = t.days === 0 ? 'var(--burgundy3)' : 'var(--gold)';
     banner.innerHTML = `
       <div style="background:var(--surface2);border:1px solid ${urgency?'rgba(125,42,66,0.4)':'var(--border2)'};border-radius:var(--r2);padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-        <div style="font-family:'Teko',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);white-space:nowrap">⏱ Picks lock in</div>
+        <div style="font-family:Teko,sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);white-space:nowrap">⏱ Picks lock in</div>
         <div style="display:flex;gap:10px;align-items:baseline">
-          ${t.days > 0 ? `<div style="text-align:center"><div style="font-family:'Teko',sans-serif;font-size:32px;font-weight:700;color:${color};line-height:1">${t.days}</div><div style="font-family:'Teko',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">days</div></div>` : ''}
-          <div style="text-align:center"><div style="font-family:'Teko',sans-serif;font-size:32px;font-weight:700;color:${color};line-height:1">${String(t.hours).padStart(2,'0')}</div><div style="font-family:'Teko',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">hrs</div></div>
-          <div style="text-align:center"><div style="font-family:'Teko',sans-serif;font-size:32px;font-weight:700;color:${color};line-height:1">${String(t.minutes).padStart(2,'0')}</div><div style="font-family:'Teko',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">min</div></div>
-          ${t.days === 0 ? `<div style="text-align:center"><div style="font-family:'Teko',sans-serif;font-size:32px;font-weight:700;color:${color};line-height:1">${String(t.seconds).padStart(2,'0')}</div><div style="font-family:'Teko',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">sec</div></div>` : ''}
+          ${t.days > 0 ? `<div style="text-align:center"><div style="font-family:Teko,sans-serif;font-size:32px;font-weight:700;color:${color};line-height:1">${t.days}</div><div style="font-family:Teko,sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">days</div></div>` : ''}
+          <div style="text-align:center"><div style="font-family:Teko,sans-serif;font-size:32px;font-weight:700;color:${color};line-height:1">${String(t.hours).padStart(2,'0')}</div><div style="font-family:Teko,sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">hrs</div></div>
+          <div style="text-align:center"><div style="font-family:Teko,sans-serif;font-size:32px;font-weight:700;color:${color};line-height:1">${String(t.minutes).padStart(2,'0')}</div><div style="font-family:Teko,sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">min</div></div>
+          ${t.days === 0 ? `<div style="text-align:center"><div style="font-family:Teko,sans-serif;font-size:32px;font-weight:700;color:${color};line-height:1">${String(t.seconds).padStart(2,'0')}</div><div style="font-family:Teko,sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">sec</div></div>` : ''}
         </div>
         <div style="margin-left:auto;font-size:13px;color:var(--muted)">Sep 29, 2026 · Opening Night</div>
       </div>`;
@@ -659,7 +659,7 @@ function openTeamPanel(entryName) {
     `<div class="tp-stat-pill"><div class="spv burg">${entry.pts.toLocaleString()}</div><div class="spl">Pool Pts</div></div>` +
     `<div class="tp-stat-pill"><div class="spv">${entry.rank || '—'}</div><div class="spl">Rank</div></div>`;
   document.getElementById('tp-tbody').innerHTML =
-    `<tr><td colspan="15" style="text-align:center;padding:40px;color:var(--muted);font-family:'Teko',sans-serif;font-size:13px">Individual pick breakdown coming soon.</td></tr>`;
+    `<tr><td colspan="15" style="text-align:center;padding:40px;color:var(--muted);font-family:Teko,sans-serif;font-size:13px">Individual pick breakdown coming soon.</td></tr>`;
   document.getElementById('tp-tfoot').innerHTML = '';
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
