@@ -483,6 +483,72 @@ function buildStarsOfNight() {
   bar.style.display = 'flex';
 }
 
+
+// ══════════ PICKS LOCK ══════════
+const LOCK_DATE = new Date('2026-09-29T19:00:00-04:00'); // Opening night 7pm EST
+
+function isPicksLocked() {
+  return new Date() >= LOCK_DATE;
+}
+
+function getTimeUntilLock() {
+  const diff = LOCK_DATE - new Date();
+  if (diff <= 0) return null;
+  const days    = Math.floor(diff / 86400000);
+  const hours   = Math.floor((diff % 86400000) / 3600000);
+  const minutes = Math.floor((diff % 3600000) / 60000);
+  const seconds = Math.floor((diff % 60000) / 1000);
+  return { days, hours, minutes, seconds, total: diff };
+}
+
+function buildPicksLockBanner() {
+  const locked = isPicksLocked();
+  const banner = document.getElementById('picks-lock-banner');
+  if (!banner) return;
+
+  if (locked) {
+    // Full lock state
+    banner.innerHTML = `
+      <div style="background:linear-gradient(135deg,rgba(125,42,66,0.2),rgba(8,4,6,0.95));border:1px solid rgba(125,42,66,0.4);border-radius:var(--r2);padding:32px 24px;text-align:center;margin-bottom:24px">
+        <div style="font-size:40px;margin-bottom:12px">🔒</div>
+        <div style="font-family:'Teko',sans-serif;font-size:28px;font-weight:700;letter-spacing:1px;margin-bottom:6px">PICKS ARE LOCKED</div>
+        <div style="font-size:14px;color:var(--muted);max-width:400px;margin:0 auto;line-height:1.6">
+          The 2026–27 AAHL season is underway. Pick submissions are now closed.<br>
+          Check the <a href="index.html" style="color:var(--burgundy3)">standings</a> to see how your team is doing.
+        </div>
+      </div>`;
+    // Disable all form inputs
+    document.querySelectorAll('input, select, button:not(.nav-btn)').forEach(el => {
+      if (!el.classList.contains('nav-btn')) el.disabled = true;
+    });
+    banner.style.display = 'block';
+    return;
+  }
+
+  // Countdown state
+  function updateCountdown() {
+    const t = getTimeUntilLock();
+    if (!t) { buildPicksLockBanner(); return; }
+    const urgency = t.days === 0 && t.hours < 24;
+    const color = t.days === 0 ? 'var(--burgundy3)' : 'var(--gold)';
+    banner.innerHTML = `
+      <div style="background:var(--surface2);border:1px solid ${urgency?'rgba(125,42,66,0.4)':'var(--border2)'};border-radius:var(--r2);padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div style="font-family:'Teko',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);white-space:nowrap">⏱ Picks lock in</div>
+        <div style="display:flex;gap:10px;align-items:baseline">
+          ${t.days > 0 ? `<div style="text-align:center"><div style="font-family:'Teko',sans-serif;font-size:32px;font-weight:700;color:${color};line-height:1">${t.days}</div><div style="font-family:'Teko',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">days</div></div>` : ''}
+          <div style="text-align:center"><div style="font-family:'Teko',sans-serif;font-size:32px;font-weight:700;color:${color};line-height:1">${String(t.hours).padStart(2,'0')}</div><div style="font-family:'Teko',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">hrs</div></div>
+          <div style="text-align:center"><div style="font-family:'Teko',sans-serif;font-size:32px;font-weight:700;color:${color};line-height:1">${String(t.minutes).padStart(2,'0')}</div><div style="font-family:'Teko',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">min</div></div>
+          ${t.days === 0 ? `<div style="text-align:center"><div style="font-family:'Teko',sans-serif;font-size:32px;font-weight:700;color:${color};line-height:1">${String(t.seconds).padStart(2,'0')}</div><div style="font-family:'Teko',sans-serif;font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">sec</div></div>` : ''}
+        </div>
+        <div style="margin-left:auto;font-size:13px;color:var(--muted)">Sep 29, 2026 · Opening Night</div>
+      </div>`;
+    banner.style.display = 'block';
+  }
+
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+}
+
 // ══════════ TICKER ══════════
 function tickerStatChips(p) {
   let chips = '';
@@ -746,7 +812,19 @@ async function submitEntry() {
   try {
     const response = await fetch(WEBAPP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({firstName:f,lastName:l,email:e,phone:ph,teamName:team,picks:picksArray,divisions:{atlantic:divisionPicks['Atlantic']||'',metropolitan:divisionPicks['Metropolitan']||'',central:divisionPicks['Central']||'',pacific:divisionPicks['Pacific']||''}})});
     const result = await response.json();
-    if (result.success) { totalEntries++; updatePayouts(); toast('🏒 Entry received!',`Welcome ${f}! Check your email. Send $10 to matt.hope@rocketmail.com.`); setTimeout(()=>window.location.href='index.html',2000); }
+    if (result.success) {
+      totalEntries++;
+      updatePayouts();
+      // Store picks for confirmation page
+      const confirmData = {
+        entryId: result.entryId,
+        firstName: f, lastName: l, email: e, teamName: team,
+        picks: picksArray,
+        divisions: { atlantic: divisionPicks['Atlantic']||'', metropolitan: divisionPicks['Metropolitan']||'', central: divisionPicks['Central']||'', pacific: divisionPicks['Pacific']||'' }
+      };
+      sessionStorage.setItem('aahl_confirm', JSON.stringify(confirmData));
+      setTimeout(() => window.location.href = 'confirmation.html', 400);
+    }
     else toast('Submission failed',result.message||result.error||'Something went wrong.');
   } catch(err) { toast('Connection error','Could not reach the server.'); }
   finally { btn.innerHTML=originalText; btn.disabled=false; btn.style.opacity='1'; }
