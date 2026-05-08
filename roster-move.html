@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roster Move — AAHL</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Teko:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" type="image/png" href="aahl-logo.png">
+<style>
+.rm-wrap { max-width: 560px; margin: 0 auto; padding: 24px 0 60px; }
+.rm-hero { margin-bottom: 28px; }
+.rm-hero .eyebrow { color: var(--accent); }
+.rm-hero h1 { font-size: 28px; font-weight: 800; margin: 4px 0 8px; }
+.rm-hero p { font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+/* Steps */
+.rm-step { display: none; }
+.rm-step.active { display: block; }
+.step-indicator { display: flex; gap: 8px; margin-bottom: 24px; }
+.step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border2); transition: background 0.3s; }
+.step-dot.active { background: var(--burgundy); }
+.step-dot.done { background: #22d37a; }
+
+/* Auth card */
+.auth-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r2); padding: 24px; margin-bottom: 16px; }
+.auth-card h3 { font-family: "Teko", sans-serif; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin: 0 0 16px; }
+.auth-note { font-size: 13px; color: var(--muted); line-height: 1.5; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); margin-top: 12px; }
+
+/* Roster display */
+.roster-grid { display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
+.roster-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r); cursor: pointer; transition: all 0.15s; position: relative; }
+.roster-row:hover { border-color: var(--burgundy); background: var(--surface3); }
+.roster-row.selected { border-color: var(--burgundy); background: rgba(111,38,61,0.12); }
+.roster-row.ir-row { opacity: 0.6; }
+.roster-row .rr-pos { font-family: "Teko", sans-serif; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; color: #fff; width: 24px; text-align: center; flex-shrink: 0; }
+.roster-row .rr-name { flex: 1; font-size: 14px; font-weight: 600; }
+.roster-row .rr-box { font-family: "Teko", sans-serif; font-size: 11px; color: var(--muted); }
+.roster-row .rr-pts { font-family: "Teko", sans-serif; font-size: 16px; color: var(--burgundy2); }
+.roster-row .rr-ir { font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; background: #c0392b; color: #fff; }
+.roster-row .rr-moves { font-family: "Teko", sans-serif; font-size: 10px; color: var(--muted2); }
+
+/* Box players */
+.box-players { display: flex; flex-direction: column; gap: 6px; }
+.box-player { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--surface2); border: 2px solid var(--border); border-radius: var(--r); cursor: pointer; transition: all 0.15s; }
+.box-player:hover { border-color: var(--accent); }
+.box-player.selected { border-color: #22d37a; background: rgba(34,211,122,0.08); }
+.box-player.current { opacity: 0.4; cursor: not-allowed; border-style: dashed; }
+.bp-name { flex: 1; font-size: 14px; font-weight: 600; }
+.bp-team { font-family: "Teko", sans-serif; font-size: 12px; color: var(--muted); }
+.bp-pts { font-family: "Teko", sans-serif; font-size: 16px; color: var(--accent); }
+
+/* Summary card */
+.move-summary { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r2); overflow: hidden; margin-bottom: 20px; }
+.ms-head { background: var(--burgundy); padding: 12px 16px; }
+.ms-head h3 { font-family: "Teko", sans-serif; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; color: #fff; margin: 0; }
+.ms-body { padding: 16px; }
+.ms-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.ms-row:last-child { border-bottom: none; }
+.ms-lbl { color: var(--muted); font-size: 13px; }
+.ms-val { font-weight: 600; }
+.ms-old { color: #f87171; }
+.ms-new { color: #4ade80; }
+.ms-warning { font-size: 12px; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 10px 12px; margin-top: 12px; line-height: 1.5; }
+
+/* Move history */
+.move-history { margin-top: 20px; }
+.mh-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 6px; font-size: 13px; }
+.mh-status { font-family: "Teko", sans-serif; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+.mh-pending  { background: rgba(245,200,66,0.2); color: #fbbf24; }
+.mh-approved { background: rgba(34,211,122,0.2); color: #4ade80; }
+.mh-rejected { background: rgba(192,57,43,0.2); color: #f87171; }
+.mh-info { flex: 1; }
+.mh-players { font-weight: 600; }
+.mh-box { font-size: 11px; color: var(--muted); font-family: "Teko", sans-serif; }
+.mh-date { font-family: "Teko", sans-serif; font-size: 11px; color: var(--muted2); }
+
+.moves-remaining { display: flex; align-items: center; gap: 8px; padding: 10px 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r); margin-bottom: 16px; }
+.mr-count { font-family: "Teko", sans-serif; font-size: 28px; font-weight: 700; color: var(--burgundy2); line-height: 1; }
+.mr-lbl { font-size: 13px; color: var(--muted); }
+
+.btn-back { background: none; border: 1px solid var(--border2); color: var(--muted); border-radius: var(--r); padding: 10px 18px; font-family: "Teko", sans-serif; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.15s; }
+.btn-back:hover { border-color: var(--text); color: var(--text); }
+.btn-row { display: flex; gap: 10px; }
+
+.success-card { text-align: center; padding: 40px 24px; background: var(--surface2); border: 1px solid rgba(34,211,122,0.3); border-radius: var(--r2); }
+.success-icon { font-size: 48px; margin-bottom: 16px; }
+.success-card h2 { font-family: "Teko", sans-serif; font-size: 22px; letter-spacing: 1px; color: #4ade80; margin: 0 0 8px; }
+.success-card p { font-size: 14px; color: var(--muted); line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="wordmark" onclick="window.location.href='index.html'">
+      <img src="aahl-logo.png" alt="AAHL" style="height:48px;width:auto;margin-right:12px;">
+      <div class="wordmark-text">A.A.H.L.</div>
+    </div>
+    <img src="alpaca-pixel.png" alt="" class="alpaca-runner">
+    <nav>
+      <button class="nav-btn" onclick="window.location.href='index.html'">Home</button>
+      <button class="nav-btn" onclick="window.location.href='picks.html'">My Picks</button>
+      <button class="nav-btn" onclick="window.location.href='standings.html'">Stats</button>
+      <button class="nav-btn" onclick="window.location.href='rules.html'">Rules</button>
+      <button class="nav-btn active">Moves</button>
+      <button class="nav-btn" onclick="window.location.href='admin.html'">Admin</button>
+    </nav>
+  </div>
+</header>
+
+<div class="page on">
+<div class="wrap">
+<div class="rm-wrap">
+
+  <div class="rm-hero">
+    <div class="eyebrow">Roster Management</div>
+    <h1>Request a Roster Move</h1>
+    <p>Swap a player from the same box. Points earned by your current player up to the approval date are yours to keep. You have <strong>2 roster moves</strong> per season.</p>
+  </div>
+
+  <div class="step-indicator">
+    <div class="step-dot active" id="dot-1"></div>
+    <div class="step-dot" id="dot-2"></div>
+    <div class="step-dot" id="dot-3"></div>
+    <div class="step-dot" id="dot-4"></div>
+  </div>
+
+  <!-- STEP 1: Authenticate -->
+  <div class="rm-step active" id="step-1">
+    <div class="auth-card">
+      <h3>Verify Your Identity</h3>
+      <div class="field" style="margin-bottom:12px">
+        <label>Entry ID</label>
+        <input type="text" id="auth-entry-id" placeholder="AAHL-20260929-XXXXX" style="font-family:'DM Mono',monospace">
+      </div>
+      <div class="field" style="margin-bottom:12px">
+        <label>Email address</label>
+        <input type="email" id="auth-email" placeholder="you@email.com">
+      </div>
+      <div class="field">
+        <label>Auth token <span style="font-size:11px;color:var(--muted)">(from your confirmation email)</span></label>
+        <input type="text" id="auth-token" placeholder="16-character token" style="font-family:'DM Mono',monospace">
+      </div>
+      <div class="auth-note">
+        Your Entry ID and auth token were included in your picks confirmation email from <strong>matt.hope@rocketmail.com</strong>. Can't find it? Contact the commissioner.
+      </div>
+    </div>
+    <button class="btn btn-gold" onclick="authenticate()" style="width:100%">Verify & Continue →</button>
+  </div>
+
+  <!-- STEP 2: Select player to replace -->
+  <div class="rm-step" id="step-2">
+    <div class="moves-remaining">
+      <div class="mr-count" id="moves-left">—</div>
+      <div class="mr-lbl">roster moves remaining this season</div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-head"><span class="card-title">Your Roster</span><span style="font-size:12px;color:var(--muted)" id="team-name-lbl"></span></div>
+      <div class="card-body" style="padding:8px">
+        <p style="font-size:13px;color:var(--muted);padding:0 6px;margin-bottom:10px">Select the player you want to replace:</p>
+        <div class="roster-grid" id="roster-grid"></div>
+      </div>
+    </div>
+
+    <!-- Move history -->
+    <div class="move-history" id="move-history-wrap" style="display:none">
+      <div style="font-family:Teko,sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Move History</div>
+      <div id="move-history-list"></div>
+    </div>
+  </div>
+
+  <!-- STEP 3: Select replacement from same box -->
+  <div class="rm-step" id="step-3">
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-head">
+        <span class="card-title">Choose Replacement</span>
+        <span style="font-size:12px;color:var(--muted)" id="box-label-display"></span>
+      </div>
+      <div class="card-body" style="padding:8px">
+        <p style="font-size:13px;color:var(--muted);padding:0 6px;margin-bottom:10px">Select your replacement from the same box. Only players in the same box are eligible:</p>
+        <div class="box-players" id="box-players-list"></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="goToStep(2)">← Back</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Review & confirm -->
+  <div class="rm-step" id="step-4">
+    <div class="move-summary">
+      <div class="ms-head"><h3>Move Summary</h3></div>
+      <div class="ms-body">
+        <div class="ms-row"><span class="ms-lbl">Box</span><span class="ms-val" id="sum-box">—</span></div>
+        <div class="ms-row"><span class="ms-lbl">Dropping</span><span class="ms-val ms-old" id="sum-old">—</span></div>
+        <div class="ms-row"><span class="ms-lbl">Adding</span><span class="ms-val ms-new" id="sum-new">—</span></div>
+        <div class="ms-row"><span class="ms-lbl">Points kept</span><span class="ms-val" id="sum-pts-kept">All pts earned up to approval date</span></div>
+        <div class="ms-row"><span class="ms-lbl">Moves after this</span><span class="ms-val" id="sum-moves-left">—</span></div>
+        <div class="ms-warning">
+          ⚠️ This move requires commissioner approval. Once approved, it cannot be undone. Your current player's points up to the approval date are locked in permanently.
+        </div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-back" onclick="goToStep(3)">← Back</button>
+      <button class="btn btn-gold" style="flex:1" onclick="submitMove()">Submit Move Request →</button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="rm-step" id="step-success">
+    <div class="success-card">
+      <div class="success-icon">🔄</div>
+      <h2>Move Request Submitted</h2>
+      <p id="success-msg">Your request is pending commissioner approval. You'll receive an email confirmation once it's been reviewed.</p>
+      <br>
+      <button class="btn btn-gold" onclick="window.location.href='index.html'" style="margin-top:8px">Back to Home</button>
+    </div>
+  </div>
+
+</div>
+</div>
+</div>
+
+<div class="toast" id="toast">
+  <div class="toast-title" id="toast-t"></div>
+  <div class="toast-body" id="toast-b"></div>
+</div>
+
+<script src="main.js?v=6"></script>
+<script>
+const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzqqijpX3BoRCDXMH5ZzWCkN2ZlALGJd_HBHMetPlXCir7_ue_WfEtqvo3NM0Z-xMhKUA/exec';
+const BOXES_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1556726328&single=true&output=csv&t=' + Date.now();
+const ENTRIES_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=0&single=true&output=csv&t=' + Date.now();
+
+let authData = null;
+let myRoster = []; // [{name, boxNumber, boxLabel, pos, pts}]
+let selectedOld = null;
+let selectedNew = null;
+let boxesData = {}; // boxNumber → [players]
+let myMoves = [];
+let movesUsed = 0;
+const MAX_MOVES = 2;
+
+// ── Pre-fill from URL params (from confirmation email link) ──
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('entryId')) document.getElementById('auth-entry-id').value = params.get('entryId');
+  if (params.get('email'))   document.getElementById('auth-email').value = params.get('email');
+  if (params.get('token'))   document.getElementById('auth-token').value = params.get('token');
+  if (params.get('entryId') && params.get('token')) authenticate();
+
+  fetchIRStatuses();
+  fetchPrevStats();
+});
+
+async function authenticate() {
+  const entryId = document.getElementById('auth-entry-id').value.trim();
+  const email   = document.getElementById('auth-email').value.trim().toLowerCase();
+  const token   = document.getElementById('auth-token').value.trim();
+
+  if (!entryId || !email || !token) { toast('Missing fields', 'Please fill in all three fields.'); return; }
+
+  // Load entry from entries CSV to verify
+  try {
+    const res = await fetch(ENTRIES_CSV);
+    const text = await res.text();
+    const lines = text.trim().split('\n').slice(1);
+    let found = null;
+    lines.forEach(line => {
+      const cols = parseCSVLine(line);
+      if ((cols[0]||'').trim() === entryId && (cols[3]||'').trim().toLowerCase() === email) {
+        found = {
+          entryId:   cols[0].trim(),
+          firstName: cols[1].trim(),
+          lastName:  cols[2].trim(),
+          email:     cols[3].trim(),
+          teamName:  cols[5].trim(),
+          picks:     cols.slice(8, 32).map(p => p.trim()),
+        };
+      }
+    });
+
+    if (!found) { toast('Not found', 'Entry ID and email do not match our records.'); return; }
+    authData = { ...found, token };
+
+    // Load boxes and player data in parallel
+    await Promise.all([loadBoxes(), fetchPrevStats()]);
+
+    // Build roster
+    await buildMyRoster();
+
+    // Load move history
+    await loadMyMoves();
+
+    goToStep(2);
+  } catch(e) {
+    toast('Error', 'Could not verify identity. Try again.');
+    console.error(e);
+  }
+}
+
+async function loadBoxes() {
+  const res = await fetch(BOXES_CSV);
+  const text = await res.text();
+  const lines = text.trim().split('\n').slice(1);
+  boxesData = {};
+  lines.forEach(line => {
+    const cols = parseCSVLine(line);
+    const boxId = parseInt(cols[0])||0;
+    if (!boxId || !cols[3]) return;
+    if (!boxesData[boxId]) boxesData[boxId] = { id: boxId, label: cols[1], type: cols[2], players: [] };
+    boxesData[boxId].players.push({ name: cols[3].trim(), team: cols[4].trim(), pts: parseFloat(cols[6])||0 });
+  });
+}
+
+async function buildMyRoster() {
+  myRoster = authData.picks.map((name, i) => {
+    const boxNum = i + 1;
+    const boxInfo = boxesData[boxNum] || {};
+    const pos = boxInfo.type || (i < 12 ? 'F' : i < 18 ? 'D' : 'G');
+    const prevPts = calcPrevPts(PREV_STATS[name]) || 0;
+    return { name, boxNumber: boxNum, boxLabel: boxInfo.label || `Box ${boxNum}`, pos, prevPts };
+  }).filter(p => p.name);
+}
+
+async function loadMyMoves() {
+  try {
+    const res = await fetch(`${WEBAPP_URL}?action=getMyMoves&entryId=${encodeURIComponent(authData.entryId)}`);
+    const data = await res.json();
+    myMoves = data.moves || [];
+    movesUsed = myMoves.filter(m => m.status === 'APPROVED').length;
+
+    document.getElementById('moves-left').textContent = MAX_MOVES - movesUsed;
+    document.getElementById('team-name-lbl').textContent = authData.teamName;
+
+    // Show move history
+    if (myMoves.length) {
+      document.getElementById('move-history-wrap').style.display = 'block';
+      document.getElementById('move-history-list').innerHTML = myMoves.map(m => `
+        <div class="mh-item">
+          <div class="mh-info">
+            <div class="mh-players">${m.oldPlayer} → ${m.newPlayer}</div>
+            <div class="mh-box">${m.boxLabel}</div>
+          </div>
+          <span class="mh-status mh-${m.status.toLowerCase()}">${m.status}</span>
+          <div class="mh-date">${m.requestDate}</div>
+        </div>`).join('');
+    }
+
+    // Render roster
+    renderRoster();
+  } catch(e) {
+    console.warn('Could not load moves:', e);
+    renderRoster();
+  }
+}
+
+function renderRoster() {
+  const grid = document.getElementById('roster-grid');
+  grid.innerHTML = myRoster.map(p => {
+    const isIR = IR_STATUS[p.name] || false;
+    const hasMove = myMoves.find(m => m.boxNumber === p.boxNumber && m.status !== 'REJECTED');
+    const posColor = p.pos==='G' ? '#059669' : p.pos==='D' ? '#7c3aed' : '#2563eb';
+
+    return `<div class="roster-row${isIR?' ir-row':''}" onclick="selectPlayerToReplace(${p.boxNumber})" data-box="${p.boxNumber}">
+      <span class="rr-pos" style="background:${posColor}">${p.pos}</span>
+      <div style="flex:1">
+        <div class="rr-name">${p.name}${isIR?' <span class="rr-ir">IR</span>':''}</div>
+        <div class="rr-box">${p.boxLabel}</div>
+      </div>
+      ${hasMove ? `<span class="rr-moves">${hasMove.status}</span>` : ''}
+      <div class="rr-pts">${p.prevPts}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectPlayerToReplace(boxNumber) {
+  if (movesUsed >= MAX_MOVES) {
+    toast('No moves left', 'You have used all your roster moves this season.');
+    return;
+  }
+
+  const hasApprovedMove = myMoves.find(m => m.boxNumber === boxNumber && m.status === 'APPROVED');
+  if (hasApprovedMove) {
+    toast('Already moved', 'You have already made an approved move for this box.');
+    return;
+  }
+
+  const hasPendingMove = myMoves.find(m => m.boxNumber === boxNumber && m.status === 'PENDING');
+  if (hasPendingMove) {
+    toast('Pending move', 'You already have a pending move request for this box.');
+    return;
+  }
+
+  selectedOld = myRoster.find(p => p.boxNumber === boxNumber);
+  if (!selectedOld) return;
+
+  // Highlight selected
+  document.querySelectorAll('.roster-row').forEach(el => el.classList.remove('selected'));
+  document.querySelector(`[data-box="${boxNumber}"]`)?.classList.add('selected');
+
+  // Show box players
+  renderBoxPlayers(boxNumber);
+  document.getElementById('box-label-display').textContent = selectedOld.boxLabel;
+  goToStep(3);
+}
+
+function renderBoxPlayers(boxNumber) {
+  const box = boxesData[boxNumber];
+  const list = document.getElementById('box-players-list');
+  if (!box) { list.innerHTML = '<p style="color:var(--muted);font-size:13px;padding:8px">No box data available.</p>'; return; }
+
+  const isCurrent = (name) => name === selectedOld?.name;
+  const isOnRoster = (name) => myRoster.some(p => p.name === name);
+
+  list.innerHTML = box.players.map(p => {
+    const current = isCurrent(p.name);
+    const onRoster = !current && isOnRoster(p.name);
+    const isIR = IR_STATUS[p.name] || false;
+    const prevPts = calcPrevPts(PREV_STATS[p.name]) || p.pts || 0;
+
+    return `<div class="box-player${current?' current':''}" onclick="${current||onRoster?'':'selectReplacement(\''+ p.name +'\')'}" data-player="${p.name}">
+      <div style="flex:1">
+        <div class="bp-name">${p.name}${isIR?' <span style="font-size:9px;background:#c0392b;color:#fff;padding:1px 5px;border-radius:3px">IR</span>':''}${current?' <span style="font-size:10px;color:var(--muted)">(current)</span>':''}</div>
+        <div class="bp-team">${p.team}${onRoster?' · already on your roster':''}</div>
+      </div>
+      <div class="bp-pts">${prevPts}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectReplacement(playerName) {
+  selectedNew = boxesData[selectedOld.boxNumber]?.players.find(p => p.name === playerName);
+  if (!selectedNew) return;
+
+  document.querySelectorAll('.box-player').forEach(el => el.classList.remove('selected'));
+  document.querySelector(`[data-player="${playerName}"]`)?.classList.add('selected');
+
+  // Populate summary
+  document.getElementById('sum-box').textContent = selectedOld.boxLabel;
+  document.getElementById('sum-old').textContent = selectedOld.name;
+  document.getElementById('sum-new').textContent = selectedNew.name;
+  document.getElementById('sum-moves-left').textContent = (MAX_MOVES - movesUsed - 1) + ' of ' + MAX_MOVES;
+
+  setTimeout(() => goToStep(4), 150);
+}
+
+async function submitMove() {
+  if (!selectedOld || !selectedNew) { toast('Error', 'Please select both players.'); return; }
+
+  const btn = document.querySelector('#step-4 .btn-gold');
+  btn.textContent = '⏳ Submitting…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        action:     'requestRosterMove',
+        entryId:    authData.entryId,
+        token:      authData.token,
+        boxNumber:  selectedOld.boxNumber,
+        boxLabel:   selectedOld.boxLabel,
+        oldPlayer:  selectedOld.name,
+        newPlayer:  selectedNew.name,
+      })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      document.getElementById('success-msg').textContent =
+        `Move request submitted (${selectedOld.name} → ${selectedNew.name}). ` +
+        `${data.remaining} roster move(s) remaining. ` +
+        `You'll receive an email confirmation once it's been reviewed.`;
+      goToStep('success');
+    } else {
+      toast('Move failed', data.error || 'Something went wrong.');
+    }
+  } catch(e) {
+    toast('Error', 'Could not submit move. Try again.');
+  } finally {
+    btn.textContent = 'Submit Move Request →';
+    btn.disabled = false;
+  }
+}
+
+function goToStep(n) {
+  document.querySelectorAll('.rm-step').forEach(s => s.classList.remove('active'));
+  document.getElementById(n === 'success' ? 'step-success' : `step-${n}`)?.classList.add('active');
+  document.querySelectorAll('.step-dot').forEach((dot, i) => {
+    dot.classList.toggle('active', i + 1 === n);
+    dot.classList.toggle('done', i + 1 < n);
+  });
+  window.scrollTo(0, 0);
+}
+
+function parseCSVLine(line) {
+  const cols = []; let cur = '', inQ = false;
+  for (const ch of line) {
+    if (ch === '"') { inQ = !inQ; }
+    else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+    else { cur += ch; }
+  }
+  cols.push(cur.trim());
+  return cols;
+}
+</script>
+</body>
+</html>
