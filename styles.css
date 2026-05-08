@@ -732,3 +732,191 @@ nav { display: flex; gap: 2px; }
   .rules-scoring-grid { grid-template-columns: 1fr 1fr; }
   .div-grid { grid-template-columns: 1fr 1fr; }
 }
+
+/* ══════════════════════════════════════
+   HOME PAGE COMPONENTS
+   ══════════════════════════════════════ */
+
+/* KPI color variants */
+.kpi-val.blue { color: var(--accent); }
+.kpi-val.burg { color: var(--burgundy3); }
+.kpi-val.slvr { color: var(--gold); }
+
+/* Standings card */
+.standings-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--r2);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.sc-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.015);
+}
+.sc-title {
+  font-family: 'Teko', sans-serif;
+  font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted);
+}
+.live-dot {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: 'Teko', sans-serif; font-size: 9px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--green); padding: 3px 8px;
+  background: rgba(29,184,112,0.1); border: 1px solid rgba(29,184,112,0.25);
+  border-radius: 100px;
+}
+.live-dot::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--green);
+  animation: livePulse2 1.5s ease-in-out infinite;
+}
+@keyframes livePulse2 { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* Mini card (scoring reference) */
+.mini-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--r2);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.mini-head {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'Teko', sans-serif;
+  font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted);
+  background: rgba(255,255,255,0.015);
+}
+.score-tbl { width: 100%; border-collapse: collapse; }
+.score-tbl th {
+  padding: 8px 14px;
+  font-family: 'Teko', sans-serif; font-size: 9px;
+  color: var(--muted); text-transform: uppercase;
+  letter-spacing: 1.5px; text-align: left;
+}
+.score-tbl td { padding: 7px 14px; border-top: 1px solid var(--border); font-size: 13px; }
+.score-tbl .pts-val {
+  font-family: 'Teko', sans-serif; font-size: 15px; font-weight: 700;
+  color: var(--accent); text-align: right;
+}
+.sec-lbl {
+  font-family: 'Teko', sans-serif; font-size: 9px; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 2px;
+  padding: 10px 14px 4px !important; border-top: none !important;
+  background: rgba(255,255,255,0.01);
+}
+.pts-val.bonus { color: var(--gold); }
+
+/* Team panel scroll container */
+.tp-scroll { overflow-y: auto; flex: 1; }
+.tp-header-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+
+/* Alpaca runner */
+.alpaca-runner {
+  position: absolute; left: 50%; transform: translateX(-50%) translateY(-50%);
+  top: 50%; height: 28px; width: auto; pointer-events: none;
+  image-rendering: pixelated;
+  opacity: 0.7;
+}
+
+/* ══════════════════════════════════════
+   PICKS PAGE EXTRAS
+   ══════════════════════════════════════ */
+.picks-bar-right { flex: 1; min-width: 0; }
+
+/* ══════════════════════════════════════
+   RULES PAGE EXTRAS
+   ══════════════════════════════════════ */
+.host-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 20px;
+  margin-bottom: 12px;
+}
+pre {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  font-size: 12px;
+  overflow-x: auto;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+}
+
+/* ══════════════════════════════════════
+   ADMIN PAGE EXTRAS
+   ══════════════════════════════════════ */
+.admin-section { margin-bottom: 32px; }
+.admin-section-title {
+  font-family: 'Teko', sans-serif;
+  font-size: 10px; font-weight: 600; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--muted);
+  margin-bottom: 12px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.btn-danger {
+  background: rgba(214,48,49,0.15);
+  color: var(--red);
+  border: 1px solid rgba(214,48,49,0.3);
+}
+.btn-danger:hover { background: rgba(214,48,49,0.25); }
+.btn-success {
+  background: rgba(29,184,112,0.15);
+  color: var(--green);
+  border: 1px solid rgba(29,184,112,0.3);
+}
+.btn-success:hover { background: rgba(29,184,112,0.25); }
+
+/* ══════════════════════════════════════
+   ROSTER MOVE PAGE
+   ══════════════════════════════════════ */
+.rm-wrap { max-width: 560px; margin: 0 auto; padding: 24px 0 60px; }
+
+/* ══════════════════════════════════════
+   CONFIRMATION PAGE
+   ══════════════════════════════════════ */
+.confirm-wrap { max-width: 600px; margin: 0 auto; padding: 40px 0 80px; }
+
+/* ══════════════════════════════════════
+   UTILITY
+   ══════════════════════════════════════ */
+.text-center { text-align: center; }
+.text-muted { color: var(--muted); }
+.text-gold { color: var(--gold); }
+.text-burg { color: var(--burgundy3); }
+.text-green { color: var(--green); }
+.mt-4 { margin-top: 4px; }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.mt-24 { margin-top: 24px; }
+.mb-8 { margin-bottom: 8px; }
+.mb-16 { margin-bottom: 16px; }
+.mb-24 { margin-bottom: 24px; }
+.gap-8 { gap: 8px; }
+.flex { display: flex; }
+.flex-center { display: flex; align-items: center; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+
+/* ══════════════════════════════════════
+   STANDINGS ROW EXTRAS
+   ══════════════════════════════════════ */
+.sc-row.r1 .sc-av { border-color: var(--gold); color: var(--gold); }
+.sc-row.r2 .sc-av { border-color: #9ca3af; color: #9ca3af; }
+.sc-row.r3 .sc-av { border-color: #cd7f32; color: #cd7f32; }
+.sc-pos.r1 { color: var(--gold); font-size: 16px; font-weight: 700; }
+.sc-pos.r2 { color: #9ca3af; }
+.sc-pos.r3 { color: #cd7f32; }
+.sc-pos.rl { color: var(--muted2); }
+.sc-pts.r1 { color: var(--gold); }
+.sc-row.rl { opacity: 0.7; }
+.sc-trend { font-family: 'Teko', sans-serif; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 100px; }
+.spv.blue { color: var(--accent); }
+
+/* tp-header-left already in main CSS */
