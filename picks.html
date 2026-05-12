@@ -60,6 +60,37 @@
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;font-size:13px;color:var(--muted);margin-top:12px">
         E-transfer <span style="color:var(--text);font-weight:600">$10 per entry</span> to <span style="color:var(--accent);font-family:'DM Mono',monospace">matt.hope@rocketmail.com</span> — include your full name in the memo.
       </div>
+
+      <!-- ══ EMAIL PREFERENCES ══ -->
+      <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--border)">
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px">📬 Email Updates</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+
+          <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r);transition:border-color .15s" id="lbl-daily"
+            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor=document.getElementById('email-daily').checked?'var(--accent)':'var(--border)'">
+            <input type="checkbox" id="email-daily" style="margin-top:2px;accent-color:var(--accent);width:16px;height:16px;flex-shrink:0"
+              onchange="document.getElementById('lbl-daily').style.borderColor=this.checked?'var(--accent)':'var(--border)'">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text)">Daily Recap</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5">Yesterday's points for each of your players — G, A, W, SO — delivered every morning after game nights.</div>
+            </div>
+          </label>
+
+          <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r);transition:border-color .15s" id="lbl-weekly"
+            onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor=document.getElementById('email-weekly').checked?'var(--accent)':'var(--border)'">
+            <input type="checkbox" id="email-weekly" style="margin-top:2px;accent-color:var(--accent);width:16px;height:16px;flex-shrink:0"
+              onchange="document.getElementById('lbl-weekly').style.borderColor=this.checked?'var(--accent)':'var(--border)'">
+            <div>
+              <div style="font-size:13px;font-weight:600;color:var(--text)">Weekly Digest</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.5">Monday morning summary: your team's week total, each player's 7-day stats, and your current pool rank.</div>
+            </div>
+          </label>
+
+        </div>
+        <div style="font-size:11px;color:var(--muted2);margin-top:10px">You can unsubscribe any time by contacting the commissioner.</div>
+      </div>
+      <!-- ══ END EMAIL PREFERENCES ══ -->
+
     </div>
   </div>
 
@@ -109,17 +140,13 @@
       </div>
       <button class="pm-close" onclick="closePlayerModal()">✕</button>
     </div>
-    <div class="pm-season-label">2025–26 Season Stats (Prior Year)</div>
-    <div class="pm-stats-grid" id="pm-stats-grid"></div>
-    <div class="pm-pts-section">
-      <div class="pm-pts-title">Pool Points Breakdown</div>
-      <div class="pm-pts-breakdown" id="pm-pts-breakdown"></div>
+    <div class="pm-body">
+      <div id="pm-stats"></div>
+      <div id="pm-ownership"></div>
     </div>
-    <div class="pm-total-pts">
-      <div><div class="pm-total-label">Prior season pool points</div><div class="pm-total-note">Based on 2025-26 stats</div></div>
-      <div class="pm-total-val" id="pm-total-pts"></div>
+    <div class="pm-foot">
+      <button class="btn btn-gold" id="pm-pick-btn" onclick="confirmModalPick()">Pick This Player →</button>
     </div>
-    <button class="pm-pick-btn" id="pm-pick-btn" onclick="pickFromModal()"></button>
   </div>
 </div>
 
@@ -128,20 +155,6 @@
   <div class="toast-body" id="toast-b"></div>
 </div>
 
-<script src="main.js?v=7"></script>
-<script>
-// Fetch IR statuses first so badges show correctly in draft boxes
-Promise.all([
-  fetchIRStatuses(),
-  fetchNightlyStats(),
-  fetchBoxesFromSheet(),
-  fetchPrevStats()
-]).then(() => {
-  buildTicker();
-  buildPicksLockBanner();
-  buildDraft();
-  buildDivisionPicks();
-});
-</script>
+<script src="main.js?v=8"></script>
 </body>
 </html>
