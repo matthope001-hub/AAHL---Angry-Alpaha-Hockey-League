@@ -550,33 +550,28 @@ function buildPicksLockBanner() {
 }
 
 // ══════════ TICKER ══════════
-function tickerStatChips(p) {
-  let chips = '';
-  const isHT = p.pos !== 'G' && p.goals >= 3;
-  if (isHT) chips += `<span class="t-stat ts-ht">🎩 HAT TRICK</span>`;
-  else if (p.goals) chips += `<span class="t-stat ts-g">${p.goals}G</span>`;
-  if (p.assists)    chips += `<span class="t-stat ts-a">${p.assists}A</span>`;
-  if (p.sog)        chips += `<span class="t-stat ts-sog">${p.sog}SOG</span>`;
-  if (p.wins)       chips += `<span class="t-stat ts-w">${p.wins}W</span>`;
-  if (p.losses)     chips += `<span class="t-stat ts-l">${p.losses}L</span>`;
-  if (p.otl)        chips += `<span class="t-stat ts-otl">${p.otl}OTL</span>`;
-  if (p.shutouts)   chips += `<span class="t-stat ts-so">SO</span>`;
-  if (p.saves)      chips += `<span class="t-stat ts-sv">${p.saves}SV</span>`;
-  if (p.pos==='D' && p.pim) chips += `<span class="t-stat ts-pim">${p.pim}PIM</span>`;
-  return chips;
-}
-
+// DROP-IN REPLACEMENT for buildTicker() in main.js
+// Also add: let _tickerRAF = null; at the top of the TICKER section
+ 
+let _tickerRAF = null;
+ 
 function buildTicker() {
-  const reel = document.getElementById('ticker-reel'); if (!reel) return;
-
-  const empty = msg =>
-    reel.innerHTML = `<div class="t-row t-row1"><div class="t-item"><span class="t-game">${msg}</span></div></div>` +
-                     `<div class="t-row t-row2"><div class="t-item"><span class="t-game">${msg}</span></div></div>`;
-
-  if (!NIGHTLY_STATS.length) { empty('No pool player stats yet for last night'); return; }
+  const viewport = document.querySelector('.ticker-viewport'); if (!viewport) return;
+ 
+  // Cancel any previous RAF loop
+  if (_tickerRAF) { cancelAnimationFrame(_tickerRAF); _tickerRAF = null; }
+ 
   const scorers = NIGHTLY_STATS.filter(p => nightlyPts(p) > 0);
-  if (!scorers.length) { empty('No scoring pool players last night'); return; }
-
+  const emptyMsg = !NIGHTLY_STATS.length
+    ? 'No pool player stats yet for last night'
+    : 'No scoring pool players last night';
+ 
+  if (!scorers.length) {
+    viewport.innerHTML =
+      `<div class="ticker-track"><div class="t-item"><span class="t-game">${emptyMsg}</span></div></div>`;
+    return;
+  }
+ 
   const itemHTML = p =>
     `<div class="t-item">` +
     `<span class="t-game">${p.game}</span>` +
@@ -587,12 +582,32 @@ function buildTicker() {
     `${tickerStatChips(p)}` +
     `<span class="t-pts">+${nightlyPts(p)}pts</span>` +
     `</div>`;
-
+ 
+  // Duplicate content — seamless reset when scrolled one copy width
   const inner = scorers.map(itemHTML).join('');
-  const looped = inner + inner + inner;
-  reel.innerHTML =
-    `<div class="t-row t-row1">${looped}</div>` +
-    `<div class="t-row t-row2">${looped}</div>`;
+  viewport.innerHTML = `<div class="ticker-track">${inner}${inner}</div>`;
+ 
+  const track = viewport.querySelector('.ticker-track');
+  const PX_PER_SEC = 60;
+  let pos = 0;
+  let last = null;
+ 
+  function tick(ts) {
+    if (!last) last = ts;
+    const dt = Math.min((ts - last) / 1000, 0.05); // cap delta — prevents jump after tab switch
+    last = ts;
+ 
+    pos += PX_PER_SEC * dt;
+ 
+    // halfWidth = width of one copy; reset silently when past it
+    const halfWidth = track.scrollWidth / 2;
+    if (pos >= halfWidth) pos -= halfWidth;
+ 
+    track.style.transform = `translateX(${-pos}px)`;
+    _tickerRAF = requestAnimationFrame(tick);
+  }
+ 
+  _tickerRAF = requestAnimationFrame(tick);
 }
 
 // ══════════ LEADERBOARD ══════════
