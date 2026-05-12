@@ -280,34 +280,33 @@ nav { display: flex; gap: 2px; }
 .btn-gold:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(196,163,90,0.35); }
 .btn-sm { padding: 7px 14px; font-size: 12px; }
 
-function buildTicker() {
-  const reel = document.getElementById('ticker-reel'); if (!reel) return;
-
-  const empty = msg =>
-    reel.innerHTML = `<div class="t-row t-row1"><div class="t-item"><span class="t-game">${msg}</span></div></div>` +
-                     `<div class="t-row t-row2"><div class="t-item"><span class="t-game">${msg}</span></div></div>`;
-
-  if (!NIGHTLY_STATS.length) { empty('No pool player stats yet for last night'); return; }
-  const scorers = NIGHTLY_STATS.filter(p => nightlyPts(p) > 0);
-  if (!scorers.length) { empty('No scoring pool players last night'); return; }
-
-  const itemHTML = p =>
-    `<div class="t-item">` +
-    `<span class="t-game">${p.game}</span>` +
-    `<span class="t-sep">·</span>` +
-    `<span class="t-name">${p.name}</span>` +
-    `<span class="t-team">${p.team}&nbsp;${p.pos}</span>` +
-    `<span class="t-sep">|</span>` +
-    `${tickerStatChips(p)}` +
-    `<span class="t-pts">+${nightlyPts(p)}pts</span>` +
-    `</div>`;
-
-  const inner = scorers.map(itemHTML).join('');
-  const looped = inner + inner + inner;
-  reel.innerHTML =
-    `<div class="t-row t-row1">${looped}</div>` +
-    `<div class="t-row t-row2">${looped}</div>`;
+/* ── TICKER ── */
+.ticker-wrap {
+  position: sticky; top: 58px; z-index: 190;
+  height: 36px; display: flex; align-items: stretch;
+  background: rgba(8,4,6,0.9);
+  border-bottom: 1px solid var(--border2);
+  backdrop-filter: blur(12px);
+  overflow: hidden;
 }
+.ticker-tag {
+  background: var(--burgundy); color: #fff;
+  font-family: 'Teko', sans-serif; font-size: 9px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase;
+  padding: 0 14px; display: flex; align-items: center;
+  white-space: nowrap; flex-shrink: 0; min-width: 80px; justify-content: center;
+}
+.ticker-tag.live { background: var(--red); animation: livePulse 2s ease-in-out infinite; }
+@keyframes livePulse { 0%,100%{background:var(--red)} 50%{background:#ff4d4d} }
+.live-dot { display: flex; align-items: center; gap: 5px; }
+.ticker-viewport { flex: 1; overflow: hidden; position: relative; }
+.ticker-track { display: flex; align-items: center; white-space: nowrap; height: 36px; will-change: transform; }
+.t-item { display: inline-flex; align-items: center; gap: 6px; padding: 0 16px; height: 36px; border-right: 1px solid var(--border); }
+.t-name { font-size: 11px; font-weight: 600; color: var(--text); }
+.t-team { font-family: 'Teko', sans-serif; font-size: 10px; color: var(--muted); }
+.t-game { font-family: 'Teko', sans-serif; font-size: 10px; color: var(--muted2); }
+.t-sep { color: var(--border2); }
+.t-pts { font-family: 'Teko', sans-serif; font-size: 12px; font-weight: 700; color: var(--green); }
 .t-stat { font-family: 'Teko', sans-serif; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; }
 .ts-g   { background: rgba(33,118,174,0.25); color: #60a5fa; }
 .ts-a   { background: rgba(124,58,237,0.2); color: #a78bfa; }
@@ -916,5 +915,3 @@ pre {
 .sc-row.rl { opacity: 0.7; }
 .sc-trend { font-family: 'Teko', sans-serif; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 100px; }
 .spv.blue { color: var(--accent); }
-
-/* tp-header-left already in main CSS */
