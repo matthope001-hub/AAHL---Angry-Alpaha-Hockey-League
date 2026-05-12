@@ -550,6 +550,21 @@ function buildPicksLockBanner() {
 }
 
 // ══════════ TICKER ══════════
+function tickerStatChips(p) {
+  let chips = '';
+  const isHT = p.pos !== 'G' && p.goals >= 3;
+  if (isHT) chips += `<span class="t-stat ts-ht">🎩 HAT TRICK</span>`;
+  else if (p.goals) chips += `<span class="t-stat ts-g">${p.goals}G</span>`;
+  if (p.assists)    chips += `<span class="t-stat ts-a">${p.assists}A</span>`;
+  if (p.sog)        chips += `<span class="t-stat ts-sog">${p.sog}SOG</span>`;
+  if (p.wins)       chips += `<span class="t-stat ts-w">${p.wins}W</span>`;
+  if (p.losses)     chips += `<span class="t-stat ts-l">${p.losses}L</span>`;
+  if (p.otl)        chips += `<span class="t-stat ts-otl">${p.otl}OTL</span>`;
+  if (p.shutouts)   chips += `<span class="t-stat ts-so">SO</span>`;
+  if (p.saves)      chips += `<span class="t-stat ts-sv">${p.saves}SV</span>`;
+  if (p.pos==='D' && p.pim) chips += `<span class="t-stat ts-pim">${p.pim}PIM</span>`;
+  return chips;
+}
 // DROP-IN REPLACEMENT for buildTicker() in main.js
 // Also add: let _tickerRAF = null; at the top of the TICKER section
  
