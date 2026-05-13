@@ -327,21 +327,42 @@ function openPlayerModal(playerName, team, pos, boxId, radioEl) {
     }
   }
 
-  const statsGrid = document.getElementById('pm-stats-grid');
+  // pm-stats is the content container (pm-stats-grid/pm-pts-breakdown/pm-total-pts may not exist)
+  const pmStats = document.getElementById('pm-stats') || document.getElementById('pm-stats-grid');
+  const pmBreak = document.getElementById('pm-pts-breakdown');
+  const pmTotal = document.getElementById('pm-total-pts');
+
   if (!s) {
-    statsGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px;padding:8px 0">No prior season data available</div>`;
-    document.getElementById('pm-pts-breakdown').innerHTML = '';
-    document.getElementById('pm-total-pts').textContent = '—';
+    if (pmStats) pmStats.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:13px;padding:12px 0">No prior season data available</div>`;
+    if (pmBreak) pmBreak.innerHTML = '';
+    if (pmTotal) pmTotal.textContent = '—';
   } else if (pos === 'G') {
-    statsGrid.innerHTML = `<div class="pm-stat"><div class="pm-stat-val">${s.w}</div><div class="pm-stat-lbl">Wins</div></div><div class="pm-stat"><div class="pm-stat-val">${s.l}</div><div class="pm-stat-lbl">Losses</div></div><div class="pm-stat"><div class="pm-stat-val">${s.otl}</div><div class="pm-stat-lbl">OT Loss</div></div><div class="pm-stat"><div class="pm-stat-val">${s.so}</div><div class="pm-stat-lbl">Shutouts</div></div><div class="pm-stat" style="grid-column:1/3"><div class="pm-stat-val">${s.sv.toLocaleString()}</div><div class="pm-stat-lbl">Saves</div></div><div class="pm-stat" style="grid-column:3/5"><div class="pm-stat-val" style="color:var(--accent)">${roundPts(s.sv*0.02)}</div><div class="pm-stat-lbl">Save pts</div></div>`;
-    document.getElementById('pm-pts-breakdown').innerHTML = `<div class="pm-pts-item"><div class="pv">${s.w*3}</div><div class="pl">${s.w}W × 3</div></div><div class="pm-pts-item"><div class="pv">${s.l}</div><div class="pl">${s.l}L × 1</div></div><div class="pm-pts-item"><div class="pv">${roundPts(s.otl*1.5)}</div><div class="pl">${s.otl}OTL × 1.5</div></div><div class="pm-pts-item"><div class="pv">${s.so*2}</div><div class="pl">${s.so}SO × 2</div></div><div class="pm-pts-item"><div class="pv">${roundPts(s.sv*0.02)}</div><div class="pl">${s.sv.toLocaleString()}SV × 0.02</div></div>`;
+    const statsHtml = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
+      <div class="pm-stat"><div class="pm-stat-val">${s.w}</div><div class="pm-stat-lbl">Wins</div></div>
+      <div class="pm-stat"><div class="pm-stat-val">${s.l}</div><div class="pm-stat-lbl">Losses</div></div>
+      <div class="pm-stat"><div class="pm-stat-val">${s.otl}</div><div class="pm-stat-lbl">OT Loss</div></div>
+      <div class="pm-stat"><div class="pm-stat-val">${s.so}</div><div class="pm-stat-lbl">SO</div></div>
+      <div class="pm-stat" style="grid-column:1/3"><div class="pm-stat-val">${s.sv.toLocaleString()}</div><div class="pm-stat-lbl">Saves</div></div>
+      <div class="pm-stat" style="grid-column:3/5"><div class="pm-stat-val" style="color:var(--accent)">${roundPts(calcPrevPts(s))}</div><div class="pm-stat-lbl">Pool Pts</div></div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px">W×3 · L×1 · OTL×1.5 · SO×2 · SV×0.02</div>`;
+    if (pmStats) pmStats.innerHTML = statsHtml;
+    if (pmBreak) pmBreak.innerHTML = `<div class="pm-pts-item"><div class="pv">${s.w*3}</div><div class="pl">${s.w}W × 3</div></div><div class="pm-pts-item"><div class="pv">${s.l}</div><div class="pl">${s.l}L × 1</div></div><div class="pm-pts-item"><div class="pv">${roundPts(s.otl*1.5)}</div><div class="pl">${s.otl}OTL × 1.5</div></div><div class="pm-pts-item"><div class="pv">${s.so*2}</div><div class="pl">${s.so}SO × 2</div></div><div class="pm-pts-item"><div class="pv">${roundPts(s.sv*0.02)}</div><div class="pl">${s.sv.toLocaleString()}SV × 0.02</div></div>`;
+    if (pmTotal) pmTotal.textContent = calcPrevPts(s);
   } else {
-    statsGrid.innerHTML = `<div class="pm-stat"><div class="pm-stat-val">${s.g}</div><div class="pm-stat-lbl">Goals</div></div><div class="pm-stat"><div class="pm-stat-val">${s.a}</div><div class="pm-stat-lbl">Assists</div></div><div class="pm-stat"><div class="pm-stat-val">${s.sog}</div><div class="pm-stat-lbl">SOG</div></div><div class="pm-stat"><div class="pm-stat-val">${pos==='D'?s.pim:'—'}</div><div class="pm-stat-lbl">PIM</div></div>`;
+    const statsHtml = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
+      <div class="pm-stat"><div class="pm-stat-val">${s.g}</div><div class="pm-stat-lbl">Goals</div></div>
+      <div class="pm-stat"><div class="pm-stat-val">${s.a}</div><div class="pm-stat-lbl">Assists</div></div>
+      <div class="pm-stat"><div class="pm-stat-val">${s.sog}</div><div class="pm-stat-lbl">SOG</div></div>
+      <div class="pm-stat"><div class="pm-stat-val">${pos==='D'?s.pim:'—'}</div><div class="pm-stat-lbl">PIM</div></div>
+      <div class="pm-stat" style="grid-column:1/-1"><div class="pm-stat-val" style="color:var(--accent)">${calcPrevPts(s)}</div><div class="pm-stat-lbl">Pool Pts (prior season)</div></div>
+    </div>`;
+    if (pmStats) pmStats.innerHTML = statsHtml;
     let bd = `<div class="pm-pts-item"><div class="pv">${s.g}</div><div class="pl">${s.g}G × 1</div></div><div class="pm-pts-item"><div class="pv">${s.a}</div><div class="pl">${s.a}A × 1</div></div><div class="pm-pts-item"><div class="pv">${roundPts(s.sog*0.11)}</div><div class="pl">${s.sog}SOG × 0.11</div></div>`;
     if (pos==='D') bd += `<div class="pm-pts-item"><div class="pv">${roundPts(s.pim*0.25)}</div><div class="pl">${s.pim}PIM × 0.25</div></div>`;
-    document.getElementById('pm-pts-breakdown').innerHTML = bd;
+    if (pmBreak) pmBreak.innerHTML = bd;
+    if (pmTotal) pmTotal.textContent = calcPrevPts(s);
   }
-  document.getElementById('pm-total-pts').textContent = calcPrevPts(s);
   const btn = document.getElementById('pm-pick-btn');
   if (btn) {
     const ap = typeof picks !== 'undefined' && picks[boxId] === playerName;
