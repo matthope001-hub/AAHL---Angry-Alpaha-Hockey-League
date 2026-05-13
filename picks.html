@@ -155,9 +155,21 @@
   <div class="toast-body" id="toast-b"></div>
 </div>
 
+<script src="data.js?v=1"></script>
 <script src="main.js?v=8"></script>
 <script>
-buildTicker();
+// ── PICKS.HTML init ──
+Promise.all([
+  fetchNightlyStats(),
+  fetchIRStatuses(),
+  fetchPrevStats(),
+  fetchBoxesFromSheet()
+]).then(() => {
+  buildTicker();
+  buildDraft();
+  buildDivisionPicks();
+  buildPicksLockBanner();
+});
 </script>
 </body>
 </html>
