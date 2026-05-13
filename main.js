@@ -1,410 +1,89 @@
-// ══════════ PRIOR SEASON STATS (2025-26) ══════════
-const PREV_STATS = {
-  'Leon Draisaitl':        {g:52,a:89,sog:246,pim:30, pos:'F'},
-  'Nikita Kucherov':       {g:44,a:100,sog:231,pim:24,pos:'F'},
-  'Nathan MacKinnon':      {g:51,a:89,sog:278,pim:44, pos:'F'},
-  'Connor McDavid':        {g:42,a:100,sog:259,pim:54,pos:'F'},
-  'Artemi Panarin':        {g:34,a:86,sog:198,pim:20, pos:'F'},
-  'Mitch Marner':          {g:26,a:81,sog:198,pim:16, pos:'F'},
-  'Auston Matthews':       {g:69,a:40,sog:311,pim:20, pos:'F'},
-  'Elias Pettersson':      {g:36,a:66,sog:212,pim:28, pos:'F'},
-  'Mikko Rantanen':        {g:55,a:49,sog:244,pim:40, pos:'F'},
-  'Jason Robertson':       {g:37,a:72,sog:229,pim:16, pos:'F'},
-  'Jack Hughes':           {g:37,a:55,sog:192,pim:24, pos:'F'},
-  'Kirill Kaprizov':       {g:36,a:51,sog:212,pim:18, pos:'F'},
-  'J.T. Miller':           {g:29,a:71,sog:178,pim:34, pos:'F'},
-  'William Nylander':      {g:40,a:52,sog:224,pim:22, pos:'F'},
-  'Brayden Point':         {g:33,a:49,sog:196,pim:26, pos:'F'},
-  'Sebastian Aho':         {g:38,a:52,sog:219,pim:30, pos:'F'},
-  'Jesper Bratt':          {g:28,a:55,sog:176,pim:18, pos:'F'},
-  'Sidney Crosby':         {g:42,a:52,sog:209,pim:28, pos:'F'},
-  'Jake Guentzel':         {g:35,a:42,sog:188,pim:24, pos:'F'},
-  'Clayton Keller':        {g:29,a:47,sog:193,pim:22, pos:'F'},
-  'Aleksander Barkov':     {g:31,a:55,sog:221,pim:20, pos:'F'},
-  'Ryan Nugent-Hopkins':   {g:27,a:56,sog:168,pim:22, pos:'F'},
-  'Kevin Fiala':           {g:28,a:54,sog:187,pim:24, pos:'F'},
-  'Dylan Larkin':          {g:34,a:48,sog:211,pim:40, pos:'F'},
-  'Steven Stamkos':        {g:28,a:53,sog:178,pim:20, pos:'F'},
-  'Drake Batherson':       {g:27,a:55,sog:174,pim:20, pos:'F'},
-  'Matt Boldy':            {g:28,a:35,sog:179,pim:14, pos:'F'},
-  'Cole Caufield':         {g:32,a:50,sog:198,pim:18, pos:'F'},
-  'Brandon Hagel':         {g:26,a:48,sog:184,pim:36, pos:'F'},
-  'Jordan Kyrou':          {g:28,a:54,sog:192,pim:16, pos:'F'},
-  'Wyatt Johnston':        {g:29,a:37,sog:167,pim:22, pos:'F'},
-  'Anze Kopitar':          {g:22,a:47,sog:141,pim:12, pos:'F'},
-  'Nikolaj Ehlers':        {g:28,a:45,sog:162,pim:16, pos:'F'},
-  'John Tavares':          {g:27,a:55,sog:171,pim:14, pos:'F'},
-  'Alex Tuch':             {g:22,a:53,sog:158,pim:26, pos:'F'},
-  'Bo Horvat':             {g:31,a:31,sog:192,pim:22, pos:'F'},
-  'Chris Kreider':         {g:39,a:27,sog:189,pim:38, pos:'F'},
-  'Elias Lindholm':        {g:25,a:50,sog:177,pim:18, pos:'F'},
-  'Tomas Hertl':           {g:27,a:45,sog:168,pim:20, pos:'F'},
-  'Brock Nelson':          {g:28,a:37,sog:164,pim:16, pos:'F'},
-  'Quinton Byfield':       {g:28,a:52,sog:178,pim:28, pos:'F'},
-  'Matt Duchene':          {g:34,a:38,sog:177,pim:14, pos:'F'},
-  'Joel Eriksson Ek':      {g:22,a:55,sog:159,pim:28, pos:'F'},
-  'Brad Marchand':         {g:28,a:48,sog:172,pim:56, pos:'F'},
-  'Jonathan Marchessault': {g:31,a:51,sog:182,pim:28, pos:'F'},
-  "Ryan O'Reilly":         {g:18,a:51,sog:142,pim:20, pos:'F'},
-  'Charlie McAvoy':        {g:11,a:48,sog:178,pim:32, pos:'D'},
-  'Morgan Rielly':         {g:12,a:45,sog:156,pim:22, pos:'D'},
-  'Shea Theodore':         {g:16,a:66,sog:196,pim:20, pos:'D'},
-  'Zach Werenski':         {g:14,a:57,sog:188,pim:18, pos:'D'},
-  'Dylan Cozens':          {g:29,a:46,sog:188,pim:30, pos:'F'},
-  'Claude Giroux':         {g:27,a:42,sog:164,pim:28, pos:'F'},
-  'Andrei Kuzmenko':       {g:24,a:48,sog:171,pim:22, pos:'F'},
-  'Evgeni Malkin':         {g:28,a:54,sog:177,pim:48, pos:'F'},
-  'Alex Ovechkin':         {g:36,a:28,sog:295,pim:26, pos:'F'},
-  'Jake DeBrusk':          {g:27,a:30,sog:182,pim:34, pos:'F'},
-  'Owen Tippett':          {g:27,a:30,sog:182,pim:16, pos:'F'},
-  'Andrei Svechnikov':     {g:22,a:33,sog:148,pim:36, pos:'F'},
-  'Tommy Novak':           {g:20,a:62,sog:144,pim:10, pos:'F'},
-  'Mats Zuccarello':       {g:15,a:67,sog:118,pim:14, pos:'F'},
-  'Noah Dobson':           {g:15,a:45,sog:178,pim:30, pos:'D'},
-  'Dougie Hamilton':       {g:12,a:50,sog:162,pim:44, pos:'D'},
-  'Victor Hedman':         {g:10,a:68,sog:171,pim:28, pos:'D'},
-  'Quinn Hughes':          {g:16,a:66,sog:189,pim:22, pos:'D'},
-  'Josh Morrissey':        {g:18,a:64,sog:196,pim:38, pos:'D'},
-  'MacKenzie Weegar':      {g:11,a:41,sog:165,pim:32, pos:'D'},
-  'Erik Karlsson':         {g:8, a:59,sog:158,pim:28, pos:'D'},
-  'Brady Skjei':           {g:10,a:42,sog:148,pim:56, pos:'D'},
-  'Luke Hughes':           {g:16,a:51,sog:147,pim:30, pos:'D'},
-  'Thomas Harley':         {g:14,a:52,sog:166,pim:24, pos:'D'},
-  'Travis Sanheim':        {g:12,a:37,sog:143,pim:38, pos:'D'},
-  'Brent Burns':           {g:14,a:41,sog:198,pim:44, pos:'D'},
-  'Jakob Chychrun':        {g:11,a:39,sog:152,pim:36, pos:'D'},
-  'Sean Durzi':            {g:9, a:33,sog:128,pim:22, pos:'D'},
-  'Cam Fowler':            {g:10,a:48,sog:144,pim:28, pos:'D'},
-  'Torey Krug':            {g:13,a:44,sog:152,pim:30, pos:'D'},
-  'Rasmus Dahlin':         {g:17,a:49,sog:211,pim:28, pos:'D'},
-  'Alex Pietrangelo':      {g:8, a:56,sog:144,pim:34, pos:'D'},
-  'Darren Raddysh':        {g:10,a:46,sog:152,pim:42, pos:'D'},
-  'Neal Pionk':            {g:9, a:43,sog:138,pim:50, pos:'D'},
-  'Adam Fox':              {g:14,a:52,sog:187,pim:20, pos:'D'},
-  'Rasmus Andersson':      {g:11,a:43,sog:162,pim:38, pos:'D'},
-  'Roman Josi':            {g:17,a:65,sog:218,pim:32, pos:'D'},
-  'Cale Makar':            {g:24,a:53,sog:234,pim:18, pos:'D'},
-  'Evan Bouchard':         {g:19,a:56,sog:254,pim:38, pos:'D'},
-  'Rasmus Sandin':         {g:8, a:39,sog:132,pim:28, pos:'D'},
-  'Jacob Trouba':          {g:8, a:33,sog:144,pim:66, pos:'D'},
-  'Damon Severson':        {g:10,a:44,sog:148,pim:52, pos:'D'},
-  'Ivan Provorov':         {g:7, a:36,sog:128,pim:44, pos:'D'},
-  'Thatcher Demko':        {w:31,l:18,otl:5,so:5,sv:1488, pos:'G'},
-  'Connor Hellebuyck':     {w:37,l:18,otl:4,so:6,sv:1502, pos:'G'},
-  'Jake Oettinger':        {w:34,l:20,otl:5,so:4,sv:1401, pos:'G'},
-  'Juuse Saros':           {w:29,l:22,otl:6,so:4,sv:1388, pos:'G'},
-  'Stuart Skinner':        {w:31,l:14,otl:4,so:3,sv:886,  pos:'G'},
-  'Sergei Bobrovsky':      {w:36,l:14,otl:4,so:6,sv:1421, pos:'G'},
-  'Alexander Georgiev':    {w:31,l:15,otl:3,so:4,sv:1188, pos:'G'},
-  'Pyotr Kochetkov':       {w:28,l:16,otl:4,so:3,sv:1122, pos:'G'},
-  'Jordan Binnington':     {w:26,l:22,otl:5,so:3,sv:1188, pos:'G'},
-  'Andrei Vasilevskiy':    {w:33,l:16,otl:4,so:5,sv:1298, pos:'G'},
-  'Cam Talbot':            {w:24,l:18,otl:5,so:3,sv:966,  pos:'G'},
-  'Jacob Markstrom':       {w:26,l:20,otl:4,so:4,sv:1144, pos:'G'},
-  'Ilya Sorokin':          {w:24,l:24,otl:5,so:4,sv:1148, pos:'G'},
-  'Filip Gustavsson':      {w:29,l:16,otl:4,so:5,sv:1198, pos:'G'},
-  'Linus Ullmark':         {w:24,l:14,otl:4,so:4,sv:988,  pos:'G'},
-  'Laurent Brossoit':      {w:12,l:8, otl:3,so:2,sv:488,  pos:'G'},
-  'Kevin Lankinen':        {w:22,l:18,otl:3,so:2,sv:874,  pos:'G'},
-  'Philipp Grubauer':      {w:20,l:16,otl:4,so:2,sv:822,  pos:'G'},
-  'Lukas Dostal':          {w:22,l:18,otl:4,so:3,sv:911,  pos:'G'},
-  'Karel Vejmelka':        {w:18,l:22,otl:5,so:2,sv:944,  pos:'G'},
-  'Joey Daccord':          {w:26,l:16,otl:4,so:3,sv:1088, pos:'G'},
-  'Semyon Varlamov':       {w:16,l:19,otl:4,so:1,sv:788,  pos:'G'},
-  'Joonas Korpisalo':      {w:18,l:26,otl:4,so:2,sv:967,  pos:'G'},
-  'Ivan Fedotov':          {w:8, l:12,otl:2,so:1,sv:488,  pos:'G'},
-  'Thomas Greiss':         {w:10,l:14,otl:3,so:1,sv:544,  pos:'G'},
-  'Charlie Lindgren':      {w:18,l:14,otl:3,so:2,sv:712,  pos:'G'},
-  'Mackenzie Blackwood':   {w:22,l:14,otl:4,so:3,sv:866,  pos:'G'},
-  'Alex Lyon':             {w:20,l:12,otl:3,so:1,sv:688,  pos:'G'},
-  'Tristan Jarry':         {w:16,l:16,otl:3,so:2,sv:722,  pos:'G'},
-  'Jonathan Quick':        {w:14,l:10,otl:2,so:1,sv:544,  pos:'G'},
-};
-
-// ══════════ IR STATUS ══════════
-let IR_STATUS = {};
-let PLAYER_ID_MAP = {};
-
-const PLAYERS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1949508708&single=true&output=csv&t=' + Date.now();
-const STANDINGS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1410587271&single=true&output=csv&t=' + Date.now();
-
-async function fetchIRStatuses() {
-  try {
-    const res = await fetch(PLAYERS_CSV);
-    const text = await res.text();
-    const lines = text.trim().split('\n');
-    lines.slice(1).forEach(line => {
-      const cols = line.split(',');
-      const name = (cols[0] || '').trim();
-      const onIR = (cols[15] || '').trim().toUpperCase() === 'TRUE';
-      const playerId = (cols[16] || '').trim();
-      if (name) {
-        IR_STATUS[name] = onIR;
-        if (playerId) PLAYER_ID_MAP[name] = playerId;
-        const team = (cols[1] || '').trim();
-        if (team) PLAYER_TEAM_MAP[name] = team;
-        const headshot = (cols[17] || '').trim();
-        if (headshot) PLAYER_HEADSHOT_MAP[name] = headshot;
-      }
-    });
-    console.log('Loaded', Object.keys(PLAYER_ID_MAP).length, 'player IDs');
-  } catch(err) {
-    console.warn('IR fetch failed:', err);
-  }
-}
-
-// NHL headshot CDN — season/team/id format
-const PLAYER_TEAM_MAP = {};    // populated via fetchIRStatuses → cols[1]
-const PLAYER_HEADSHOT_MAP = {}; // populated via fetchIRStatuses → cols[17] (NHL API headshot URL)
-const SEASON = '20252026';
-
-// Short → full 3-letter NHL CDN abbreviations
-const TEAM_ABBREV = {
-  'ANA':'ANA','BOS':'BOS','BUF':'BUF','CAR':'CAR','CBJ':'CBJ',
-  'CGY':'CGY','CHI':'CHI','COL':'COL','DAL':'DAL','DET':'DET',
-  'EDM':'EDM','FLA':'FLA','LA':'LAK', 'MIN':'MIN','MTL':'MTL',
-  'NJ':'NJD', 'NSH':'NSH','NYI':'NYI','NYR':'NYR','OTT':'OTT',
-  'PHI':'PHI','PIT':'PIT','SEA':'SEA','STL':'STL','TB':'TBL',
-  'TOR':'TOR','UTA':'UTA','VAN':'VAN','VGK':'VGK','WSH':'WSH',
-  'WPG':'WPG','ARI':'ARI',
-};
-
-function getPlayerHeadshotUrls(playerName) {
-  // 1. Direct URL from roster API (most reliable — stored in col R of Players sheet)
-  const directUrl = PLAYER_HEADSHOT_MAP[playerName];
-  if (directUrl) return [directUrl];
-  // 2. CDN URL constructed from player ID + team
-  const playerId = PLAYER_ID_MAP[playerName];
-  if (!playerId) return [];
-  const shortTeam = PLAYER_TEAM_MAP[playerName] || '';
-  const team = TEAM_ABBREV[shortTeam] || shortTeam;
-  const urls = [];
-  if (team) urls.push(`https://assets.nhle.com/mugs/nhl/${SEASON}/${team}/${playerId}.png`);
-  urls.push(`https://assets.nhle.com/mugs/nhl/00/00/${playerId}.png`);
-  return urls;
-}
-
-function irBadge(name) {
-  return IR_STATUS[name] ? ' <span class="ir-badge">IR</span>' : '';
-}
-
-// ══════════ DIVISIONS ══════════
-const DIVISIONS = {
-  'Atlantic': { conf:'Eastern', teams:['Boston Bruins','Buffalo Sabres','Detroit Red Wings','Florida Panthers','Montreal Canadiens','Ottawa Senators','Tampa Bay Lightning','Toronto Maple Leafs'] },
-  'Metropolitan': { conf:'Eastern', teams:['Carolina Hurricanes','Columbus Blue Jackets','New Jersey Devils','New York Islanders','New York Rangers','Philadelphia Flyers','Pittsburgh Penguins','Washington Capitals'] },
-  'Central': { conf:'Western', teams:['Arizona Coyotes','Chicago Blackhawks','Colorado Avalanche','Dallas Stars','Minnesota Wild','Nashville Predators','St. Louis Blues','Winnipeg Jets'] },
-  'Pacific': { conf:'Western', teams:['Anaheim Ducks','Calgary Flames','Edmonton Oilers','Los Angeles Kings','San Jose Sharks','Seattle Kraken','Utah Hockey Club','Vancouver Canucks'] },
-};
-
-let divisionPicks = {};
-
-// ══════════ BOXES DATA ══════════
-const BOXES = [
-  {id:1,label:'Forwards 1',type:'F',players:[{name:'Leon Draisaitl',team:'EDM',pts:160},{name:'Nikita Kucherov',team:'TB',pts:144},{name:'Nathan MacKinnon',team:'COL',pts:140},{name:'Connor McDavid',team:'EDM',pts:132},{name:'Artemi Panarin',team:'NYR',pts:120}]},
-  {id:2,label:'Forwards 2',type:'F',players:[{name:'Mitch Marner',team:'TOR',pts:107},{name:'Auston Matthews',team:'TOR',pts:107},{name:'Elias Pettersson',team:'VAN',pts:102},{name:'Mikko Rantanen',team:'COL',pts:104},{name:'Jason Robertson',team:'DAL',pts:109}]},
-  {id:3,label:'Forwards 3',type:'F',players:[{name:'Jack Hughes',team:'NJ',pts:92},{name:'Kirill Kaprizov',team:'MIN',pts:96},{name:'J.T. Miller',team:'VAN',pts:100},{name:'William Nylander',team:'TOR',pts:92},{name:'Brayden Point',team:'TB',pts:82}]},
-  {id:4,label:'Forwards 4',type:'F',players:[{name:'Sebastian Aho',team:'CAR',pts:90},{name:'Jesper Bratt',team:'NJ',pts:83},{name:'Sidney Crosby',team:'PIT',pts:94},{name:'Jake Guentzel',team:'CAR',pts:77},{name:'Clayton Keller',team:'ARI',pts:76}]},
-  {id:5,label:'Forwards 5',type:'F',players:[{name:'Aleksander Barkov',team:'FLA',pts:86},{name:'Ryan Nugent-Hopkins',team:'EDM',pts:87},{name:'Kevin Fiala',team:'LA',pts:82},{name:'Dylan Larkin',team:'DET',pts:82},{name:'Steven Stamkos',team:'TB',pts:81}]},
-  {id:6,label:'Forwards 6',type:'F',players:[{name:'Drake Batherson',team:'OTT',pts:82},{name:'Matt Boldy',team:'MIN',pts:75},{name:'Cole Caufield',team:'MTL',pts:82},{name:'Brandon Hagel',team:'TB',pts:74},{name:'Jordan Kyrou',team:'STL',pts:82}]},
-  {id:7,label:'Forwards 7',type:'F',players:[{name:'Wyatt Johnston',team:'DAL',pts:82},{name:'Mats Zuccarello',team:'MIN',pts:82},{name:'Nikolaj Ehlers',team:'WPG',pts:73},{name:'John Tavares',team:'TOR',pts:82},{name:'Alex Tuch',team:'BUF',pts:75}]},
-  {id:8,label:'Forwards 8',type:'F',players:[{name:'Bo Horvat',team:'NYI',pts:81},{name:'Chris Kreider',team:'NYR',pts:82},{name:'Elias Lindholm',team:'VAN',pts:75},{name:'Tomas Hertl',team:'VGK',pts:72},{name:'Brock Nelson',team:'NYI',pts:82}]},
-  {id:9,label:'Forwards 9',type:'F',players:[{name:'Quinton Byfield',team:'LA',pts:80},{name:'Matt Duchene',team:'DAL',pts:80},{name:'Joel Eriksson Ek',team:'MIN',pts:77},{name:'Brad Marchand',team:'BOS',pts:82},{name:'Jonathan Marchessault',team:'VGK',pts:82}]},
-  {id:10,label:'Forwards 10',type:'F',players:[{name:"Ryan O'Reilly",team:'NSH',pts:69},{name:'Charlie McAvoy',team:'BOS',pts:74},{name:'Morgan Rielly',team:'TOR',pts:72},{name:'Shea Theodore',team:'VGK',pts:82},{name:'Zach Werenski',team:'CBJ',pts:71}]},
-  {id:11,label:'Forwards 11',type:'F',players:[{name:'Dylan Cozens',team:'BUF',pts:75},{name:'Claude Giroux',team:'OTT',pts:82},{name:'Andrei Kuzmenko',team:'CGY',pts:72},{name:'Evgeni Malkin',team:'PIT',pts:82},{name:'Alex Ovechkin',team:'WSH',pts:79}]},
-  {id:12,label:'Forwards 12',type:'F',players:[{name:'Jake DeBrusk',team:'BOS',pts:75},{name:'Owen Tippett',team:'PHI',pts:82},{name:'Andrei Svechnikov',team:'CAR',pts:59},{name:'Tommy Novak',team:'NSH',pts:82},{name:'Mats Zuccarello',team:'MIN',pts:82}]},
-  {id:13,label:'Defense 1',type:'D',players:[{name:'Noah Dobson',team:'NYI',pts:82},{name:'Dougie Hamilton',team:'NJ',pts:62},{name:'Victor Hedman',team:'TB',pts:78},{name:'Quinn Hughes',team:'VAN',pts:82},{name:'Josh Morrissey',team:'WPG',pts:82}]},
-  {id:14,label:'Defense 2',type:'D',players:[{name:'MacKenzie Weegar',team:'CGY',pts:82},{name:'Erik Karlsson',team:'PIT',pts:67},{name:'Brady Skjei',team:'CAR',pts:80},{name:'Luke Hughes',team:'NJ',pts:82},{name:'Thomas Harley',team:'DAL',pts:79}]},
-  {id:15,label:'Defense 3',type:'D',players:[{name:'Travis Sanheim',team:'PHI',pts:82},{name:'Brent Burns',team:'CAR',pts:82},{name:'Jakob Chychrun',team:'OTT',pts:82},{name:'Sean Durzi',team:'ARI',pts:82},{name:'Cam Fowler',team:'ANA',pts:82}]},
-  {id:16,label:'Defense 4',type:'D',players:[{name:'Torey Krug',team:'STL',pts:77},{name:'Rasmus Dahlin',team:'BUF',pts:82},{name:'Alex Pietrangelo',team:'VGK',pts:64},{name:'Darren Raddysh',team:'TB',pts:82},{name:'Neal Pionk',team:'WPG',pts:79}]},
-  {id:17,label:'Defense 5',type:'D',players:[{name:'Adam Fox',team:'NYR',pts:73},{name:'Rasmus Andersson',team:'CGY',pts:82},{name:'Roman Josi',team:'NSH',pts:82},{name:'Quinn Hughes',team:'VAN',pts:82},{name:'Cale Makar',team:'COL',pts:77}]},
-  {id:18,label:'Defense 6',type:'D',players:[{name:'Rasmus Sandin',team:'WSH',pts:70},{name:'Jacob Trouba',team:'NYR',pts:82},{name:'Damon Severson',team:'CBJ',pts:82},{name:'Ivan Provorov',team:'CBJ',pts:73},{name:'Evan Bouchard',team:'EDM',pts:82}]},
-  {id:19,label:'Goalie 1',type:'G',players:[{name:'Thatcher Demko',team:'VAN',pts:51},{name:'Connor Hellebuyck',team:'WPG',pts:60},{name:'Jake Oettinger',team:'DAL',pts:56},{name:'Juuse Saros',team:'NSH',pts:55},{name:'Stuart Skinner',team:'EDM',pts:56}]},
-  {id:20,label:'Goalie 2',type:'G',players:[{name:'Sergei Bobrovsky',team:'FLA',pts:56},{name:'Pyotr Kochetkov',team:'CAR',pts:46},{name:'Jordan Binnington',team:'STL',pts:54},{name:'Andrei Vasilevskiy',team:'TB',pts:52},{name:'Filip Gustavsson',team:'MIN',pts:56}]},
-  {id:21,label:'Goalie 3',type:'G',players:[{name:'Cam Talbot',team:'CGY',pts:54},{name:'Jacob Markstrom',team:'CGY',pts:48},{name:'Ilya Sorokin',team:'NYI',pts:56},{name:'Filip Gustavsson',team:'MIN',pts:56},{name:'Linus Ullmark',team:'BOS',pts:41}]},
-  {id:22,label:'Goalie 4',type:'G',players:[{name:'Laurent Brossoit',team:'VGK',pts:23},{name:'Kevin Lankinen',team:'NSH',pts:47},{name:'Philipp Grubauer',team:'SEA',pts:47},{name:'Lukas Dostal',team:'ANA',pts:44},{name:'Karel Vejmelka',team:'ARI',pts:47}]},
-  {id:23,label:'Goalie 5',type:'G',players:[{name:'Joey Daccord',team:'SEA',pts:50},{name:'Semyon Varlamov',team:'NYI',pts:47},{name:'Joonas Korpisalo',team:'CBJ',pts:55},{name:'Ivan Fedotov',team:'PHI',pts:20},{name:'Thomas Greiss',team:'STL',pts:30}]},
-  {id:24,label:'Goalie 6',type:'G',players:[{name:'Charlie Lindgren',team:'WSH',pts:40},{name:'Mackenzie Blackwood',team:'VAN',pts:35},{name:'Alex Lyon',team:'FLA',pts:44},{name:'Tristan Jarry',team:'PIT',pts:34},{name:'Lukas Dostal',team:'ANA',pts:44}]},
-];
-
-// ══════════ LIVE STANDINGS ══════════
-let LIVE_BOARD = [];
-
-function parseStandingsCSV(csv) {
-  // Cols: Rank,EntryID,TeamName,OwnerName,Email,TotalPts,PrevRank,RankChange,...
-  return csv.trim().split("\n").slice(1).map(line => {
-    const cols = line.split(",");
-    return {
-      rank:  parseInt(cols[0])    || 0,
-      entry: (cols[1] || "").trim(),
-      name:  (cols[2] || "").trim(),  // TeamName
-      owner: (cols[3] || "").trim(),  // OwnerName
-      pts:   parseFloat(cols[5]) || 0, // TotalPts
-      trend: (cols[7] || "=").trim(),  // RankChange
-    };
-  }).filter(e => e.name);
-}
-
-async function fetchStandings() {
-  try {
-    const res = await fetch(STANDINGS_CSV);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const text = await res.text();
-    LIVE_BOARD = parseStandingsCSV(text);
-    console.log('Standings loaded:', LIVE_BOARD.length, 'entries');
-  } catch(err) {
-    console.warn('Standings fetch failed:', err);
-    LIVE_BOARD = [];
-  }
-}
-
-// ══════════ BOXES — fetch from sheet if available ══════════
-const BOXES_SHEET_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1556726328&single=true&output=csv&t=' + Date.now();
-
-async function fetchBoxesFromSheet() {
-  try {
-    const res = await fetch(BOXES_SHEET_CSV);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const text = await res.text();
-    const lines = text.trim().split('\n').slice(1);
-    const boxMap = {};
-    lines.forEach(line => {
-      const cols = []; let cur = '', inQ = false;
-      for (const ch of line) {
-        if (ch==='"'){inQ=!inQ;}
-        else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
-        else{cur+=ch;}
-      }
-      cols.push(cur.trim());
-      const boxId = parseInt(cols[0])||0;
-      if (!boxId || !cols[3]) return;
-      if (!boxMap[boxId]) boxMap[boxId] = { id:boxId, label:cols[1], type:cols[2], players:[] };
-      boxMap[boxId].players.push({
-        name: cols[3], team: cols[4], pts: parseFloat(cols[6])||0
-      });
-    });
-    const boxes = Object.values(boxMap).sort((a,b) => a.id - b.id);
-    if (boxes.length) {
-      // Replace the hardcoded BOXES array at runtime
-      BOXES.length = 0;
-      boxes.forEach(b => BOXES.push(b));
-      console.log('Boxes loaded from sheet:', BOXES.length, 'boxes');
-    }
-  } catch(err) {
-    console.warn('Boxes sheet not available — using main.js defaults:', err.message);
-  }
-}
-
-// ══════════ PREV STATS — fetch from PrevStats sheet ══════════
-const PREV_STATS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1431377363&single=true&output=csv&t=' + Date.now();
-
-let PREV_SEASON_LABEL = '2025–26'; // updated by fetchPrevStats from sheet
-
-async function fetchPrevStats() {
-  try {
-    const res = await fetch(PREV_STATS_CSV);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const text = await res.text();
-    const lines = text.trim().split('\n').slice(1);
-    // Detect season from first row col 14 (Season col = 20252026 format)
-    if (lines.length) {
-      const firstCols = lines[0].split(',');
-      const seasonId = (firstCols[14]||'').trim();
-      if (seasonId.length === 8) {
-        const y1 = seasonId.slice(0,4), y2 = seasonId.slice(6,8);
-        PREV_SEASON_LABEL = `${y1}–${y2}`;
-      }
-    }
-    lines.forEach(line => {
-      const cols = []; let cur = '', inQ = false;
-      for (const ch of line) {
-        if (ch==='"'){inQ=!inQ;}
-        else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
-        else{cur+=ch;}
-      }
-      cols.push(cur.trim());
-      const name = cols[0]; if (!name) return;
-      const pos  = (cols[2]||'').trim();
-      if (pos === 'G') {
-        PREV_STATS[name] = {
-          pos:'G',
-          w:  parseInt(cols[8])||0,
-          l:  parseInt(cols[9])||0,
-          otl:parseInt(cols[10])||0,
-          so: parseInt(cols[11])||0,
-          sv: parseInt(cols[12])||0,
-        };
-      } else {
-        PREV_STATS[name] = {
-          pos,
-          g:   parseInt(cols[4])||0,
-          a:   parseInt(cols[5])||0,
-          sog: parseInt(cols[6])||0,
-          pim: parseInt(cols[7])||0,
-        };
-      }
-    });
-    console.log('PrevStats loaded:', Object.keys(PREV_STATS).length, 'players');
-  } catch(err) {
-    console.warn('PrevStats fetch failed — using hardcoded fallback:', err.message);
-  }
-}
-
-// ══════════ NIGHTLY STATS ══════════
-const NIGHTLY_STATS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=615464608&single=true&output=csv&t=' + Date.now();
-let NIGHTLY_STATS = [];
-
-function parseNightlyCSV(csv) {
-  return csv.trim().split('\n').slice(1).map(line => {
-    const cols = line.split(',');
-    return { name:(cols[0]||'').trim(), team:(cols[1]||'').trim(), pos:(cols[2]||'').trim(),
-      game:(cols[3]||'').trim(), goals:parseInt(cols[4])||0, assists:parseInt(cols[5])||0,
-      sog:parseInt(cols[6])||0, pim:parseInt(cols[7])||0, wins:parseInt(cols[8])||0,
-      losses:parseInt(cols[9])||0, otl:parseInt(cols[10])||0, shutouts:parseInt(cols[11])||0, saves:parseInt(cols[12])||0 };
-  }).filter(p => p.name);
-}
-
-async function fetchNightlyStats() {
-  try {
-    const res = await fetch(NIGHTLY_STATS_CSV);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const text = await res.text();
-    NIGHTLY_STATS = parseNightlyCSV(text);
-    console.log('Nightly stats loaded:', NIGHTLY_STATS.length, 'players');
-  } catch(err) {
-    console.error('NightlyStats fetch failed:', err);
-    NIGHTLY_STATS = [];
-  }
-}
-
-// ══════════ SCORING ══════════
-function roundPts(n) { return Math.round(n * 100) / 100; }
-function isHatTrick(p) { return p.pos !== 'G' && (p.goals || 0) >= 3; }
-const SCORING = { F:{goal:1,assist:1,sog:0.11,hatTrickBonus:3}, D:{goal:1,assist:1,sog:0.11,hatTrickBonus:3,pim:0.25}, G:{win:3,loss:1,otl:1.5,shutout:2,save:0.02} };
-
-function calcPts(p) {
-  const r = SCORING[p.pos] || SCORING.F;
-  if (p.pos === 'G') return roundPts((p.wins||0)*r.win+(p.losses||0)*r.loss+(p.otl||0)*r.otl+(p.shutouts||0)*r.shutout+(p.saves||0)*r.save);
-  return roundPts((p.goals||0)*r.goal+(p.assists||0)*r.assist+(p.sog||0)*r.sog+(isHatTrick(p)?r.hatTrickBonus:0)+(p.pos==='D'?(p.pim||0)*r.pim:0));
-}
-function calcPrevPts(s) {
-  if (!s) return 0;
-  if (s.pos === 'G') return roundPts(s.w*3+s.l*1+s.otl*1.5+s.so*2+s.sv*0.02);
-  return roundPts((s.g||0)*1+(s.a||0)*1+(s.sog||0)*0.11+(s.pos==='D'?(s.pim||0)*0.25:0));
-}
-function nightlyPts(p) {
-  if (p.pos==='G') return roundPts(p.wins*3+p.losses*1+p.otl*1.5+p.shutouts*2+p.saves*0.02);
-  return roundPts(p.goals*1+p.assists*1+p.sog*0.11+(p.goals>=3?3:0)+(p.pos==='D'?p.pim*0.25:0));
-}
-function initials(n) { return n.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2); }
+// ══════════════════════════════════════════════
+// main.js — AAHL UI Layer
+// Requires data.js to be loaded first
+// ══════════════════════════════════════════════
 
 // ══════════ TOAST ══════════
 function toast(title, body) {
   const t = document.getElementById('toast'); if (!t) return;
   document.getElementById('toast-t').textContent = title;
   document.getElementById('toast-b').textContent = body;
-  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),4200);
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 4200);
 }
 
+// ══════════ PHONE FORMAT ══════════
+function formatPhone(input) {
+  const digits = input.value.replace(/\D/g,'').slice(0,10); let f='';
+  if (digits.length===0) f='';
+  else if (digits.length<=3) f='('+digits;
+  else if (digits.length<=6) f='('+digits.slice(0,3)+') '+digits.slice(3);
+  else f='('+digits.slice(0,3)+') '+digits.slice(3,6)+'-'+digits.slice(6);
+  input.value=f;
+}
+
+// ══════════ TICKER ══════════
+let _tickerRAF = null;
+
+function tickerStatChips(p) {
+  let chips = '';
+  const isHT = p.pos !== 'G' && p.goals >= 3;
+  if (isHT)         chips += `<span class="t-stat ts-ht">🎩 HAT TRICK</span>`;
+  else if (p.goals) chips += `<span class="t-stat ts-g">${p.goals}G</span>`;
+  if (p.assists)    chips += `<span class="t-stat ts-a">${p.assists}A</span>`;
+  if (p.sog)        chips += `<span class="t-stat ts-sog">${p.sog}SOG</span>`;
+  if (p.wins)       chips += `<span class="t-stat ts-w">${p.wins}W</span>`;
+  if (p.losses)     chips += `<span class="t-stat ts-l">${p.losses}L</span>`;
+  if (p.otl)        chips += `<span class="t-stat ts-otl">${p.otl}OTL</span>`;
+  if (p.shutouts)   chips += `<span class="t-stat ts-so">SO</span>`;
+  if (p.saves)      chips += `<span class="t-stat ts-sv">${p.saves}SV</span>`;
+  if (p.pos==='D' && p.pim) chips += `<span class="t-stat ts-pim">${p.pim}PIM</span>`;
+  return chips;
+}
+
+function buildTicker() {
+  const viewport = document.querySelector('.ticker-viewport'); if (!viewport) return;
+  if (_tickerRAF) { cancelAnimationFrame(_tickerRAF); _tickerRAF = null; }
+
+  const scorers = NIGHTLY_STATS.filter(p => nightlyPts(p) > 0);
+  const emptyMsg = !NIGHTLY_STATS.length
+    ? 'No pool player stats yet for last night'
+    : 'No scoring pool players last night';
+
+  if (!scorers.length) {
+    viewport.innerHTML = `<div class="ticker-track"><div class="t-item"><span class="t-game">${emptyMsg}</span></div></div>`;
+    return;
+  }
+
+  const itemHTML = p =>
+    `<div class="t-item">` +
+    `<span class="t-game">${p.game}</span>` +
+    `<span class="t-sep">·</span>` +
+    `<span class="t-name">${p.name}</span>` +
+    `<span class="t-team">${p.team}&nbsp;${p.pos}</span>` +
+    `<span class="t-sep">|</span>` +
+    `${tickerStatChips(p)}` +
+    `<span class="t-pts">+${nightlyPts(p)}pts</span>` +
+    `</div>`;
+
+  const inner = scorers.map(itemHTML).join('');
+  viewport.innerHTML = `<div class="ticker-track">${inner}${inner}</div>`;
+
+  const track = viewport.querySelector('.ticker-track');
+  const PX_PER_SEC = 60;
+  let pos = 0, last = null;
+
+  function tick(ts) {
+    if (!last) last = ts;
+    const dt = Math.min((ts - last) / 1000, 0.05);
+    last = ts;
+    pos += PX_PER_SEC * dt;
+    const halfWidth = track.scrollWidth / 2;
+    if (pos >= halfWidth) pos -= halfWidth;
+    track.style.transform = `translateX(${-pos}px)`;
+    _tickerRAF = requestAnimationFrame(tick);
+  }
+  _tickerRAF = requestAnimationFrame(tick);
+}
 
 // ══════════ STARS OF THE NIGHT ══════════
 function buildStarsOfNight() {
@@ -412,10 +91,8 @@ function buildStarsOfNight() {
   const list = document.getElementById('stars-list');
   const dateEl = document.getElementById('stars-date');
   if (!bar || !list) return;
-
   if (!NIGHTLY_STATS.length) { bar.style.display = 'none'; return; }
 
-  // Rank by pool pts earned last night, take top 3
   const scored = NIGHTLY_STATS
     .map(p => ({ ...p, pts: nightlyPts(p) }))
     .filter(p => p.pts > 0)
@@ -428,11 +105,7 @@ function buildStarsOfNight() {
   const starColors = ['#f5c842', '#a8b8c8', '#cd7f32'];
 
   list.innerHTML = scored.map((p, i) => {
-    const urls = getPlayerHeadshotUrls(p.name);
-    const ini  = initials(p.name);
-    const hsId = `star-hs-${i}`;
-
-    // Stat chips
+    const ini = initials(p.name);
     let chips = '';
     if (p.goals >= 3)  chips += `<span class="sn-chip sn-ht">🎩 HAT TRICK</span>`;
     else if (p.goals)  chips += `<span class="sn-chip sn-g">${p.goals}G</span>`;
@@ -442,13 +115,10 @@ function buildStarsOfNight() {
     if (p.shutouts)    chips += `<span class="sn-chip sn-so">SO</span>`;
     if (p.saves)       chips += `<span class="sn-chip sn-sv">${p.saves}SV</span>`;
     if (p.pos==='D' && p.pim) chips += `<span class="sn-chip sn-pim">${p.pim}PIM</span>`;
-
     return `
       <div class="sn-card">
         <div class="sn-star-label" style="color:${starColors[i]}">${starLabels[i]}</div>
-        <div class="sn-hs-wrap" id="${hsId}">
-          <span class="sn-ini">${ini}</span>
-        </div>
+        <div class="sn-hs-wrap" id="star-hs-${i}"><span class="sn-ini">${ini}</span></div>
         <div class="sn-info">
           <div class="sn-name">${p.name}</div>
           <div class="sn-team">${p.team} · ${p.pos}</div>
@@ -458,7 +128,6 @@ function buildStarsOfNight() {
       </div>`;
   }).join('');
 
-  // Inject headshots after render
   scored.forEach((p, i) => {
     const urls = getPlayerHeadshotUrls(p.name);
     if (!urls.length) return;
@@ -474,31 +143,26 @@ function buildStarsOfNight() {
     tryUrl(0);
   });
 
-  // Set date
   if (dateEl && scored[0]?.game) {
     const yesterday = new Date(Date.now() - 86400000);
     dateEl.textContent = yesterday.toLocaleDateString('en-CA', {weekday:'long', month:'short', day:'numeric'});
   }
-
   bar.style.display = 'flex';
 }
 
-
 // ══════════ PICKS LOCK ══════════
-const LOCK_DATE = new Date('2026-09-29T19:00:00-04:00'); // Opening night 7pm EST
-
-function isPicksLocked() {
-  return new Date() >= LOCK_DATE;
-}
-
+const LOCK_DATE = new Date('2026-09-29T19:00:00-04:00');
+function isPicksLocked() { return new Date() >= LOCK_DATE; }
 function getTimeUntilLock() {
   const diff = LOCK_DATE - new Date();
   if (diff <= 0) return null;
-  const days    = Math.floor(diff / 86400000);
-  const hours   = Math.floor((diff % 86400000) / 3600000);
-  const minutes = Math.floor((diff % 3600000) / 60000);
-  const seconds = Math.floor((diff % 60000) / 1000);
-  return { days, hours, minutes, seconds, total: diff };
+  return {
+    days:    Math.floor(diff / 86400000),
+    hours:   Math.floor((diff % 86400000) / 3600000),
+    minutes: Math.floor((diff % 3600000) / 60000),
+    seconds: Math.floor((diff % 60000) / 1000),
+    total:   diff
+  };
 }
 
 function buildPicksLockBanner() {
@@ -507,7 +171,6 @@ function buildPicksLockBanner() {
   if (!banner) return;
 
   if (locked) {
-    // Full lock state
     banner.innerHTML = `
       <div style="background:linear-gradient(135deg,rgba(125,42,66,0.2),rgba(8,4,6,0.95));border:1px solid rgba(125,42,66,0.4);border-radius:var(--r2);padding:32px 24px;text-align:center;margin-bottom:24px">
         <div style="font-size:40px;margin-bottom:12px">🔒</div>
@@ -517,15 +180,11 @@ function buildPicksLockBanner() {
           Check the <a href="index.html" style="color:var(--burgundy3)">standings</a> to see how your team is doing.
         </div>
       </div>`;
-    // Disable all form inputs
-    document.querySelectorAll('input, select, button:not(.nav-btn)').forEach(el => {
-      if (!el.classList.contains('nav-btn')) el.disabled = true;
-    });
+    document.querySelectorAll('input, select, button:not(.nav-btn)').forEach(el => { el.disabled = true; });
     banner.style.display = 'block';
     return;
   }
 
-  // Countdown state
   function updateCountdown() {
     const t = getTimeUntilLock();
     if (!t) { buildPicksLockBanner(); return; }
@@ -544,96 +203,19 @@ function buildPicksLockBanner() {
       </div>`;
     banner.style.display = 'block';
   }
-
   updateCountdown();
   setInterval(updateCountdown, 1000);
-}
-
-// ══════════ TICKER ══════════
-function tickerStatChips(p) {
-  let chips = '';
-  const isHT = p.pos !== 'G' && p.goals >= 3;
-  if (isHT) chips += `<span class="t-stat ts-ht">🎩 HAT TRICK</span>`;
-  else if (p.goals) chips += `<span class="t-stat ts-g">${p.goals}G</span>`;
-  if (p.assists)    chips += `<span class="t-stat ts-a">${p.assists}A</span>`;
-  if (p.sog)        chips += `<span class="t-stat ts-sog">${p.sog}SOG</span>`;
-  if (p.wins)       chips += `<span class="t-stat ts-w">${p.wins}W</span>`;
-  if (p.losses)     chips += `<span class="t-stat ts-l">${p.losses}L</span>`;
-  if (p.otl)        chips += `<span class="t-stat ts-otl">${p.otl}OTL</span>`;
-  if (p.shutouts)   chips += `<span class="t-stat ts-so">SO</span>`;
-  if (p.saves)      chips += `<span class="t-stat ts-sv">${p.saves}SV</span>`;
-  if (p.pos==='D' && p.pim) chips += `<span class="t-stat ts-pim">${p.pim}PIM</span>`;
-  return chips;
-}
-// DROP-IN REPLACEMENT for buildTicker() in main.js
-// Also add: let _tickerRAF = null; at the top of the TICKER section
- 
-let _tickerRAF = null;
- 
-function buildTicker() {
-  const viewport = document.querySelector('.ticker-viewport'); if (!viewport) return;
- 
-  // Cancel any previous RAF loop
-  if (_tickerRAF) { cancelAnimationFrame(_tickerRAF); _tickerRAF = null; }
- 
-  const scorers = NIGHTLY_STATS.filter(p => nightlyPts(p) > 0);
-  const emptyMsg = !NIGHTLY_STATS.length
-    ? 'No pool player stats yet for last night'
-    : 'No scoring pool players last night';
- 
-  if (!scorers.length) {
-    viewport.innerHTML =
-      `<div class="ticker-track"><div class="t-item"><span class="t-game">${emptyMsg}</span></div></div>`;
-    return;
-  }
- 
-  const itemHTML = p =>
-    `<div class="t-item">` +
-    `<span class="t-game">${p.game}</span>` +
-    `<span class="t-sep">·</span>` +
-    `<span class="t-name">${p.name}</span>` +
-    `<span class="t-team">${p.team}&nbsp;${p.pos}</span>` +
-    `<span class="t-sep">|</span>` +
-    `${tickerStatChips(p)}` +
-    `<span class="t-pts">+${nightlyPts(p)}pts</span>` +
-    `</div>`;
- 
-  // Duplicate content — seamless reset when scrolled one copy width
-  const inner = scorers.map(itemHTML).join('');
-  viewport.innerHTML = `<div class="ticker-track">${inner}${inner}</div>`;
- 
-  const track = viewport.querySelector('.ticker-track');
-  const PX_PER_SEC = 60;
-  let pos = 0;
-  let last = null;
- 
-  function tick(ts) {
-    if (!last) last = ts;
-    const dt = Math.min((ts - last) / 1000, 0.05); // cap delta — prevents jump after tab switch
-    last = ts;
- 
-    pos += PX_PER_SEC * dt;
- 
-    // halfWidth = width of one copy; reset silently when past it
-    const halfWidth = track.scrollWidth / 2;
-    if (pos >= halfWidth) pos -= halfWidth;
- 
-    track.style.transform = `translateX(${-pos}px)`;
-    _tickerRAF = requestAnimationFrame(tick);
-  }
- 
-  _tickerRAF = requestAnimationFrame(tick);
 }
 
 // ══════════ LEADERBOARD ══════════
 function lbRowHTML(e, i) {
   const cls = i===0?'p1':i===1?'p2':i===2?'p3':'';
-  const t = e.trend;
-  const tv = parseInt(t) || 0;
+  const tv = parseInt(e.trend) || 0;
   const tCls = tv>0?'trend-up':tv<0?'trend-dn':'trend-eq';
   const tLbl = tv>0?'▲'+tv:tv<0?'▼'+Math.abs(tv):'—';
   return `<div class="lb-row ${cls}"><div class="lb-pos">${i+1}</div><div class="lb-av">${initials(e.name)}</div><div class="lb-info"><div class="lb-name">${e.name}</div></div><span class="lb-trend ${tCls}">${tLbl}</span><div class="lb-pts">${e.pts.toLocaleString()}</div></div>`;
 }
+
 function buildBoards() {
   const fl = document.getElementById('full-lb');
   if (!fl) return;
@@ -663,6 +245,8 @@ function buildPayoutTable() {
 }
 
 // ══════════ DIVISION PICKS ══════════
+let divisionPicks = {};
+
 function buildDivisionPicks() {
   const grid = document.getElementById('div-grid'); if (!grid) return;
   grid.innerHTML = Object.entries(DIVISIONS).map(([divName, div]) => {
@@ -670,15 +254,19 @@ function buildDivisionPicks() {
     return `<div class="div-section"><div class="div-conf-label">${div.conf}ern Conference</div><div class="div-name">${divName} Division</div><select class="div-team-select" id="div-${divName}" onchange="pickDivision('${divName}', this)"><option value="">— Pick division winner —</option>${options}</select><div class="div-pts-note">+10 pts if your team wins the division</div></div>`;
   }).join('');
 }
-function pickDivision(divName, sel) { divisionPicks[divName] = sel.value || null; sel.classList.toggle('picked', !!sel.value); updateDivisionCount(); }
+function pickDivision(divName, sel) {
+  divisionPicks[divName] = sel.value || null;
+  sel.classList.toggle('picked', !!sel.value);
+  updateDivisionCount();
+}
 function updateDivisionCount() {
   const filled = Object.values(divisionPicks).filter(Boolean).length;
   const dc = document.getElementById('div-pick-count'), db = document.getElementById('div-bonus-total');
-  if (dc) dc.textContent = filled; if (db) db.textContent = filled * 10;
+  if (dc) dc.textContent = filled;
+  if (db) db.textContent = filled * 10;
 }
 
 // ══════════ TEAM PANEL ══════════
-let currentFilter = 'ALL', currentRoster = [];
 function openTeamPanel(entryName) {
   const entry = LIVE_BOARD.find(e => e.name === entryName);
   if (!entry) return;
@@ -694,23 +282,35 @@ function openTeamPanel(entryName) {
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
-function closeTeamPanel() { const el = document.getElementById('modal-overlay'); if (el) el.classList.remove('open'); document.body.style.overflow = ''; }
+function closeTeamPanel() {
+  const el = document.getElementById('modal-overlay');
+  if (el) el.classList.remove('open');
+  document.body.style.overflow = '';
+}
 function overlayClick(e) { if (e.target === document.getElementById('modal-overlay')) closeTeamPanel(); }
-function filterRoster(pos, tab) { currentFilter = pos; document.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active')); tab.classList.add('active'); }
+function filterRoster(pos, tab) {
+  currentFilter = pos;
+  document.querySelectorAll('.tp-tab').forEach(t=>t.classList.remove('active'));
+  tab.classList.add('active');
+}
 
 // ══════════ PLAYER INFO MODAL ══════════
 let playerModalContext = null;
+
 function openPlayerModal(playerName, team, pos, boxId, radioEl) {
-  const s = PREV_STATS[playerName]; playerModalContext = {boxId,playerName,radio:radioEl};
-  // Update season label dynamically
+  const s = PREV_STATS[playerName];
+  playerModalContext = { boxId, playerName, radio: radioEl };
+
   const seasonLabel = document.querySelector('.pm-season-label');
   if (seasonLabel) seasonLabel.textContent = `${PREV_SEASON_LABEL} Season Stats (Prior Year)`;
   const totalNote = document.querySelector('.pm-total-note');
   if (totalNote) totalNote.textContent = `Based on ${PREV_SEASON_LABEL} stats`;
+
   document.getElementById('pm-name').textContent = playerName;
   document.getElementById('pm-nhl').textContent = team + ' · ' + (s?.pos || pos);
-  const badge = document.getElementById('pm-pos-badge'); badge.textContent = pos; badge.className = `pm-pos-badge pm-pos-${pos}`;
-  // ── Headshot — use existing #pm-headshot img tag if present, else inject ──
+  const badge = document.getElementById('pm-pos-badge');
+  badge.textContent = pos; badge.className = `pm-pos-badge pm-pos-${pos}`;
+
   const urls = getPlayerHeadshotUrls(playerName);
   const existingImg = document.getElementById('pm-headshot');
   if (existingImg) {
@@ -725,33 +325,14 @@ function openPlayerModal(playerName, team, pos, boxId, radioEl) {
       }
       tryUrl(0);
     }
-  } else {
-    // No static img tag — inject dynamically
-    const pmHead = document.querySelector('.pm-head');
-    if (pmHead) {
-      let hsWrap = pmHead.querySelector('.pm-headshot-wrap');
-      if (!hsWrap) {
-        hsWrap = document.createElement('div');
-        hsWrap.className = 'pm-headshot-wrap';
-        pmHead.insertBefore(hsWrap, pmHead.firstChild);
-      }
-      const ini = initials(playerName);
-      hsWrap.innerHTML = `<span class="pm-headshot-placeholder">${ini}</span>`;
-      if (urls.length) {
-        function tryUrl2(i) {
-          if (i >= urls.length) return;
-          const img = new Image();
-          img.onload = () => { hsWrap.innerHTML = `<img class="pm-headshot" src="${urls[i]}" alt="${playerName}">`; };
-          img.onerror = () => tryUrl2(i + 1);
-          img.src = urls[i];
-        }
-        tryUrl2(0);
-      }
-    }
   }
+
   const statsGrid = document.getElementById('pm-stats-grid');
-  if (!s) { statsGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px;padding:8px 0">No prior season data available</div>`; document.getElementById('pm-pts-breakdown').innerHTML=''; document.getElementById('pm-total-pts').textContent='—'; }
-  else if (pos==='G') {
+  if (!s) {
+    statsGrid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px;padding:8px 0">No prior season data available</div>`;
+    document.getElementById('pm-pts-breakdown').innerHTML = '';
+    document.getElementById('pm-total-pts').textContent = '—';
+  } else if (pos === 'G') {
     statsGrid.innerHTML = `<div class="pm-stat"><div class="pm-stat-val">${s.w}</div><div class="pm-stat-lbl">Wins</div></div><div class="pm-stat"><div class="pm-stat-val">${s.l}</div><div class="pm-stat-lbl">Losses</div></div><div class="pm-stat"><div class="pm-stat-val">${s.otl}</div><div class="pm-stat-lbl">OT Loss</div></div><div class="pm-stat"><div class="pm-stat-val">${s.so}</div><div class="pm-stat-lbl">Shutouts</div></div><div class="pm-stat" style="grid-column:1/3"><div class="pm-stat-val">${s.sv.toLocaleString()}</div><div class="pm-stat-lbl">Saves</div></div><div class="pm-stat" style="grid-column:3/5"><div class="pm-stat-val" style="color:var(--accent)">${roundPts(s.sv*0.02)}</div><div class="pm-stat-lbl">Save pts</div></div>`;
     document.getElementById('pm-pts-breakdown').innerHTML = `<div class="pm-pts-item"><div class="pv">${s.w*3}</div><div class="pl">${s.w}W × 3</div></div><div class="pm-pts-item"><div class="pv">${s.l}</div><div class="pl">${s.l}L × 1</div></div><div class="pm-pts-item"><div class="pv">${roundPts(s.otl*1.5)}</div><div class="pl">${s.otl}OTL × 1.5</div></div><div class="pm-pts-item"><div class="pv">${s.so*2}</div><div class="pl">${s.so}SO × 2</div></div><div class="pm-pts-item"><div class="pv">${roundPts(s.sv*0.02)}</div><div class="pl">${s.sv.toLocaleString()}SV × 0.02</div></div>`;
   } else {
@@ -762,112 +343,177 @@ function openPlayerModal(playerName, team, pos, boxId, radioEl) {
   }
   document.getElementById('pm-total-pts').textContent = calcPrevPts(s);
   const btn = document.getElementById('pm-pick-btn');
-  if (btn) { const ap = typeof picks!=='undefined'&&picks[boxId]===playerName; btn.textContent=ap?`✓ ${playerName} already selected`:`Pick ${playerName}`; btn.disabled=ap; }
-  document.getElementById('player-modal-overlay').classList.add('open'); document.body.style.overflow='hidden';
+  if (btn) {
+    const ap = typeof picks !== 'undefined' && picks[boxId] === playerName;
+    btn.textContent = ap ? `✓ ${playerName} already selected` : `Pick ${playerName}`;
+    btn.disabled = ap;
+  }
+  document.getElementById('player-modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
 }
+
 function closePlayerModal(e) {
   if (e && e.target !== document.getElementById('player-modal-overlay')) return;
-  document.getElementById('player-modal-overlay').classList.remove('open'); document.body.style.overflow=''; playerModalContext=null;
+  document.getElementById('player-modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  playerModalContext = null;
 }
-function pickFromModal() {
+
+function confirmModalPick() {
   if (!playerModalContext) return;
-  const {boxId,playerName,radio} = playerModalContext; radio.checked=true; pick(boxId,playerName,radio);
-  document.getElementById('pm-pick-btn').textContent=`✓ ${playerName} selected`; document.getElementById('pm-pick-btn').disabled=true;
-  setTimeout(()=>{ document.getElementById('player-modal-overlay').classList.remove('open'); document.body.style.overflow=''; playerModalContext=null; },600);
+  const { boxId, playerName, radio } = playerModalContext;
+  radio.checked = true;
+  pick(boxId, playerName, radio);
+  document.getElementById('pm-pick-btn').textContent = `✓ ${playerName} selected`;
+  document.getElementById('pm-pick-btn').disabled = true;
+  setTimeout(() => {
+    document.getElementById('player-modal-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+    playerModalContext = null;
+  }, 600);
 }
-document.addEventListener('keydown', e => { if (e.key==='Escape') { closePlayerModal(); closeTeamPanel(); } });
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closePlayerModal(); closeTeamPanel(); }
+});
 
 // ══════════ DRAFT ══════════
 let picks = {};
+
 function buildDraft() {
   const draft = document.getElementById('draft'); if (!draft) return;
   draft.innerHTML = BOXES.map(box => {
     const typeLabel = box.type==='G'?'Goalie':box.type==='D'?'Defense':'Forward';
-    const players = [...box.players].sort((a,b) => (b.pts||calcPrevPts(PREV_STATS[b.name])||0) - (a.pts||calcPrevPts(PREV_STATS[a.name])||0)).map(p => {
-      const rid = `radio-${box.id}-${p.name.replace(/\W/g,'')}`;
-      const displayPts = p.pts || calcPrevPts(PREV_STATS[p.name]) || 0;
-      const irTag = IR_STATUS[p.name] ? ' <span class="ir-badge" style="font-size:9px;padding:1px 5px;border-radius:3px;background:#c0392b;color:#fff;margin-left:4px">IR</span>' : '';
-      return `<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px"><label class="popt" id="opt-${box.id}-${p.name.replace(/\W/g,'')}" style="flex:1;margin-bottom:0${IR_STATUS[p.name]?';opacity:0.55':''}"><input type="radio" name="b${box.id}" value="${p.name}" id="${rid}" onchange="pick(${box.id},'${p.name}',this)"><div style="flex:1"><div class="popt-name">${p.name}${irTag}</div><div class="popt-team">${p.team}</div></div><div style="text-align:right"><div class="popt-pts">${displayPts}</div><div class="popt-pts-label">prev pts</div></div></label><button class="player-info-btn" title="View ${p.name} stats" onclick="event.stopPropagation();openPlayerModal('${p.name.replace(/'/g,"\\'")}','${p.team}','${box.type}',${box.id},document.getElementById('${rid}'))">ℹ</button></div>`;
-    }).join('');
+    const players = [...box.players]
+      .sort((a,b) => (b.pts||calcPrevPts(PREV_STATS[b.name])||0) - (a.pts||calcPrevPts(PREV_STATS[a.name])||0))
+      .map(p => {
+        const rid = `radio-${box.id}-${p.name.replace(/\W/g,'')}`;
+        const displayPts = p.pts || calcPrevPts(PREV_STATS[p.name]) || 0;
+        const irTag = IR_STATUS[p.name] ? ' <span class="ir-badge" style="font-size:9px;padding:1px 5px;border-radius:3px;background:#c0392b;color:#fff;margin-left:4px">IR</span>' : '';
+        return `<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px">
+          <label class="popt" id="opt-${box.id}-${p.name.replace(/\W/g,'')}" style="flex:1;margin-bottom:0${IR_STATUS[p.name]?';opacity:0.55':''}">
+            <input type="radio" name="b${box.id}" value="${p.name}" id="${rid}" onchange="pick(${box.id},'${p.name}',this)">
+            <div style="flex:1"><div class="popt-name">${p.name}${irTag}</div><div class="popt-team">${p.team}</div></div>
+            <div style="text-align:right"><div class="popt-pts">${displayPts}</div><div class="popt-pts-label">prev pts</div></div>
+          </label>
+          <button class="player-info-btn" title="View ${p.name} stats" onclick="event.stopPropagation();openPlayerModal('${p.name.replace(/'/g,"\\'")}','${p.team}','${box.type}',${box.id},document.getElementById('${rid}'))">ℹ</button>
+        </div>`;
+      }).join('');
     return `<div class="box-wrap" id="bx-${box.id}"><div class="box-hd"><div><div class="box-type">${typeLabel}</div><div class="box-name">${box.label}</div></div><div class="box-check" id="chk-${box.id}">✓</div></div><div class="player-opts">${players}</div></div>`;
   }).join('');
   renderChips();
 }
+
 function pick(boxId, name, radio) {
   picks[boxId] = name;
-  document.querySelectorAll(`[name=b${boxId}]`).forEach(r=>r.closest('.popt').classList.remove('sel'));
+  document.querySelectorAll(`[name=b${boxId}]`).forEach(r => r.closest('.popt').classList.remove('sel'));
   radio.closest('.popt').classList.add('sel');
-  const box = document.getElementById('bx-'+boxId); box.classList.add('done'); box.classList.remove('error');
-  const chk = document.getElementById('chk-'+boxId); chk.style.background='var(--burgundy)'; chk.style.borderColor='var(--burgundy)'; chk.style.color='#fff';
+  const box = document.getElementById('bx-'+boxId);
+  box.classList.add('done'); box.classList.remove('error');
+  const chk = document.getElementById('chk-'+boxId);
+  chk.style.background='var(--burgundy)'; chk.style.borderColor='var(--burgundy)'; chk.style.color='#fff';
   renderChips();
   const n = Object.keys(picks).length;
   document.getElementById('pc').textContent = n;
   document.getElementById('pbar').style.width = Math.round(n/24*100)+'%';
 }
+
 function renderChips() {
   const el = document.getElementById('chips'); if (!el) return;
-  el.innerHTML = BOXES.map(b => { const p=picks[b.id]; return p?`<span class="chip">${p.split(' ').pop()}</span>`:`<span class="chip empty">${b.label}</span>`; }).join('');
-}
-function updateProgress() { const n=Object.keys(picks).length; const pc=document.getElementById('pc'),pb=document.getElementById('pbar'); if(pc)pc.textContent=n; if(pb)pb.style.width=Math.round(n/24*100)+'%'; }
-
-// ══════════ PHONE FORMAT ══════════
-function formatPhone(input) {
-  const digits = input.value.replace(/\D/g,'').slice(0,10); let f='';
-  if (digits.length===0) f='';
-  else if (digits.length<=3) f='('+digits;
-  else if (digits.length<=6) f='('+digits.slice(0,3)+') '+digits.slice(3);
-  else f='('+digits.slice(0,3)+') '+digits.slice(3,6)+'-'+digits.slice(6);
-  input.value=f;
+  el.innerHTML = BOXES.map(b => {
+    const p = picks[b.id];
+    return p ? `<span class="chip">${p.split(' ').pop()}</span>` : `<span class="chip empty">${b.label}</span>`;
+  }).join('');
 }
 
-const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzqqijpX3BoRCDXMH5ZzWCkN2ZlALGJd_HBHMetPlXCir7_ue_WfEtqvo3NM0Z-xMhKUA/exec';
+function updateProgress() {
+  const n = Object.keys(picks).length;
+  const pc = document.getElementById('pc'), pb = document.getElementById('pbar');
+  if (pc) pc.textContent = n;
+  if (pb) pb.style.width = Math.round(n/24*100)+'%';
+}
 
+// ══════════ SUBMIT ENTRY ══════════
 async function submitEntry() {
-  const f=document.getElementById('ff').value.trim(), l=document.getElementById('fl').value.trim();
-  const e=document.getElementById('fe').value.trim(), ph=document.getElementById('fp').value.trim();
-  const team=document.getElementById('ft').value.trim()||`${f}'s Team`;
+  const f    = document.getElementById('ff').value.trim();
+  const l    = document.getElementById('fl').value.trim();
+  const e    = document.getElementById('fe').value.trim();
+  const ph   = document.getElementById('fp').value.trim();
+  const team = document.getElementById('ft').value.trim() || `${f}'s Team`;
+
+  // ── AGT-007: email prefs ──
+  const emailDaily  = document.getElementById('email-daily')?.checked  || false;
+  const emailWeekly = document.getElementById('email-weekly')?.checked || false;
+
   if (!f||!l) { toast('Missing name','Enter your first and last name.'); return; }
-  if (!e) { toast('Missing email','Enter your email address.'); return; }
-  document.querySelectorAll('.box-wrap').forEach(el=>el.classList.remove('error'));
-  const missingBoxes = BOXES.filter(b=>!picks[b.id]);
-  if (missingBoxes.length>0) {
-    missingBoxes.forEach(b=>{const el=document.getElementById('bx-'+b.id);if(el)el.classList.add('error');});
-    const first=document.getElementById('bx-'+missingBoxes[0].id); if(first)first.scrollIntoView({behavior:'smooth',block:'center'});
-    toast('Picks incomplete','Missing: '+missingBoxes.map(b=>b.label).join(', ')); return;
+  if (!e)     { toast('Missing email','Enter your email address.'); return; }
+
+  document.querySelectorAll('.box-wrap').forEach(el => el.classList.remove('error'));
+  const missingBoxes = BOXES.filter(b => !picks[b.id]);
+  if (missingBoxes.length > 0) {
+    missingBoxes.forEach(b => { const el=document.getElementById('bx-'+b.id); if(el)el.classList.add('error'); });
+    const first = document.getElementById('bx-'+missingBoxes[0].id);
+    if (first) first.scrollIntoView({behavior:'smooth',block:'center'});
+    toast('Picks incomplete','Missing: '+missingBoxes.map(b=>b.label).join(', '));
+    return;
   }
-  if (Object.values(divisionPicks).filter(Boolean).length<4) { toast('Division picks missing','Please pick a winner for all 4 divisions.'); return; }
-  const picksArray = Array.from({length:24},(_,i)=>picks[i+1]||'');
-  const btn = document.querySelector('.btn-gold'), originalText=btn.innerHTML;
-  btn.innerHTML='⏳ Submitting…'; btn.disabled=true; btn.style.opacity='0.7';
+
+  if (Object.values(divisionPicks).filter(Boolean).length < 4) {
+    toast('Division picks missing','Please pick a winner for all 4 divisions.');
+    return;
+  }
+
+  const picksArray = Array.from({length:24}, (_,i) => picks[i+1]||'');
+  const btn = document.querySelector('.btn-gold'), originalText = btn.innerHTML;
+  btn.innerHTML = '⏳ Submitting…'; btn.disabled = true; btn.style.opacity = '0.7';
+
   try {
-    const response = await fetch(WEBAPP_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({firstName:f,lastName:l,email:e,phone:ph,teamName:team,picks:picksArray,divisions:{atlantic:divisionPicks['Atlantic']||'',metropolitan:divisionPicks['Metropolitan']||'',central:divisionPicks['Central']||'',pacific:divisionPicks['Pacific']||''}})});
+    const response = await fetch(WEBAPP_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        firstName: f, lastName: l, email: e, phone: ph, teamName: team,
+        picks: picksArray,
+        emailDaily,
+        emailWeekly,
+        divisions: {
+          atlantic:     divisionPicks['Atlantic']     || '',
+          metropolitan: divisionPicks['Metropolitan'] || '',
+          central:      divisionPicks['Central']      || '',
+          pacific:      divisionPicks['Pacific']      || '',
+        }
+      })
+    });
     const result = await response.json();
     if (result.success) {
       totalEntries++;
       updatePayouts();
-      // Store picks for confirmation page
       const confirmData = {
         entryId: result.entryId,
         firstName: f, lastName: l, email: e, teamName: team,
         picks: picksArray,
-        divisions: { atlantic: divisionPicks['Atlantic']||'', metropolitan: divisionPicks['Metropolitan']||'', central: divisionPicks['Central']||'', pacific: divisionPicks['Pacific']||'' }
+        divisions: { atlantic:divisionPicks['Atlantic']||'', metropolitan:divisionPicks['Metropolitan']||'', central:divisionPicks['Central']||'', pacific:divisionPicks['Pacific']||'' }
       };
       sessionStorage.setItem('aahl_confirm', JSON.stringify(confirmData));
       setTimeout(() => window.location.href = 'confirmation.html', 400);
+    } else {
+      toast('Submission failed', result.message||result.error||'Something went wrong.');
     }
-    else toast('Submission failed',result.message||result.error||'Something went wrong.');
-  } catch(err) { toast('Connection error','Could not reach the server.'); }
-  finally { btn.innerHTML=originalText; btn.disabled=false; btn.style.opacity='1'; }
+  } catch(err) {
+    toast('Connection error','Could not reach the server.');
+  } finally {
+    btn.innerHTML = originalText; btn.disabled = false; btn.style.opacity = '1';
+  }
 }
 
 // ══════════ ADMIN ══════════
 function adminAdd() {
-  const p=document.getElementById('ap').value.trim(), pts=parseInt(document.getElementById('apts').value)||0;
+  const p = document.getElementById('ap').value.trim(), pts = parseInt(document.getElementById('apts').value)||0;
   if (!p||!pts) return;
-  const log=document.getElementById('alog'), now=new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'});
-  log.innerHTML=`${now} — +${pts} pts → ${p}\n`+log.innerHTML;
-  document.getElementById('ap').value=''; document.getElementById('apts').value='';
-  toast('Points added',`+${pts} pts added to ${p}`);
+  const log = document.getElementById('alog'), now = new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit'});
+  log.innerHTML = `${now} — +${pts} pts → ${p}\n` + log.innerHTML;
+  document.getElementById('ap').value = ''; document.getElementById('apts').value = '';
+  toast('Points added', `+${pts} pts added to ${p}`);
 }
 
 // ══════════ PIXEL ALPACA RUNNER ══════════
@@ -899,24 +545,13 @@ function adminAdd() {
 // ══════════ LIVE GAME INDICATOR ══════════
 (function(){
   function isGameTime() {
-    const now = new Date();
-    const hour = now.getHours();
-    const day = now.getDay();
-    const isWeekend = day === 0 || day === 6;
-    const isGameDay = isWeekend || (day >= 2 && day <= 5);
-    const isGameHour = hour >= 19 && hour <= 23;
-    return isGameDay && isGameHour;
+    const now = new Date(), hour = now.getHours(), day = now.getDay();
+    return (day === 0 || day >= 2) && hour >= 19 && hour <= 23;
   }
   function updateLiveIndicator() {
-    const tag = document.querySelector('.ticker-tag');
-    if (!tag) return;
-    if (isGameTime()) {
-      tag.classList.add('live');
-      tag.innerHTML = '<span class="live-dot">● LIVE</span>';
-    } else {
-      tag.classList.remove('live');
-      tag.textContent = 'Last Night';
-    }
+    const tag = document.querySelector('.ticker-tag'); if (!tag) return;
+    if (isGameTime()) { tag.classList.add('live'); tag.innerHTML = '<span class="live-dot">● LIVE</span>'; }
+    else { tag.classList.remove('live'); tag.textContent = 'Last Night'; }
   }
   updateLiveIndicator();
   setInterval(updateLiveIndicator, 60000);
@@ -942,47 +577,56 @@ function adminAdd() {
     const nav = document.querySelector('nav');
     if (!nav || document.getElementById('theme-toggle')) return;
     const btn = document.createElement('button');
-    btn.id = 'theme-toggle';
-    btn.className = 'theme-toggle';
-    btn.innerHTML = '🌓';
-    btn.title = 'Toggle theme';
-    btn.onclick = () => {
-      const theme = toggleTheme();
-      btn.innerHTML = theme === 'dark' ? '☀️' : '🌙';
-    };
+    btn.id = 'theme-toggle'; btn.className = 'theme-toggle';
+    btn.innerHTML = '🌓'; btn.title = 'Toggle theme';
+    btn.onclick = () => { const theme = toggleTheme(); btn.innerHTML = theme === 'dark' ? '☀️' : '🌙'; };
     nav.appendChild(btn);
     const current = document.documentElement.getAttribute('data-theme') || 'dark';
     btn.innerHTML = current === 'dark' ? '☀️' : '🌙';
   }
   initTheme();
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', addThemeToggle);
-  } else {
-    addThemeToggle();
-  }
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', addThemeToggle); } else { addThemeToggle(); }
 })();
 
 // ══════════ AUTO-REFRESH DURING GAMES ══════════
 (function(){
   let refreshInterval;
-  function shouldAutoRefresh() {
-    const now = new Date();
-    const hour = now.getHours();
-    return hour >= 19 && hour <= 23;
-  }
+  function shouldAutoRefresh() { const h = new Date().getHours(); return h >= 19 && h <= 23; }
   function startAutoRefresh() {
     if (refreshInterval) return;
     refreshInterval = setInterval(() => {
       if (typeof loadData === 'function') loadData();
-      if (typeof buildTicker === 'function') buildTicker();
+      buildTicker();
     }, 300000);
   }
-  function stopAutoRefresh() {
-    if (refreshInterval) { clearInterval(refreshInterval); refreshInterval = null; }
-  }
-  function checkAndUpdate() {
-    if (shouldAutoRefresh()) { startAutoRefresh(); } else { stopAutoRefresh(); }
-  }
+  function stopAutoRefresh() { if (refreshInterval) { clearInterval(refreshInterval); refreshInterval = null; } }
+  function checkAndUpdate() { if (shouldAutoRefresh()) startAutoRefresh(); else stopAutoRefresh(); }
   checkAndUpdate();
   setInterval(checkAndUpdate, 60000);
 })();
+
+// ══════════ PAGE INIT (DOMContentLoaded) ══════════
+document.addEventListener('DOMContentLoaded', async () => {
+  // Shared across all pages
+  await Promise.all([fetchNightlyStats(), fetchIRStatuses(), fetchPrevStats()]);
+
+  buildTicker();
+
+  // picks.html
+  if (document.getElementById('draft')) {
+    await fetchBoxesFromSheet();
+    buildDraft();
+    buildDivisionPicks();
+    buildPicksLockBanner();
+  }
+
+  // index.html / standings.html
+  if (document.getElementById('full-lb') || document.getElementById('stars-bar')) {
+    await fetchStandings();
+    buildBoards();
+    buildStarsOfNight();
+  }
+
+  updatePayouts();
+  buildPayoutTable();
+});
