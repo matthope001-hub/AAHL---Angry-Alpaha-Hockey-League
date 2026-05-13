@@ -8,15 +8,12 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" type="image/png" href="aahl-logo.png">
 <style>
-/* ── Page Tabs ── */
 .page-tabs { display:flex;gap:6px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r2);padding:5px;margin-bottom:24px; }
 .page-tab { flex:1;padding:12px 20px;border-radius:8px;font-family:Teko,sans-serif;font-size:14px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all 0.15s;text-align:center;border:none;background:none; }
 .page-tab:hover { color:var(--text);background:var(--surface3); }
 .page-tab.active { background:var(--burgundy);color:#fff; }
 .tab-panel { display:none; }
 .tab-panel.active { display:block; }
-
-/* ── Controls ── */
 .stats-controls { display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap; }
 .pos-tabs { display:flex;gap:4px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:4px; }
 .pos-tab { padding:8px 20px;border-radius:6px;font-family:Teko,sans-serif;font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;transition:all 0.12s;border:none;background:none; }
@@ -26,15 +23,12 @@
 .stats-search { background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:9px 14px;font-family:'Inter',sans-serif;font-size:14px;color:var(--text);outline:none;width:240px;transition:border-color 0.15s; }
 .stats-search:focus { border-color:var(--burgundy); }
 .stats-search::placeholder { color:var(--muted); }
-
-/* ── Table ── */
 .stats-table-wrap { background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden; }
 .stats-table { width:100%;border-collapse:collapse;font-size:15px; }
 .stats-table thead tr { background:var(--surface2);border-bottom:2px solid var(--border2); }
 .stats-table thead th { position:sticky;top:0;z-index:2;background:var(--surface2); }
 .stats-table th { padding:12px 16px;font-family:Teko,sans-serif;font-size:12px;font-weight:600;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;text-align:left;white-space:nowrap;cursor:pointer;user-select:none;transition:color 0.12s; }
-.stats-table th.ra, .stats-table td.ra,
-.stats-table td.st-num { text-align:right; }
+.stats-table th.ra, .stats-table td.ra, .stats-table td.st-num { text-align:right; }
 .stats-table th.ca, .stats-table td.ca { text-align:center; }
 .stats-table th:hover { color:var(--text); }
 .stats-table th.sorted { color:var(--burgundy2); }
@@ -45,8 +39,6 @@
 .stats-table tbody tr:hover { background:var(--surface2); }
 .stats-table tbody tr.ht-row { background:rgba(111,38,61,0.06); }
 .stats-table td { padding:12px 16px;white-space:nowrap;text-align:left; }
-
-/* ── Cell types ── */
 .st-rank { font-family:Teko,sans-serif;font-size:15px;color:var(--muted);width:36px;text-align:center; }
 .st-rank.r1 { color:var(--gold);font-weight:700; }
 .st-rank.r2 { color:#9ca3af;font-weight:700; }
@@ -58,15 +50,11 @@
 .pos-D { background:var(--burgundy); }
 .pos-G { background:var(--accent); }
 .st-num { font-family:Teko,sans-serif;font-size:16px;text-align:right;color:var(--muted); }
-.stats-table td.ra { text-align:right; }
-.stats-table td.ca { text-align:center; }
 .st-num.highlight { color:var(--text);font-weight:700; }
 .st-pts { font-family:Teko,sans-serif;font-size:18px;font-weight:800;text-align:right;color:var(--burgundy2); }
 .st-box { font-family:Teko,sans-serif;font-size:13px;color:var(--muted2);text-align:center; }
 .st-ht { text-align:center;font-size:14px; }
 .stats-empty { padding:48px;text-align:center;color:var(--muted);font-size:15px;font-family:Teko,sans-serif; }
-
-/* ── Mobile ── */
 @media(max-width:640px) {
   .stats-controls { flex-direction:column;align-items:flex-start; }
   .stats-search { width:100%; }
@@ -212,8 +200,10 @@
   <div class="toast-body" id="toast-b"></div>
 </div>
 
-<script src="main.js?v=7"></script>
+<script src="data.js?v=1"></script>
+<script src="main.js?v=8"></script>
 <script>
+// ── STANDINGS.HTML page-specific logic ──
 
 function calcSkaterPts(p) {
   const ht = (p.hatTricks||0) * 3;
@@ -221,25 +211,33 @@ function calcSkaterPts(p) {
   return Math.round(((p.goals||0) + (p.assists||0) + (p.sog||0)*0.11 + ht + pim) * 100) / 100;
 }
 function calcGoaliePts(p) {
-  return Math.round(((p.wins||0)*3 + (p.losses||0)*1 + (p.otl||0)*1.5 + (p.shutouts||0)*2 + (p.saves||0)*0.02) * 100) / 100;
+  return Math.round(((p.wins||0)*3 + (p.losses||0) + (p.otl||0)*1.5 + (p.shutouts||0)*2 + (p.saves||0)*0.02) * 100) / 100;
 }
-let ALL_PLAYERS = [], skaterSort = {col:'pts',dir:-1}, goalieSort = {col:'pts',dir:-1}, skaterPos = 'ALL';
+
+let ALL_PLAYERS = [];
+let skaterSort = {col:'pts', dir:-1};
+let goalieSort = {col:'pts', dir:-1};
+let skaterPos  = 'ALL';
 
 function parsePlayersCSV(csv) {
   return csv.trim().split('\n').slice(1).map(line => {
-    const cols = []; let cur = '', inQ = false;
-    for (const ch of line) {
-      if (ch === '"') { inQ = !inQ; }
-      else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-      else { cur += ch; }
-    }
-    cols.push(cur.trim());
-    // Cols: A=PlayerName,B=NHLTeam,C=Position,D=BoxNumber,E=BoxLabel,F=Goals,G=Assists,H=SOG,I=PIM,J=Wins,K=Losses,L=OTLosses,M=Shutouts,N=Saves,O=HatTricks,P=OnIR,Q=PlayerID
-    return { name:(cols[0]||'').trim(), team:(cols[1]||'').trim(), pos:(cols[2]||'').trim(),
-      box:parseInt(cols[3])||0, goals:parseInt(cols[5])||0, assists:parseInt(cols[6])||0,
-      sog:parseInt(cols[7])||0, pim:parseInt(cols[8])||0, wins:parseInt(cols[9])||0,
-      losses:parseInt(cols[10])||0, otl:parseInt(cols[11])||0, shutouts:parseInt(cols[12])||0,
-      saves:parseInt(cols[13])||0, hatTricks:parseInt(cols[14])||0 };
+    const cols = parseCSVLine(line);
+    return {
+      name:      (cols[0]||'').trim(),
+      team:      (cols[1]||'').trim(),
+      pos:       (cols[2]||'').trim(),
+      box:       parseInt(cols[3])||0,
+      goals:     parseInt(cols[5])||0,
+      assists:   parseInt(cols[6])||0,
+      sog:       parseInt(cols[7])||0,
+      pim:       parseInt(cols[8])||0,
+      wins:      parseInt(cols[9])||0,
+      losses:    parseInt(cols[10])||0,
+      otl:       parseInt(cols[11])||0,
+      shutouts:  parseInt(cols[12])||0,
+      saves:     parseInt(cols[13])||0,
+      hatTricks: parseInt(cols[14])||0,
+    };
   }).filter(p => p.name && p.pos);
 }
 
@@ -247,8 +245,7 @@ async function fetchPlayers() {
   try {
     const res = await fetch(PLAYERS_CSV);
     if (!res.ok) throw new Error('HTTP ' + res.status);
-    const text = await res.text();
-    ALL_PLAYERS = parsePlayersCSV(text);
+    ALL_PLAYERS = parsePlayersCSV(await res.text());
     console.log('Loaded', ALL_PLAYERS.length, 'players');
   } catch(err) {
     console.error('Failed to load players:', err);
@@ -261,40 +258,35 @@ function switchTab(tab, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('tab-' + tab).classList.add('active');
-  if (tab === 'skaters') { fetchPlayers().then(renderSkaters); }
-  if (tab === 'goalies') { fetchPlayers().then(renderGoalies); }
-  if (tab === 'standings') { /* removed — standings now on home page only */ }
+  if (tab === 'skaters') fetchPlayers().then(renderSkaters);
+  if (tab === 'goalies') fetchPlayers().then(renderGoalies);
 }
 
 function sortSkaters(col) {
-  skaterSort = skaterSort.col === col ? {col, dir: skaterSort.dir * -1} : {col, dir: col==='name'||col==='team'?1:-1};
+  skaterSort = skaterSort.col===col ? {col, dir:skaterSort.dir*-1} : {col, dir:col==='name'||col==='team'?1:-1};
   updateSkaterHeaders(); renderSkaters();
 }
-
 function updateSkaterHeaders() {
   document.querySelectorAll('#skater-table th[onclick]').forEach(th => {
     th.classList.remove('sorted');
     const a = th.querySelector('.sort-arrow'); if (a) a.textContent = '↕';
     const m = th.getAttribute('onclick').match(/'([^']+)'/);
-    if (m && m[1] === skaterSort.col) { th.classList.add('sorted'); const a2 = th.querySelector('.sort-arrow'); if (a2) a2.textContent = skaterSort.dir===-1?'↓':'↑'; }
+    if (m && m[1]===skaterSort.col) { th.classList.add('sorted'); const a2=th.querySelector('.sort-arrow'); if(a2)a2.textContent=skaterSort.dir===-1?'↓':'↑'; }
   });
 }
-
 function filterSkaterPos(pos, btn) {
   skaterPos = pos;
   document.querySelectorAll('.pos-tab').forEach(b => b.classList.remove('active','skater'));
-  btn.classList.add('active','skater'); renderSkaters();
+  btn.classList.add('active','skater');
+  renderSkaters();
 }
 
 function renderSkaters() {
   const tbody = document.getElementById('skater-tbody');
-  if (!ALL_PLAYERS.length) {
-    tbody.innerHTML = '<tr><td colspan="10" class="stats-empty">Loading player stats…</td></tr>';
-    return;
-  }
+  if (!ALL_PLAYERS.length) { tbody.innerHTML = '<tr><td colspan="10" class="stats-empty">Loading player stats…</td></tr>'; return; }
   const search = (document.getElementById('skater-search')?.value||'').toLowerCase();
   let data = ALL_PLAYERS.filter(p => p.pos==='F'||p.pos==='D');
-  if (skaterPos !== 'ALL') data = data.filter(p => p.pos === skaterPos);
+  if (skaterPos !== 'ALL') data = data.filter(p => p.pos===skaterPos);
   if (search) data = data.filter(p => p.name.toLowerCase().includes(search)||p.team.toLowerCase().includes(search));
   data.forEach(p => p.pts = calcSkaterPts(p));
   data.sort((a,b) => {
@@ -304,41 +296,37 @@ function renderSkaters() {
   });
   if (!data.length) { tbody.innerHTML = '<tr><td colspan="10" class="stats-empty">No players match</td></tr>'; return; }
   tbody.innerHTML = data.map((p,i) => {
-    const rc = i===0?'r1':i===1?'r2':i===2?'r3':'', ht = p.hatTricks>0;
+    const ht = p.hatTricks>0;
     const rankColor = i===0?'var(--gold)':i===1?'#9ca3af':i===2?'#cd7f32':'var(--muted)';
-    return '<tr class="'+(ht?'ht-row':'')+'"><td style="text-align:center;font-family:Teko,sans-serif;font-size:11px;font-weight:'+(i<3?'700':'500')+';color:'+rankColor+'">'+(i+1)+'</td>'
-      +'<td><div class="st-name">'+p.name+(ht?' <span style="font-size:11px">🎩</span>':'')+(IR_STATUS[p.name]?' <span class="ir-badge" style="font-size:9px;padding:1px 5px;border-radius:3px;background:#c0392b;color:#fff">IR</span>':'')+'</div><div class="st-sub">'+p.team+'</div></td>'
-      +'<td style="text-align:center"><span class="st-pos-badge pos-'+p.pos+'">'+p.pos+'</span></td>'
-      +'<td style="text-align:center;font-family:Teko,sans-serif;font-size:10px;color:var(--muted2)" class="hide-mob">'+p.box+'</td>'
-      +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:'+(p.goals>0?'var(--text)':'var(--muted)')+(p.goals>0?';font-weight:600':'')+'">'+(p.goals||0)+'</td>'
-      +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:'+(p.assists>0?'var(--text)':'var(--muted)')+(p.assists>0?';font-weight:600':'')+'">'+(p.assists||0)+'</td>'
-      +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:var(--muted)" class="hide-mob">'+p.sog+'</td>'
-      +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:var(--muted)" class="hide-mob">'+(p.pos==='D'?p.pim:'—')+'</td>'
-      +'<td style="text-align:center;font-size:12px">'+(p.hatTricks>0?'🎩'.repeat(Math.min(p.hatTricks,3)):'')+'</td>'
-      +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:14px;font-weight:800;color:var(--burgundy2)">'+calcSkaterPts(p)+'</td></tr>';
+    return '<tr class="'+(ht?'ht-row':'')+'"><td style="text-align:center;font-family:Teko,sans-serif;font-size:11px;font-weight:'+(i<3?'700':'500')+';color:'+rankColor+'">'+(i+1)+'</td>'+
+      '<td><div class="st-name">'+p.name+(ht?' <span style="font-size:11px">🎩</span>':'')+(IR_STATUS[p.name]?' <span class="ir-badge" style="font-size:9px;padding:1px 5px;border-radius:3px;background:#c0392b;color:#fff">IR</span>':'')+'</div><div class="st-sub">'+p.team+'</div></td>'+
+      '<td style="text-align:center"><span class="st-pos-badge pos-'+p.pos+'">'+p.pos+'</span></td>'+
+      '<td style="text-align:center;font-family:Teko,sans-serif;font-size:10px;color:var(--muted2)" class="hide-mob">'+p.box+'</td>'+
+      '<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:'+(p.goals>0?'var(--text)':'var(--muted)')+(p.goals>0?';font-weight:600':'')+'">'+(p.goals||0)+'</td>'+
+      '<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:'+(p.assists>0?'var(--text)':'var(--muted)')+(p.assists>0?';font-weight:600':'')+'">'+(p.assists||0)+'</td>'+
+      '<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:var(--muted)" class="hide-mob">'+p.sog+'</td>'+
+      '<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:var(--muted)" class="hide-mob">'+(p.pos==='D'?p.pim:'—')+'</td>'+
+      '<td style="text-align:center;font-size:12px">'+(p.hatTricks>0?'🎩'.repeat(Math.min(p.hatTricks,3)):'')+'</td>'+
+      '<td style="text-align:right;font-family:Teko,sans-serif;font-size:14px;font-weight:800;color:var(--burgundy2)">'+calcSkaterPts(p)+'</td></tr>';
   }).join('');
 }
 
 function sortGoalies(col) {
-  goalieSort = goalieSort.col === col ? {col, dir: goalieSort.dir * -1} : {col, dir: col==='name'||col==='team'?1:-1};
+  goalieSort = goalieSort.col===col ? {col, dir:goalieSort.dir*-1} : {col, dir:col==='name'||col==='team'?1:-1};
   updateGoalieHeaders(); renderGoalies();
 }
-
 function updateGoalieHeaders() {
   document.querySelectorAll('#goalie-table th[onclick]').forEach(th => {
     th.classList.remove('sorted');
     const a = th.querySelector('.sort-arrow'); if (a) a.textContent = '↕';
     const m = th.getAttribute('onclick').match(/'([^']+)'/);
-    if (m && m[1] === goalieSort.col) { th.classList.add('sorted'); const a2 = th.querySelector('.sort-arrow'); if (a2) a2.textContent = goalieSort.dir===-1?'↓':'↑'; }
+    if (m && m[1]===goalieSort.col) { th.classList.add('sorted'); const a2=th.querySelector('.sort-arrow'); if(a2)a2.textContent=goalieSort.dir===-1?'↓':'↑'; }
   });
 }
 
 function renderGoalies() {
   const tbody = document.getElementById('goalie-tbody');
-  if (!ALL_PLAYERS.length) {
-    tbody.innerHTML = '<tr><td colspan="10" class="stats-empty">Loading goalie stats…</td></tr>';
-    return;
-  }
+  if (!ALL_PLAYERS.length) { tbody.innerHTML = '<tr><td colspan="9" class="stats-empty">Loading goalie stats…</td></tr>'; return; }
   const search = (document.getElementById('goalie-search')?.value||'').toLowerCase();
   let data = ALL_PLAYERS.filter(p => p.pos==='G');
   if (search) data = data.filter(p => p.name.toLowerCase().includes(search)||p.team.toLowerCase().includes(search));
@@ -350,25 +338,23 @@ function renderGoalies() {
   });
   if (!data.length) { tbody.innerHTML = '<tr><td colspan="9" class="stats-empty">No goalies match</td></tr>'; return; }
   tbody.innerHTML = data.map((p,i) => {
-    const rc = i===0?'r1':i===1?'r2':i===2?'r3':'';
     const rankColor = i===0?'var(--gold)':i===1?'#9ca3af':i===2?'#cd7f32':'var(--muted)';
-    return '<tr'+(IR_STATUS[p.name]?' style="opacity:0.5"':'')+'>'
-      +'<td style="text-align:center;font-family:Teko,sans-serif;font-size:11px;font-weight:'+(i<3?'700':'500')+';color:'+rankColor+'">'+(i+1)+'</td>'
-      +'<td><div class="st-name">'+p.name+(IR_STATUS[p.name]?' <span class="ir-badge" style="font-size:9px;padding:1px 5px;border-radius:3px;background:#c0392b;color:#fff">IR</span>':'')+'</div><div class="st-sub">'+p.team+'</div></td>'
-      +'<td style="text-align:center;font-family:Teko,sans-serif;font-size:10px;color:var(--muted2)" class="hide-mob">'+p.box+'</td>'
-      +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:'+(p.wins>0?'var(--text)':'var(--muted)')+(p.wins>0?';font-weight:600':'')+'">'+(p.wins||0)+'</td>'
-      +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:var(--muted)">'+p.losses+'</td>'
-      +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:var(--muted)" class="hide-mob">'+p.otl+'</td>'
-      +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:var(--muted)" class="hide-mob">'+p.shutouts+'</td>'
-      +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:'+(p.saves>0?'var(--text)':'var(--muted)')+(p.saves>0?';font-weight:600':'')+'">'+(p.saves?p.saves.toLocaleString():0)+'</td>'
-      +'<td style="text-align:right;font-family:Teko,sans-serif;font-size:14px;font-weight:800;color:var(--burgundy2)">'+calcGoaliePts(p)+'</td></tr>';
+    return '<tr'+(IR_STATUS[p.name]?' style="opacity:0.5"':'')+'>'+
+      '<td style="text-align:center;font-family:Teko,sans-serif;font-size:11px;font-weight:'+(i<3?'700':'500')+';color:'+rankColor+'">'+(i+1)+'</td>'+
+      '<td><div class="st-name">'+p.name+(IR_STATUS[p.name]?' <span class="ir-badge" style="font-size:9px;padding:1px 5px;border-radius:3px;background:#c0392b;color:#fff">IR</span>':'')+'</div><div class="st-sub">'+p.team+'</div></td>'+
+      '<td style="text-align:center;font-family:Teko,sans-serif;font-size:10px;color:var(--muted2)" class="hide-mob">'+p.box+'</td>'+
+      '<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:'+(p.wins>0?'var(--text)':'var(--muted)')+(p.wins>0?';font-weight:600':'')+'">'+(p.wins||0)+'</td>'+
+      '<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:var(--muted)">'+p.losses+'</td>'+
+      '<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:var(--muted)" class="hide-mob">'+p.otl+'</td>'+
+      '<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:var(--muted)" class="hide-mob">'+p.shutouts+'</td>'+
+      '<td style="text-align:right;font-family:Teko,sans-serif;font-size:13px;color:'+(p.saves>0?'var(--text)':'var(--muted)')+(p.saves>0?';font-weight:600':'')+'">'+(p.saves?p.saves.toLocaleString():0)+'</td>'+
+      '<td style="text-align:right;font-family:Teko,sans-serif;font-size:14px;font-weight:800;color:var(--burgundy2)">'+calcGoaliePts(p)+'</td></tr>';
   }).join('');
 }
 
-// Load on init
+// ── INIT ──
 Promise.all([
   fetchNightlyStats(),
-  fetchStandings(),
   fetchPlayers(),
   fetchIRStatuses(),
   fetchPrevStats()
@@ -377,32 +363,6 @@ Promise.all([
   renderSkaters();
   renderGoalies();
 }).catch(err => console.error('Data load error:', err));
-</script>
-<script>
-(function() {
-  function initAlpaca() {
-    var el = document.querySelector('.alpaca-runner');
-    if (!el) return;
-    var x = 170, dir = 1, paused = false, bobT = 0, last = null;
-    var MIN_X = 170, MAX_X = 320, SPEED = 60;
-    el.style.left = x + 'px';
-    el.style.transform = 'translateY(-50%) scaleX(1)';
-    function frame(ts) {
-      if (!last) last = ts;
-      var dt = Math.min((ts - last) / 1000, 0.05); last = ts;
-      if (!paused) {
-        x += dir * SPEED * dt; bobT += dt;
-        el.style.top = 'calc(50% + ' + (Math.sin(bobT * Math.PI * 2 / 0.3) * 3) + 'px)';
-        el.style.left = Math.round(x) + 'px';
-        if (dir === 1 && x >= MAX_X) { x = MAX_X; paused = true; setTimeout(function() { dir = -1; el.style.transform = 'translateY(-50%) scaleX(-1)'; paused = false; }, 1000); }
-        if (dir === -1 && x <= MIN_X) { x = MIN_X; paused = true; setTimeout(function() { dir = 1; el.style.transform = 'translateY(-50%) scaleX(1)'; paused = false; }, 1000); }
-      }
-      requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-  }
-  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initAlpaca); } else { initAlpaca(); }
-})();
 </script>
 </body>
 </html>
