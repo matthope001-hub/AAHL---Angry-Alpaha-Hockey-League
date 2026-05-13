@@ -605,28 +605,4 @@ function adminAdd() {
   setInterval(checkAndUpdate, 60000);
 })();
 
-// ══════════ PAGE INIT (DOMContentLoaded) ══════════
-document.addEventListener('DOMContentLoaded', async () => {
-  // Shared across all pages
-  await Promise.all([fetchNightlyStats(), fetchIRStatuses(), fetchPrevStats()]);
-
-  buildTicker();
-
-  // picks.html
-  if (document.getElementById('draft')) {
-    await fetchBoxesFromSheet();
-    buildDraft();
-    buildDivisionPicks();
-    buildPicksLockBanner();
-  }
-
-  // index.html / standings.html
-  if (document.getElementById('full-lb') || document.getElementById('stars-bar')) {
-    await fetchStandings();
-    buildBoards();
-    buildStarsOfNight();
-  }
-
-  updatePayouts();
-  buildPayoutTable();
-});
+// Each HTML page manages its own init via inline script block
