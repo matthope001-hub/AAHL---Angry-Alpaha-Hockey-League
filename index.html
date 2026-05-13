@@ -145,7 +145,6 @@
         <tbody id="tp-tbody"></tbody>
         <tfoot id="tp-tfoot"></tfoot>
       </table>
-      <!-- Division picks panel — shown when DIV tab active -->
       <div id="tp-div-panel" style="display:none;padding:16px"></div>
     </div>
   </div>
@@ -156,147 +155,24 @@
   <div class="toast-body" id="toast-b"></div>
 </div>
 
-<script src="main.js?v=7"></script>
+<script src="data.js?v=1"></script>
+<script src="main.js?v=8"></script>
 <script>
-// ── HOME PAGE: standings display & team panel ──
-
-// Division leaders cache (populated by buildDivisionTracker)
-let DIVISION_LEADERS = {};
-
-async function buildDivisionTracker() {
-  try {
-    const [leadersRes, entriesRes] = await Promise.all([
-      fetch(WEBAPP_URL + '?action=getDivisionLeaders'),
-      fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=0&single=true&output=csv&t=' + Date.now())
-    ]);
-
-    const leadData = await leadersRes.json();
-    if (!leadData.success || !leadData.leaders) return;
-
-    // Cache leaders globally for team panel use
-    DIVISION_LEADERS = leadData.leaders;
-
-    const entryText = await entriesRes.text();
-    const divPicks = { Atlantic:[], Metropolitan:[], Central:[], Pacific:[] };
-    entryText.trim().split('\n').slice(1).forEach(line => {
-      const cols = []; let cur='', inQ=false;
-      for(const ch of line){if(ch==='"'){inQ=!inQ;}else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}else{cur+=ch;}}
-      cols.push(cur.trim());
-      if(cols[32]) divPicks.Atlantic.push(cols[32].trim().toLowerCase());
-      if(cols[33]) divPicks.Metropolitan.push(cols[33].trim().toLowerCase());
-      if(cols[34]) divPicks.Central.push(cols[34].trim().toLowerCase());
-      if(cols[35]) divPicks.Pacific.push(cols[35].trim().toLowerCase());
-    });
-
-    const card = document.getElementById('div-tracker');
-    const body = document.getElementById('div-tracker-body');
-    if (!card || !body) return;
-
-    const divOrder = ['Atlantic','Metropolitan','Central','Pacific'];
-
-    body.innerHTML = divOrder.map(div => {
-      const leader = DIVISION_LEADERS[div];
-      if (!leader) return '';
-      const leaderTeam = (leader.team||'').toLowerCase();
-      const pickCount = (divPicks[div]||[]).filter(p => p === leaderTeam).length;
-      const total = (divPicks[div]||[]).length;
-
-      return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border)">
-        <div style="flex:1;min-width:0">
-          <div style="font-family:Teko,sans-serif;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px">${div}</div>
-          <div style="font-size:14px;font-weight:700">${leader.team}</div>
-          <div style="font-family:Teko,sans-serif;font-size:10px;color:var(--muted)">${leader.pts} pts · ${leader.gp} GP</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-family:Teko,sans-serif;font-size:22px;font-weight:700;color:${pickCount>0?'var(--gold)':'var(--muted)'};line-height:1">${pickCount}</div>
-          <div style="font-family:Teko,sans-serif;font-size:9px;color:var(--muted)">of ${total} earning</div>
-        </div>
-      </div>`;
-    }).join('') +
-    `<div style="padding:7px 14px;font-family:Teko,sans-serif;font-size:9px;color:var(--muted2)">+10 pts if your picked team wins the division</div>`;
-
-    card.style.display = 'block';
-  } catch(e) {
-    console.warn('Division tracker failed:', e);
-  }
-}
-
-async function loadActivityFeed() {
-  try {
-    const res = await fetch(WEBAPP_URL + '?action=getApprovedMoves');
-    const data = await res.json();
-    const moves = (data.moves || [])
-      .filter(m => m.effectiveDate)
-      .sort((a,b) => b.effectiveDate.localeCompare(a.effectiveDate))
-      .slice(0, 5);
-    if (!moves.length) return;
-    const feed = document.getElementById('activity-feed');
-    const list = document.getElementById('activity-list');
-    if (!feed || !list) return;
-    list.innerHTML = moves.map((m,i) => `
-      <div style="display:flex;align-items:center;gap:10px;padding:9px 16px;font-size:13px;border-bottom:${i<moves.length-1?'1px solid var(--border)':'none'}">
-        <span style="font-size:15px">🔄</span>
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-            <span style="color:#f87171">${m.oldPlayer}</span>
-            <span style="color:var(--muted);margin:0 6px;font-size:12px">→</span>
-            <span style="color:#4ade80">${m.newPlayer}</span>
-          </div>
-          <div style="font-family:Teko,sans-serif;font-size:11px;color:var(--muted);margin-top:1px">${m.teamName||''} · ${m.boxLabel||''}</div>
-        </div>
-        <div style="font-family:Teko,sans-serif;font-size:11px;color:var(--muted2);white-space:nowrap">${m.effectiveDate}</div>
-      </div>`).join('');
-    feed.style.display = 'block';
-  } catch(e) { /* silent fail */ }
-}
-
-function buildLiveStandings() {
-  const el = document.getElementById('home-standings');
-  if (!el) return;
-  if (!LIVE_BOARD.length) {
-    el.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);font-family:\'Teko\',sans-serif;font-size:13px;letter-spacing:1px">No entries yet — be the first!</div>';
-    return;
-  }
-  const last = LIVE_BOARD.length - 1;
-  el.innerHTML = LIVE_BOARD.map((e, i) => {
-    const isFirst = i === 0, isLast = i === last;
-    const rowCls = isFirst?'r1':i===1?'r2':i===2?'r3':isLast?'rl':'';
-    const posDisplay = isLast
-      ? '<span style="font-family:\'Teko\',sans-serif;font-size:8px;letter-spacing:1px;color:var(--muted)">LAST</span>'
-      : (i+1);
-    const tv = parseInt(e.trend) || 0;
-    const mvCls = tv>0?'trend-up':tv<0?'trend-dn':'trend-eq';
-    const mvLbl = tv>0?'▲'+tv:tv<0?'▼'+Math.abs(tv):'—';
-    const ini = initials(e.name);
-    return '<div class="sc-row '+rowCls+'" onclick="openLiveTeamPanel(\''+e.name.replace(/'/g,"\\'")+'\')">'
-      +'<div class="sc-pos '+rowCls+'">'+posDisplay+'</div>'
-      +'<div class="sc-av">'+ini+'</div>'
-      +'<div class="sc-info"><div class="sc-name">'+e.name+'</div><div class="sc-team">'+(e.owner||'')+'</div></div>'
-      +'<div class="sc-ht"></div>'
-      +'<div><span class="lb-trend '+mvCls+'">'+mvLbl+'</span></div>'
-      +'<div class="sc-pts '+rowCls+'">'+e.pts.toLocaleString()+'</div></div>';
-  }).join('');
-}
-
-let currentLiveRoster = [];
-let currentLiveDivPicks = {}; // { Atlantic: 'Boston Bruins', ... }
+// ── INDEX.HTML page-specific logic ──
 
 const ENTRIES_CSV_IDX = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=0&single=true&output=csv&v=2';
-const PLAYERS_CSV_IDX = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1949508708&single=true&output=csv&t=' + Date.now();
+
+let DIVISION_LEADERS = {};
+let currentLiveRoster = [];
+let currentLiveDivPicks = {};
 let PLAYERS_MAP = {};
 
 async function fetchPlayersForPanel() {
   try {
-    const res = await fetch(PLAYERS_CSV_IDX);
+    const res = await fetch(PLAYERS_CSV);
     const text = await res.text();
     text.trim().split('\n').slice(1).forEach(line => {
-      const cols = []; let cur = '', inQ = false;
-      for (const ch of line) {
-        if (ch==='"'){inQ=!inQ;}
-        else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
-        else{cur+=ch;}
-      }
-      cols.push(cur.trim());
+      const cols = parseCSVLine(line);
       const name = (cols[0]||'').trim();
       if (!name) return;
       PLAYERS_MAP[name] = {
@@ -326,6 +202,108 @@ function calcPlayerPoolPts(p) {
   return Math.round((p.goals + p.assists + p.sog*0.11 + ht + pim)*100)/100;
 }
 
+async function buildDivisionTracker() {
+  try {
+    const [leadersRes, entriesRes] = await Promise.all([
+      fetch(WEBAPP_URL + '?action=getDivisionLeaders'),
+      fetch(ENTRIES_CSV_IDX)
+    ]);
+    const leadData = await leadersRes.json();
+    if (!leadData.success || !leadData.leaders) return;
+    DIVISION_LEADERS = leadData.leaders;
+
+    const entryText = await entriesRes.text();
+    const divPicks = { Atlantic:[], Metropolitan:[], Central:[], Pacific:[] };
+    entryText.trim().split('\n').slice(1).forEach(line => {
+      const cols = parseCSVLine(line);
+      if(cols[32]) divPicks.Atlantic.push(cols[32].trim().toLowerCase());
+      if(cols[33]) divPicks.Metropolitan.push(cols[33].trim().toLowerCase());
+      if(cols[34]) divPicks.Central.push(cols[34].trim().toLowerCase());
+      if(cols[35]) divPicks.Pacific.push(cols[35].trim().toLowerCase());
+    });
+
+    const card = document.getElementById('div-tracker');
+    const body = document.getElementById('div-tracker-body');
+    if (!card || !body) return;
+
+    body.innerHTML = ['Atlantic','Metropolitan','Central','Pacific'].map(div => {
+      const leader = DIVISION_LEADERS[div];
+      if (!leader) return '';
+      const leaderTeam = (leader.team||'').toLowerCase();
+      const pickCount = (divPicks[div]||[]).filter(p => p === leaderTeam).length;
+      const total = (divPicks[div]||[]).length;
+      return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border)">
+        <div style="flex:1;min-width:0">
+          <div style="font-family:Teko,sans-serif;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px">${div}</div>
+          <div style="font-size:14px;font-weight:700">${leader.team}</div>
+          <div style="font-family:Teko,sans-serif;font-size:10px;color:var(--muted)">${leader.pts} pts · ${leader.gp} GP</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-family:Teko,sans-serif;font-size:22px;font-weight:700;color:${pickCount>0?'var(--gold)':'var(--muted)'};line-height:1">${pickCount}</div>
+          <div style="font-family:Teko,sans-serif;font-size:9px;color:var(--muted)">of ${total} earning</div>
+        </div>
+      </div>`;
+    }).join('') + `<div style="padding:7px 14px;font-family:Teko,sans-serif;font-size:9px;color:var(--muted2)">+10 pts if your picked team wins the division</div>`;
+    card.style.display = 'block';
+  } catch(e) { console.warn('Division tracker failed:', e); }
+}
+
+async function loadActivityFeed() {
+  try {
+    const res = await fetch(WEBAPP_URL + '?action=getApprovedMoves');
+    const data = await res.json();
+    const moves = (data.moves || [])
+      .filter(m => m.effectiveDate)
+      .sort((a,b) => b.effectiveDate.localeCompare(a.effectiveDate))
+      .slice(0, 5);
+    if (!moves.length) return;
+    const feed = document.getElementById('activity-feed');
+    const list = document.getElementById('activity-list');
+    if (!feed || !list) return;
+    list.innerHTML = moves.map((m,i) => `
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 16px;font-size:13px;border-bottom:${i<moves.length-1?'1px solid var(--border)':'none'}">
+        <span style="font-size:15px">🔄</span>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+            <span style="color:#f87171">${m.oldPlayer}</span>
+            <span style="color:var(--muted);margin:0 6px;font-size:12px">→</span>
+            <span style="color:#4ade80">${m.newPlayer}</span>
+          </div>
+          <div style="font-family:Teko,sans-serif;font-size:11px;color:var(--muted);margin-top:1px">${m.teamName||''} · ${m.boxLabel||''}</div>
+        </div>
+        <div style="font-family:Teko,sans-serif;font-size:11px;color:var(--muted2);white-space:nowrap">${m.effectiveDate}</div>
+      </div>`).join('');
+    feed.style.display = 'block';
+  } catch(e) { /* silent */ }
+}
+
+function buildLiveStandings() {
+  const el = document.getElementById('home-standings');
+  if (!el) return;
+  if (!LIVE_BOARD.length) {
+    el.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);font-family:\'Teko\',sans-serif;font-size:13px;letter-spacing:1px">No entries yet — be the first!</div>';
+    return;
+  }
+  const last = LIVE_BOARD.length - 1;
+  el.innerHTML = LIVE_BOARD.map((e, i) => {
+    const isFirst = i===0, isLast = i===last;
+    const rowCls = isFirst?'r1':i===1?'r2':i===2?'r3':isLast?'rl':'';
+    const posDisplay = isLast
+      ? '<span style="font-family:\'Teko\',sans-serif;font-size:8px;letter-spacing:1px;color:var(--muted)">LAST</span>'
+      : (i+1);
+    const tv = parseInt(e.trend) || 0;
+    const mvCls = tv>0?'trend-up':tv<0?'trend-dn':'trend-eq';
+    const mvLbl = tv>0?'▲'+tv:tv<0?'▼'+Math.abs(tv):'—';
+    return '<div class="sc-row '+rowCls+'" onclick="openLiveTeamPanel(\''+e.name.replace(/'/g,"\\'")+'\')">'+
+      '<div class="sc-pos '+rowCls+'">'+posDisplay+'</div>'+
+      '<div class="sc-av">'+initials(e.name)+'</div>'+
+      '<div class="sc-info"><div class="sc-name">'+e.name+'</div><div class="sc-team">'+(e.owner||'')+'</div></div>'+
+      '<div class="sc-ht"></div>'+
+      '<div><span class="lb-trend '+mvCls+'">'+mvLbl+'</span></div>'+
+      '<div class="sc-pts '+rowCls+'">'+e.pts.toLocaleString()+'</div></div>';
+  }).join('');
+}
+
 async function openLiveTeamPanel(teamName) {
   const entry = LIVE_BOARD.find(e => e.name === teamName);
   if (!entry) return;
@@ -334,34 +312,20 @@ async function openLiveTeamPanel(teamName) {
   document.getElementById('tp-tname').textContent = entry.name;
   document.getElementById('tp-owner').textContent = entry.owner || '';
   document.getElementById('tp-meta').innerHTML =
-    '<div class="tp-stat-pill"><div class="spv burg">'+entry.pts.toLocaleString()+'</div><div class="spl">Total Pts</div></div>'
-    +'<div class="tp-stat-pill"><div class="spv blue">'+(entry.rank||'—')+'</div><div class="spl">Rank</div></div>';
+    '<div class="tp-stat-pill"><div class="spv burg">'+entry.pts.toLocaleString()+'</div><div class="spl">Total Pts</div></div>'+
+    '<div class="tp-stat-pill"><div class="spv blue">'+(entry.rank||'—')+'</div><div class="spl">Rank</div></div>';
   document.getElementById('modal-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  // Reset tabs — show roster tab by default
   document.querySelectorAll('.tp-tab').forEach(t => t.classList.remove('active'));
   document.querySelector('.tp-tab').classList.add('active');
   document.getElementById('tp-table').style.display = '';
   document.getElementById('tp-div-panel').style.display = 'none';
 
-  const boxLabels = [
-    'Forwards 1','Forwards 2','Forwards 3','Forwards 4','Forwards 5','Forwards 6',
+  const boxLabels = ['Forwards 1','Forwards 2','Forwards 3','Forwards 4','Forwards 5','Forwards 6',
     'Forwards 7','Forwards 8','Forwards 9','Forwards 10','Forwards 11','Forwards 12',
     'Defense 1','Defense 2','Defense 3','Defense 4','Defense 5','Defense 6',
-    'Goalie 1','Goalie 2','Goalie 3','Goalie 4','Goalie 5','Goalie 6'
-  ];
-
-  function parseCSVLine(line) {
-    const cols = []; let cur = '', inQ = false;
-    for (const ch of line) {
-      if (ch === '"') { inQ = !inQ; }
-      else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
-      else { cur += ch; }
-    }
-    cols.push(cur.trim());
-    return cols;
-  }
+    'Goalie 1','Goalie 2','Goalie 3','Goalie 4','Goalie 5','Goalie 6'];
 
   try {
     const res = await fetch(ENTRIES_CSV_IDX);
@@ -370,23 +334,16 @@ async function openLiveTeamPanel(teamName) {
     const entryRow = rows.find(r => r.includes(entry.entry));
     if (!entryRow) throw new Error('Entry not found');
     const cols = parseCSVLine(entryRow);
-
-    // Player picks (cols 8–31)
     const picks = cols.slice(8, 32);
     currentLiveRoster = picks.map((name, i) => ({
-      name: name.trim(),
-      pos: i < 12 ? 'F' : i < 18 ? 'D' : 'G',
-      box: boxLabels[i]
+      name: name.trim(), pos: i<12?'F':i<18?'D':'G', box: boxLabels[i]
     })).filter(p => p.name);
-
-    // Division picks (cols 32–35: Atlantic, Metro, Central, Pacific)
     currentLiveDivPicks = {
       Atlantic:     (cols[32]||'').trim(),
       Metropolitan: (cols[33]||'').trim(),
       Central:      (cols[34]||'').trim(),
       Pacific:      (cols[35]||'').trim(),
     };
-
     renderLiveRoster('ALL');
   } catch(err) {
     console.error('Roster load failed:', err);
@@ -399,76 +356,57 @@ async function openLiveTeamPanel(teamName) {
 function renderLiveRoster(filter) {
   const table = document.getElementById('tp-table');
   const divPanel = document.getElementById('tp-div-panel');
-
-  // Division tab
   if (filter === 'DIV') {
-    table.style.display = 'none';
-    divPanel.style.display = 'block';
-    renderDivisionTab();
-    return;
+    table.style.display = 'none'; divPanel.style.display = 'block';
+    renderDivisionTab(); return;
   }
-
-  table.style.display = '';
-  divPanel.style.display = 'none';
-
+  table.style.display = ''; divPanel.style.display = 'none';
   const tbody = document.getElementById('tp-tbody');
-  let rows = filter === 'ALL' ? currentLiveRoster : currentLiveRoster.filter(p => p.pos === filter);
-  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:30px">No players</td></tr>'; return; }
-
+  let rows = filter==='ALL' ? currentLiveRoster : currentLiveRoster.filter(p => p.pos===filter);
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="15" style="text-align:center;padding:30px">No players</td></tr>'; return; }
   let totalPts = 0;
   tbody.innerHTML = rows.map(p => {
-    const ps  = PLAYERS_MAP[p.name] || null;
+    const ps = PLAYERS_MAP[p.name] || null;
     const pts = calcPlayerPoolPts(ps);
     totalPts += pts;
     const isIR = ps?.onIR || false;
     const team = ps?.team || '—';
     let sc = '';
-    if (p.pos === 'G') {
-      sc = '<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'
-         + '<td class="tp-stat-num">'+(ps?.wins||0)+'</td><td class="tp-stat-num">'+(ps?.losses||0)+'</td>'
-         + '<td class="tp-stat-num">'+(ps?.otl||0)+'</td><td class="tp-stat-num">'+(ps?.shutouts||0)+'</td>'
-         + '<td class="tp-stat-num">'+(ps?.saves||0)+'</td>';
+    if (p.pos==='G') {
+      sc = '<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'+
+        '<td class="tp-stat-num">'+(ps?.wins||0)+'</td><td class="tp-stat-num">'+(ps?.losses||0)+'</td>'+
+        '<td class="tp-stat-num">'+(ps?.otl||0)+'</td><td class="tp-stat-num">'+(ps?.shutouts||0)+'</td>'+
+        '<td class="tp-stat-num">'+(ps?.saves||0)+'</td>';
     } else {
-      sc = '<td class="tp-stat-num">'+(ps?.goals||0)+'</td><td class="tp-stat-num">'+(ps?.assists||0)+'</td>'
-         + '<td class="tp-stat-num">'+(ps?.sog||0)+'</td><td class="tp-stat-num">'+(p.pos==='D'?(ps?.pim||0):'—')+'</td>'
-         + '<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'
-         + '<td class="tp-stat-num">—</td><td class="tp-stat-num">'+(ps?.hatTricks>0?'🎩':'—')+'</td>';
+      sc = '<td class="tp-stat-num">'+(ps?.goals||0)+'</td><td class="tp-stat-num">'+(ps?.assists||0)+'</td>'+
+        '<td class="tp-stat-num">'+(ps?.sog||0)+'</td><td class="tp-stat-num">'+(p.pos==='D'?(ps?.pim||0):'—')+'</td>'+
+        '<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'+
+        '<td class="tp-stat-num">—</td><td class="tp-stat-num">'+(ps?.hatTricks>0?'🎩':'—')+'</td>';
     }
-    return '<tr'+(isIR?' style="opacity:0.55"':'')+'>'
-      +'<td><span class="tp-pos-badge pos-'+p.pos+'">'+p.pos+'</span></td>'
-      +'<td><div class="tp-pname">'+p.name+(isIR?' <span class="ir-badge">IR</span>':'')+'</div><div class="tp-box">'+p.box+'</div></td>'
-      +'<td><div class="tp-nhl">'+team+'</div></td>'
-      +sc
-      +'<td class="tp-pts-num" style="color:var(--burgundy2)">'+pts+'</td>'
-      +'</tr>';
+    return '<tr'+(isIR?' style="opacity:0.55"':'')+'>'+'<td><span class="tp-pos-badge pos-'+p.pos+'">'+p.pos+'</span></td>'+
+      '<td><div class="tp-pname">'+p.name+(isIR?' <span class="ir-badge">IR</span>':'')+'</div><div class="tp-box">'+p.box+'</div></td>'+
+      '<td><div class="tp-nhl">'+team+'</div></td>'+sc+
+      '<td class="tp-pts-num" style="color:var(--burgundy2)">'+pts+'</td></tr>';
   }).join('');
-
   const tfoot = document.getElementById('tp-tfoot');
-  if (tfoot) tfoot.innerHTML = '<tr class="tp-footer"><td colspan="10" style="padding:12px 16px;font-family:Teko,sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Season Total</td><td class="tp-pts-num" style="font-size:17px;color:var(--burgundy2);padding:12px 16px">'+Math.round(totalPts*100)/100+'</td></tr>';
+  if (tfoot) tfoot.innerHTML = '<tr class="tp-footer"><td colspan="14" style="padding:12px 16px;font-family:Teko,sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Season Total</td><td class="tp-pts-num" style="font-size:17px;color:var(--burgundy2);padding:12px 16px">'+Math.round(totalPts*100)/100+'</td></tr>';
 }
 
 function renderDivisionTab() {
   const panel = document.getElementById('tp-div-panel');
-  const divOrder = ['Atlantic', 'Metropolitan', 'Central', 'Pacific'];
-
   let bonusTotal = 0;
-
-  const rows = divOrder.map(div => {
+  const rows = ['Atlantic','Metropolitan','Central','Pacific'].map(div => {
     const pick = currentLiveDivPicks[div] || '—';
     const leader = DIVISION_LEADERS[div] || null;
     const leaderTeam = leader ? leader.team : null;
-    const isLeading = leaderTeam && pick !== '—' &&
-      leaderTeam.toLowerCase() === pick.toLowerCase();
+    const isLeading = leaderTeam && pick!=='—' && leaderTeam.toLowerCase()===pick.toLowerCase();
     if (isLeading) bonusTotal += 10;
-
-    const statusIcon = pick === '—' ? '' : isLeading
-      ? '<span style="color:var(--green);font-size:16px" title="Currently leading">✓</span>'
-      : '<span style="color:var(--muted);font-size:16px" title="Not currently leading">✗</span>';
-
+    const statusIcon = pick==='—' ? '' : isLeading
+      ? '<span style="color:var(--green);font-size:16px">✓</span>'
+      : '<span style="color:var(--muted);font-size:16px">✗</span>';
     const leaderStr = leaderTeam
       ? `<div style="font-family:Teko,sans-serif;font-size:10px;color:var(--muted);margin-top:3px">Current leader: <span style="color:var(--text)">${leaderTeam}</span> · ${leader.pts} pts</div>`
       : '';
-
     return `<div style="display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--border)">
       <div style="flex:1;min-width:0">
         <div style="font-family:Teko,sans-serif;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px">${div} Division</div>
@@ -478,14 +416,11 @@ function renderDivisionTab() {
       <div style="flex-shrink:0">${statusIcon}</div>
     </div>`;
   }).join('');
-
-  const bonusNote = `<div style="margin-top:14px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);display:flex;align-items:center;justify-content:space-between">
+  panel.innerHTML = rows + `<div style="margin-top:14px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);display:flex;align-items:center;justify-content:space-between">
     <div style="font-family:Teko,sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Season end bonus (if picks hold)</div>
     <div style="font-family:Teko,sans-serif;font-size:22px;font-weight:700;color:var(--gold)">+${bonusTotal} pts</div>
   </div>
   <div style="margin-top:8px;font-family:Teko,sans-serif;font-size:10px;color:var(--muted2)">✓ = currently leading · +10 pts per correct pick awarded at season end</div>`;
-
-  panel.innerHTML = rows + bonusNote;
 }
 
 function filterLiveRoster(pos, btn) {
@@ -501,7 +436,14 @@ function updateLivePayouts() {
   if (hp) hp.textContent = LIVE_BOARD.length ? '$' + Math.round(prize) : '—';
 }
 
-Promise.all([fetchNightlyStats(), fetchStandings(), fetchIRStatuses(), fetchPrevStats(), fetchPlayersForPanel()]).then(() => {
+// ── INIT ──
+Promise.all([
+  fetchNightlyStats(),
+  fetchStandings(),
+  fetchIRStatuses(),
+  fetchPrevStats(),
+  fetchPlayersForPanel()
+]).then(() => {
   buildStarsOfNight();
   buildTicker();
   loadActivityFeed();
@@ -509,9 +451,6 @@ Promise.all([fetchNightlyStats(), fetchStandings(), fetchIRStatuses(), fetchPrev
   buildLiveStandings();
   updateLivePayouts();
 });
-
-function closeTeamPanel() { const el = document.getElementById('modal-overlay'); if (el) el.classList.remove('open'); document.body.style.overflow = ''; }
-function overlayClick(e) { if (e.target === document.getElementById('modal-overlay')) closeTeamPanel(); }
 </script>
 </body>
 </html>
