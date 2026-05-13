@@ -8,43 +8,38 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" type="image/png" href="aahl-logo.png">
 <style>
-/* ── BOX EDITOR ── */
-.be-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; margin-top:16px; }
-.be-box { background:var(--surface); border:1px solid var(--border); border-radius:var(--r2); overflow:hidden; }
-.be-box-head { background:var(--surface2); padding:10px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
-.be-box-label { font-family:Teko,sans-serif; font-size:13px; font-weight:600; color:var(--text); }
-.be-box-type { font-family:Teko,sans-serif; font-size:10px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+.be-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:16px; }
+.be-box { background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden; }
+.be-box-head { background:var(--surface2);padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between; }
+.be-box-label { font-family:Teko,sans-serif;font-size:13px;font-weight:600;color:var(--text); }
+.be-box-type { font-family:Teko,sans-serif;font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase; }
 .be-players { padding:8px; }
-.be-player-row { display:grid; grid-template-columns:1fr 80px 52px 70px 28px; gap:6px; align-items:center; padding:5px 4px; border-bottom:1px solid var(--border); }
+.be-player-row { display:grid;grid-template-columns:1fr 80px 52px 70px 28px;gap:6px;align-items:center;padding:5px 4px;border-bottom:1px solid var(--border); }
 .be-player-row:last-child { border-bottom:none; }
-.be-input { background:var(--surface2); border:1px solid var(--border2); border-radius:6px; padding:5px 8px; font-family:'Inter',sans-serif; font-size:12px; color:var(--text); outline:none; width:100%; transition:border-color 0.15s; }
+.be-input { background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 8px;font-family:'Inter',sans-serif;font-size:12px;color:var(--text);outline:none;width:100%;transition:border-color 0.15s; }
 .be-input:focus { border-color:var(--burgundy); }
-.be-input.team { text-transform:uppercase; font-family:Teko,sans-serif; font-size:12px; letter-spacing:0.5px; }
-.be-pos-select { background:var(--surface2); border:1px solid var(--border2); border-radius:6px; padding:5px 4px; font-family:Teko,sans-serif; font-size:11px; color:var(--text); outline:none; width:100%; cursor:pointer; }
-.be-pts-input { background:var(--surface2); border:1px solid var(--border2); border-radius:6px; padding:5px 6px; font-family:Teko,sans-serif; font-size:12px; color:var(--accent); outline:none; width:100%; text-align:right; }
+.be-input.team { text-transform:uppercase;font-family:Teko,sans-serif;font-size:12px;letter-spacing:0.5px; }
+.be-pos-select { background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 4px;font-family:Teko,sans-serif;font-size:11px;color:var(--text);outline:none;width:100%;cursor:pointer; }
+.be-pts-input { background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:5px 6px;font-family:Teko,sans-serif;font-size:12px;color:var(--accent);outline:none;width:100%;text-align:right; }
 .be-pts-input:focus { border-color:var(--accent); }
-.be-del-btn { background:none; border:1px solid var(--border2); border-radius:6px; color:var(--muted); cursor:pointer; font-size:14px; width:26px; height:26px; display:grid; place-items:center; transition:all 0.15s; flex-shrink:0; padding:0; }
-.be-del-btn:hover { background:rgba(192,57,43,0.1); border-color:var(--red); color:var(--red); }
-.be-add-btn { width:100%; background:none; border:1px dashed var(--border2); border-radius:6px; padding:6px; font-family:Teko,sans-serif; font-size:10px; color:var(--muted); cursor:pointer; letter-spacing:1px; text-transform:uppercase; transition:all 0.15s; margin-top:6px; }
-.be-add-btn:hover { border-color:var(--burgundy); color:var(--burgundy2); }
-.be-header-row { display:grid; grid-template-columns:1fr 80px 52px 70px 28px; gap:6px; padding:3px 4px 6px; }
-.be-header-row span { font-family:Teko,sans-serif; font-size:9px; color:var(--muted2); letter-spacing:1px; text-transform:uppercase; }
+.be-del-btn { background:none;border:1px solid var(--border2);border-radius:6px;color:var(--muted);cursor:pointer;font-size:14px;width:26px;height:26px;display:grid;place-items:center;transition:all 0.15s;flex-shrink:0;padding:0; }
+.be-del-btn:hover { background:rgba(192,57,43,0.1);border-color:var(--red);color:var(--red); }
+.be-add-btn { width:100%;background:none;border:1px dashed var(--border2);border-radius:6px;padding:6px;font-family:Teko,sans-serif;font-size:10px;color:var(--muted);cursor:pointer;letter-spacing:1px;text-transform:uppercase;transition:all 0.15s;margin-top:6px; }
+.be-add-btn:hover { border-color:var(--burgundy);color:var(--burgundy2); }
+.be-header-row { display:grid;grid-template-columns:1fr 80px 52px 70px 28px;gap:6px;padding:3px 4px 6px; }
+.be-header-row span { font-family:Teko,sans-serif;font-size:9px;color:var(--muted2);letter-spacing:1px;text-transform:uppercase; }
 .be-col-right { text-align:right; }
-
-/* ── SAVE BAR ── */
-.be-save-bar { position:sticky; bottom:0; z-index:100; background:var(--surface2); border-top:1px solid var(--border2); padding:14px 24px; display:flex; align-items:center; justify-content:space-between; gap:16px; margin:0 -24px; }
-.be-status { font-family:Teko,sans-serif; font-size:12px; color:var(--muted); }
+.be-save-bar { position:sticky;bottom:0;z-index:100;background:var(--surface2);border-top:1px solid var(--border2);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 -24px; }
+.be-status { font-family:Teko,sans-serif;font-size:12px;color:var(--muted); }
 .be-status.saving { color:var(--gold); }
 .be-status.saved  { color:var(--green); }
 .be-status.error  { color:var(--red); }
-.be-actions { display:flex; gap:10px; }
-
-/* ── WEBHOOK CARDS ── */
-.wh-card { background:var(--surface2); border:1px solid var(--border); border-radius:var(--r); padding:16px 20px; margin-bottom:10px; display:flex; align-items:flex-start; gap:14px; }
-.wh-icon { font-size:24px; flex-shrink:0; margin-top:2px; }
-.wh-title { font-size:14px; font-weight:700; margin-bottom:4px; }
-.wh-desc { font-size:13px; color:var(--muted); line-height:1.6; }
-.wh-desc code { font-family:'DM Mono',monospace; font-size:11px; background:var(--surface3); padding:1px 6px; border-radius:4px; color:var(--accent); }
+.be-actions { display:flex;gap:10px; }
+.wh-card { background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:16px 20px;margin-bottom:10px;display:flex;align-items:flex-start;gap:14px; }
+.wh-icon { font-size:24px;flex-shrink:0;margin-top:2px; }
+.wh-title { font-size:14px;font-weight:700;margin-bottom:4px; }
+.wh-desc { font-size:13px;color:var(--muted);line-height:1.6; }
+.wh-desc code { font-family:'DM Mono',monospace;font-size:11px;background:var(--surface3);padding:1px 6px;border-radius:4px;color:var(--accent); }
 </style>
 </head>
 <body>
@@ -91,7 +86,7 @@
     <div style="padding:16px 20px 0">
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
         <button class="btn btn-accent" style="font-size:12px;padding:8px 18px" onclick="loadBoxes()">↻ Load from Sheet</button>
-        <button class="btn btn-ghost" style="font-size:12px;padding:8px 18px" onclick="loadFromMainJS()">Load from main.js defaults</button>
+        <button class="btn btn-ghost" style="font-size:12px;padding:8px 18px" onclick="loadFromMainJS()">Load from data.js defaults</button>
         <div style="flex:1"></div>
         <span class="be-status" id="be-status">Not loaded</span>
       </div>
@@ -112,6 +107,77 @@
           <button class="btn btn-accent" style="font-size:12px;padding:8px 18px" onclick="saveBoxes()">💾 Save to Sheet</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ══ ROSTER MOVES ══ -->
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-head">
+      <span class="card-title">🔄 Roster Moves</span>
+      <button class="btn btn-sm" onclick="loadPendingMoves()" style="font-size:11px;padding:6px 14px">Refresh</button>
+    </div>
+    <div class="card-body">
+      <div id="rm-stats" style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+        <div class="kpi" style="min-width:100px"><div class="kpi-val" id="rm-pending-count">—</div><div class="kpi-lbl">Pending</div></div>
+        <div class="kpi" style="min-width:100px"><div class="kpi-val" id="rm-approved-count">—</div><div class="kpi-lbl">Approved</div></div>
+      </div>
+      <div id="rm-pending-list">
+        <div style="text-align:center;padding:24px;color:var(--muted);font-family:Teko,sans-serif;font-size:13px">Click Refresh to load pending moves</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ENTRIES & PAYMENT ══ -->
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-head">
+      <span class="card-title">📋 Entries & Payment</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm btn-ghost" onclick="loadEntries()">Refresh</button>
+        <span style="font-family:'Teko',sans-serif;font-size:11px;color:var(--muted);padding:6px 0" id="entry-summary"></span>
+      </div>
+    </div>
+    <div class="card-body" style="padding:0">
+      <div id="entries-list">
+        <div style="text-align:center;padding:24px;color:var(--muted);font-family:Teko,sans-serif;font-size:13px">Click Refresh to load entries</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ AGENT STATUS LOG ══ -->
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-head">
+      <span class="card-title">🤖 Agent Status Log</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn btn-sm btn-ghost" onclick="loadAgentLog()">Refresh</button>
+        <select id="agent-filter" onchange="filterAgentLog()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:4px 8px;font-size:12px;color:var(--text);outline:none">
+          <option value="">All Agents</option>
+          <option value="AGT-001">AGT-001 Entries</option>
+          <option value="AGT-002">AGT-002 Stats</option>
+          <option value="AGT-003">AGT-003 Standings</option>
+          <option value="AGT-004">AGT-004 Comms</option>
+          <option value="AGT-005">AGT-005 Boxes</option>
+          <option value="AGT-006">AGT-006 Health</option>
+          <option value="AGT-007">AGT-007 Email/Backup</option>
+          <option value="PIPELINE">Pipeline</option>
+          <option value="ROSTER">Roster</option>
+        </select>
+      </div>
+    </div>
+    <div class="card-body" style="padding:0;max-height:400px;overflow-y:auto" id="agent-log-wrap">
+      <div style="text-align:center;padding:24px;color:var(--muted);font-family:Teko,sans-serif;font-size:13px">Click Refresh to load agent log</div>
+    </div>
+  </div>
+
+  <!-- ══ MANUAL ACTIONS ══ -->
+  <div class="card" style="margin-bottom:24px">
+    <div class="card-head"><span class="card-title">⚡ Manual Actions</span></div>
+    <div class="card-body">
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="triggerRecalc()">🔄 Recalculate Standings</button>
+        <button class="btn btn-ghost btn-sm" onclick="triggerHealthCheck()">🏥 Run Health Check</button>
+        <button class="btn btn-ghost btn-sm" onclick="triggerBackup()">💾 Run Backup Now</button>
+      </div>
+      <div id="action-result" style="margin-top:12px;font-size:13px;color:var(--muted)"></div>
     </div>
   </div>
 
@@ -167,77 +233,7 @@
       <button class="btn btn-accent" style="font-size:12px" onclick="copyJSON()">Copy JSON</button>
       <button class="btn btn-ghost" style="font-size:12px" onclick="closePreview()">Close</button>
     </div>
-  
-  <!-- ══ ROSTER MOVES ══ -->
-  <div class="card" style="margin-bottom:24px">
-    <div class="card-head">
-      <span class="card-title">🔄 Roster Moves</span>
-      <button class="btn btn-sm" onclick="loadPendingMoves()" style="font-size:11px;padding:6px 14px">Refresh</button>
-    </div>
-    <div class="card-body">
-      <div id="rm-stats" style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
-        <div class="kpi" style="min-width:100px"><div class="kpi-val" id="rm-pending-count">—</div><div class="kpi-lbl">Pending</div></div>
-        <div class="kpi" style="min-width:100px"><div class="kpi-val" id="rm-approved-count">—</div><div class="kpi-lbl">Approved</div></div>
-      </div>
-      <div id="rm-pending-list">
-        <div style="text-align:center;padding:24px;color:var(--muted);font-family:Teko,sans-serif;font-size:13px">Click Refresh to load pending moves</div>
-      </div>
-    </div>
   </div>
-
-  <!-- ══ ENTRIES & PAYMENT ══ -->
-  <div class="card" style="margin-bottom:24px">
-    <div class="card-head">
-      <span class="card-title">📋 Entries & Payment</span>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-sm btn-ghost" onclick="loadEntries()">Refresh</button>
-        <span style="font-family:'Teko',sans-serif;font-size:11px;color:var(--muted);padding:6px 0" id="entry-summary"></span>
-      </div>
-    </div>
-    <div class="card-body" style="padding:0">
-      <div id="entries-list">
-        <div style="text-align:center;padding:24px;color:var(--muted);font-family:Teko,sans-serif;font-size:13px">Click Refresh to load entries</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ AGENT STATUS LOG ══ -->
-  <div class="card" style="margin-bottom:24px">
-    <div class="card-head">
-      <span class="card-title">🤖 Agent Status Log</span>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button class="btn btn-sm btn-ghost" onclick="loadAgentLog()">Refresh</button>
-        <select id="agent-filter" onchange="filterAgentLog()" style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:4px 8px;font-size:12px;color:var(--text);outline:none">
-          <option value="">All Agents</option>
-          <option value="AGT-002">AGT-002 Stats</option>
-          <option value="AGT-003">AGT-003 Standings</option>
-          <option value="AGT-004">AGT-004 Comms</option>
-          <option value="AGT-005">AGT-005 Boxes</option>
-          <option value="AGT-006">AGT-006 Health</option>
-          <option value="AGT-007">AGT-007 Backup</option>
-          <option value="PIPELINE">Pipeline</option>
-          <option value="ROSTER">Roster</option>
-        </select>
-      </div>
-    </div>
-    <div class="card-body" style="padding:0;max-height:400px;overflow-y:auto" id="agent-log-wrap">
-      <div style="text-align:center;padding:24px;color:var(--muted);font-family:Teko,sans-serif;font-size:13px">Click Refresh to load agent log</div>
-    </div>
-  </div>
-
-  <!-- ══ MANUAL ACTIONS ══ -->
-  <div class="card" style="margin-bottom:24px">
-    <div class="card-head"><span class="card-title">⚡ Manual Actions</span></div>
-    <div class="card-body">
-      <div style="display:flex;gap:10px;flex-wrap:wrap">
-        <button class="btn btn-ghost btn-sm" onclick="triggerRecalc()">🔄 Recalculate Standings</button>
-        <button class="btn btn-ghost btn-sm" onclick="triggerHealthCheck()">🏥 Run Health Check</button>
-        <button class="btn btn-ghost btn-sm" onclick="triggerBackup()">💾 Run Backup Now</button>
-      </div>
-      <div id="action-result" style="margin-top:12px;font-size:13px;color:var(--muted)"></div>
-    </div>
-  </div>
-</div>
 </div>
 
 <div class="toast" id="toast">
@@ -245,17 +241,16 @@
   <div class="toast-body" id="toast-b"></div>
 </div>
 
-<script src="main.js?v=5"></script>
+<script src="data.js?v=1"></script>
+<script src="main.js?v=8"></script>
 <script>
-buildTicker();
+// ── ADMIN.HTML init ──
+fetchNightlyStats().then(() => buildTicker());
 
-// ══════════ BOXES SHEET CONFIG ══════════
-// This sheet must be published as CSV: File → Share → Publish to web → Boxes tab → CSV
-// Columns: BoxID, BoxLabel, BoxType(F/D/G), PlayerName, NHLTeam, Position, PrevPts
-const BOXES_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=BOXES_GID&single=true&output=csv&t=' + Date.now();
-const WEBAPP_URL_BOXES = 'https://script.google.com/macros/s/AKfycbzqqijpX3BoRCDXMH5ZzWCkN2ZlALGJd_HBHMetPlXCir7_ue_WfEtqvo3NM0Z-xMhKUA/exec';
+// ══════════ BOX EDITOR ══════════
+const BOXES_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1556726328&single=true&output=csv&t=' + Date.now();
+const WEBAPP_URL_BOXES = WEBAPP_URL; // same endpoint
 
-// In-memory state
 let editorBoxes = [];
 
 const BOX_LABELS = [
@@ -275,22 +270,14 @@ function setStatus(msg, cls='') {
   });
 }
 
-// ── Load from Sheet ──
 async function loadBoxes() {
   setStatus('Loading from sheet…', 'saving');
   try {
-    const res = await fetch(BOXES_CSV_URL.replace('BOXES_GID', 'BOXES_GID'));
-    // If Boxes sheet not yet set up, fall back to main.js defaults
-    if (!res.ok) throw new Error('Sheet not found — loading defaults');
+    const res = await fetch(BOXES_CSV_URL);
+    if (!res.ok) throw new Error('Sheet not found');
     const text = await res.text();
     const rows = text.trim().split('\n').slice(1).map(line => {
-      const cols = []; let cur = '', inQ = false;
-      for (const ch of line) {
-        if (ch==='"'){inQ=!inQ;}
-        else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
-        else{cur+=ch;}
-      }
-      cols.push(cur.trim());
+      const cols = parseCSVLine(line);
       return { boxId:parseInt(cols[0])||0, label:(cols[1]||'').trim(), type:(cols[2]||'F').trim(),
                name:(cols[3]||'').trim(), team:(cols[4]||'').trim(),
                pos:(cols[5]||'F').trim(), pts:parseFloat(cols[6])||0 };
@@ -303,9 +290,8 @@ async function loadBoxes() {
   }
 }
 
-// ── Load from main.js BOXES constant ──
 function loadFromMainJS() {
-  if (typeof BOXES === 'undefined') { setStatus('BOXES not found in main.js', 'error'); return; }
+  if (typeof BOXES === 'undefined') { setStatus('BOXES not found in data.js', 'error'); return; }
   const rows = [];
   BOXES.forEach(box => {
     box.players.forEach(p => {
@@ -314,91 +300,66 @@ function loadFromMainJS() {
     });
   });
   buildEditorFromRows(rows);
-  setStatus(`Loaded ${rows.length} players from main.js defaults`, 'saved');
+  setStatus(`Loaded ${rows.length} players from data.js defaults`, 'saved');
 }
 
-// ── Build editor UI from flat rows ──
 function buildEditorFromRows(rows) {
-  // Group by boxId
   editorBoxes = [];
   for (let i = 1; i <= 24; i++) {
-    const label = BOX_LABELS[i-1];
-    const type  = BOX_TYPES[i-1];
+    const label = BOX_LABELS[i-1], type = BOX_TYPES[i-1];
     const players = rows.filter(r => r.boxId === i).map(r => ({
-      name: r.name, team: r.team, pos: r.pos || type, pts: r.pts
+      name:r.name, team:r.team, pos:r.pos||type, pts:r.pts
     }));
-    // Ensure at least 5 slots
     while (players.length < 5) players.push({ name:'', team:'', pos:type, pts:0 });
     editorBoxes.push({ id:i, label, type, players });
   }
   renderEditor();
 }
 
-// ── Render all boxes ──
 function renderEditor() {
   const grid = document.getElementById('be-grid');
   grid.innerHTML = editorBoxes.map((box, bi) => `
     <div class="be-box" id="be-box-${box.id}">
       <div class="be-box-head">
-        <div>
-          <div class="be-box-label">${box.label}</div>
-        </div>
+        <div class="be-box-label">${box.label}</div>
         <span class="be-box-type">${box.type==='F'?'Forward':box.type==='D'?'Defense':'Goalie'}</span>
       </div>
       <div class="be-players">
         <div class="be-header-row">
-          <span>Player Name</span>
-          <span>NHL Team</span>
-          <span>Pos</span>
-          <span class="be-col-right">Prev Pts</span>
-          <span></span>
+          <span>Player Name</span><span>NHL Team</span><span>Pos</span>
+          <span class="be-col-right">Prev Pts</span><span></span>
         </div>
         ${box.players.map((p, pi) => renderPlayerRow(bi, pi, p, box.type)).join('')}
         <button class="be-add-btn" onclick="addPlayer(${bi})">+ Add Player</button>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function renderPlayerRow(bi, pi, p, type) {
   const posOptions = ['F','D','G'].map(v =>
-    `<option value="${v}" ${p.pos===v?'selected':''}>${v}</option>`
-  ).join('');
-  return `
-    <div class="be-player-row" id="pr-${bi}-${pi}">
-      <input class="be-input" type="text" placeholder="Player name"
-             value="${escHtml(p.name)}"
-             onchange="updatePlayer(${bi},${pi},'name',this.value)"
-             oninput="updatePlayer(${bi},${pi},'name',this.value)">
-      <input class="be-input team" type="text" placeholder="EDM" maxlength="4"
-             value="${escHtml(p.team)}"
-             onchange="updatePlayer(${bi},${pi},'team',this.value.toUpperCase())"
-             oninput="this.value=this.value.toUpperCase();updatePlayer(${bi},${pi},'team',this.value)">
-      <select class="be-pos-select" onchange="updatePlayer(${bi},${pi},'pos',this.value)">
-        ${posOptions}
-      </select>
-      <input class="be-pts-input" type="number" placeholder="0" step="0.1" min="0"
-             value="${p.pts||''}"
-             onchange="updatePlayer(${bi},${pi},'pts',parseFloat(this.value)||0)">
-      <button class="be-del-btn" onclick="removePlayer(${bi},${pi})" title="Remove">×</button>
-    </div>`;
+    `<option value="${v}" ${p.pos===v?'selected':''}>${v}</option>`).join('');
+  return `<div class="be-player-row" id="pr-${bi}-${pi}">
+    <input class="be-input" type="text" placeholder="Player name" value="${escHtml(p.name)}"
+           onchange="updatePlayer(${bi},${pi},'name',this.value)"
+           oninput="updatePlayer(${bi},${pi},'name',this.value)">
+    <input class="be-input team" type="text" placeholder="EDM" maxlength="4" value="${escHtml(p.team)}"
+           onchange="updatePlayer(${bi},${pi},'team',this.value.toUpperCase())"
+           oninput="this.value=this.value.toUpperCase();updatePlayer(${bi},${pi},'team',this.value)">
+    <select class="be-pos-select" onchange="updatePlayer(${bi},${pi},'pos',this.value)">${posOptions}</select>
+    <input class="be-pts-input" type="number" placeholder="0" step="0.1" min="0" value="${p.pts||''}"
+           onchange="updatePlayer(${bi},${pi},'pts',parseFloat(this.value)||0)">
+    <button class="be-del-btn" onclick="removePlayer(${bi},${pi})" title="Remove">×</button>
+  </div>`;
 }
 
 function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
-
-function updatePlayer(bi, pi, field, val) {
-  if (editorBoxes[bi] && editorBoxes[bi].players[pi]) {
-    editorBoxes[bi].players[pi][field] = val;
-  }
-}
+function updatePlayer(bi, pi, field, val) { if (editorBoxes[bi]?.players[pi]) editorBoxes[bi].players[pi][field] = val; }
 
 function addPlayer(bi) {
   editorBoxes[bi].players.push({ name:'', team:'', pos:editorBoxes[bi].type, pts:0 });
-  // Re-render just this box
   const box = editorBoxes[bi];
-  const playersDiv = document.querySelector(`#be-box-${box.id} .be-players`);
-  playersDiv.innerHTML =
-    `<div class="be-header-row"><span>Player Name</span><span>NHL Team</span><span>Pos</span><span class="be-col-right">Prev Pts</span><span></span></div>` +
+  const div = document.querySelector(`#be-box-${box.id} .be-players`);
+  div.innerHTML = `<div class="be-header-row"><span>Player Name</span><span>NHL Team</span><span>Pos</span><span class="be-col-right">Prev Pts</span><span></span></div>` +
     box.players.map((p,pi) => renderPlayerRow(bi, pi, p, box.type)).join('') +
     `<button class="be-add-btn" onclick="addPlayer(${bi})">+ Add Player</button>`;
 }
@@ -406,33 +367,24 @@ function addPlayer(bi) {
 function removePlayer(bi, pi) {
   editorBoxes[bi].players.splice(pi, 1);
   const box = editorBoxes[bi];
-  const playersDiv = document.querySelector(`#be-box-${box.id} .be-players`);
-  playersDiv.innerHTML =
-    `<div class="be-header-row"><span>Player Name</span><span>NHL Team</span><span>Pos</span><span class="be-col-right">Prev Pts</span><span></span></div>` +
+  const div = document.querySelector(`#be-box-${box.id} .be-players`);
+  div.innerHTML = `<div class="be-header-row"><span>Player Name</span><span>NHL Team</span><span>Pos</span><span class="be-col-right">Prev Pts</span><span></span></div>` +
     box.players.map((p,pi) => renderPlayerRow(bi, pi, p, box.type)).join('') +
     `<button class="be-add-btn" onclick="addPlayer(${bi})">+ Add Player</button>`;
 }
 
-// ── Build BOXES array for main.js ──
 function buildBoxesArray() {
   return editorBoxes.map(box => ({
-    id: box.id,
-    label: box.label,
-    type: box.type,
-    players: box.players
-      .filter(p => p.name.trim())
-      .map(p => ({ name: p.name.trim(), team: p.team.trim(), pts: p.pts || 0 }))
+    id:box.id, label:box.label, type:box.type,
+    players: box.players.filter(p => p.name.trim()).map(p => ({ name:p.name.trim(), team:p.team.trim(), pts:p.pts||0 }))
   }));
 }
 
-// ── Preview JSON ──
 function previewBoxes() {
   if (!editorBoxes.length) { toast('No data', 'Load boxes first.'); return; }
-  const arr = buildBoxesArray();
-  document.getElementById('preview-json').textContent = JSON.stringify(arr, null, 2);
+  document.getElementById('preview-json').textContent = JSON.stringify(buildBoxesArray(), null, 2);
   const overlay = document.getElementById('preview-overlay');
-  overlay.style.display = 'flex';
-  overlay.style.pointerEvents = 'all';
+  overlay.style.display = 'flex'; overlay.style.pointerEvents = 'all';
   overlay.classList.add('open');
 }
 function closePreview() {
@@ -445,21 +397,17 @@ function copyJSON() {
     .then(() => toast('Copied!', 'JSON copied to clipboard.'));
 }
 
-// ── Save to Sheet via Apps Script ──
 async function saveBoxes() {
   if (!editorBoxes.length) { toast('Nothing to save', 'Load boxes first.'); return; }
   setStatus('Saving to sheet…', 'saving');
-
-  // Build flat rows: BoxID, BoxLabel, BoxType, PlayerName, NHLTeam, Position, PrevPts
   const rows = [];
   editorBoxes.forEach(box => {
     box.players.filter(p => p.name.trim()).forEach(p => {
       rows.push([box.id, box.label, box.type, p.name.trim(), p.team.trim(), p.pos, p.pts||0]);
     });
   });
-
   try {
-    const res = await fetch(WEBAPP_URL_BOXES, {
+    const res = await fetch(WEBAPP_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify({ action: 'saveBoxes', rows })
@@ -468,13 +416,10 @@ async function saveBoxes() {
     if (result.success) {
       setStatus(`Saved ${rows.length} players to sheet ✓`, 'saved');
       toast('Saved!', `${rows.length} player rows written to Boxes sheet.`);
-    } else {
-      throw new Error(result.error || 'Unknown error');
-    }
+    } else throw new Error(result.error || 'Unknown error');
   } catch(err) {
     setStatus('Save failed — see console', 'error');
     toast('Save failed', err.message);
-    console.error(err);
   }
 }
 
@@ -486,14 +431,11 @@ async function loadPendingMoves() {
     const data = await res.json();
     const moves = data.moves || [];
     const pending = moves.filter(m => m.status === 'PENDING' || !m.status);
-
     document.getElementById('rm-pending-count').textContent = pending.length;
-
     if (!pending.length) {
       document.getElementById('rm-pending-list').innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted);font-family:Teko,sans-serif;font-size:13px">No pending roster moves ✓</div>';
       return;
     }
-
     document.getElementById('rm-pending-list').innerHTML = pending.map(m => `
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:8px">
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
@@ -509,80 +451,45 @@ async function loadPendingMoves() {
           </div>
           <div style="display:flex;gap:8px">
             <button onclick="adminApproveMove('${m.moveId}','${m.token}')"
-              style="background:#22d37a;color:#000;border:none;padding:10px 18px;border-radius:6px;font-family:Teko,sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer">
-              ✅ APPROVE
-            </button>
+              style="background:#22d37a;color:#000;border:none;padding:10px 18px;border-radius:6px;font-family:Teko,sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer">✅ APPROVE</button>
             <button onclick="adminRejectMove('${m.moveId}','${m.token}')"
-              style="background:var(--surface3);color:var(--text);border:1px solid var(--border2);padding:10px 18px;border-radius:6px;font-family:Teko,sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer">
-              ❌ REJECT
-            </button>
+              style="background:var(--surface3);color:var(--text);border:1px solid var(--border2);padding:10px 18px;border-radius:6px;font-family:Teko,sans-serif;font-size:12px;font-weight:700;letter-spacing:1px;cursor:pointer">❌ REJECT</button>
           </div>
         </div>
       </div>`).join('');
   } catch(e) {
-    document.getElementById('rm-pending-list').innerHTML = '<div style="color:#f87171;padding:16px">Failed to load: ' + e.message + '</div>';
+    document.getElementById('rm-pending-list').innerHTML = `<div style="color:#f87171;padding:16px">Failed to load: ${e.message}</div>`;
   }
 }
 
 async function adminApproveMove(moveId, token) {
   if (!confirm('Approve this roster move?')) return;
   try {
-    const res = await fetch(WEBAPP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'approveMove', moveId, token })
-    });
+    const res = await fetch(WEBAPP_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({action:'approveMove', moveId, token}) });
     const data = await res.json();
-    if (data.success) {
-      alert('✅ Move approved! Effective date: ' + data.effectiveDate);
-      loadPendingMoves();
-    } else {
-      alert('Error: ' + data.error);
-    }
+    if (data.success) { alert('✅ Move approved! Effective date: ' + data.effectiveDate); loadPendingMoves(); }
+    else alert('Error: ' + data.error);
   } catch(e) { alert('Failed: ' + e.message); }
 }
 
 async function adminRejectMove(moveId, token) {
   const reason = prompt('Reason for rejection (optional):') || '';
-  if (reason === null) return; // cancelled
+  if (reason === null) return;
   try {
-    const res = await fetch(WEBAPP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'rejectMove', moveId, token, reason })
-    });
+    const res = await fetch(WEBAPP_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({action:'rejectMove', moveId, token, reason}) });
     const data = await res.json();
-    if (data.success) {
-      alert('❌ Move rejected.');
-      loadPendingMoves();
-    } else {
-      alert('Error: ' + data.error);
-    }
+    if (data.success) { alert('❌ Move rejected.'); loadPendingMoves(); }
+    else alert('Error: ' + data.error);
   } catch(e) { alert('Failed: ' + e.message); }
 }
 
-
 // ══ ENTRIES & PAYMENT ══
-const ENTRIES_CSV_ADMIN = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=0&single=true&output=csv&t=' + Date.now();
-const AGENT_STATUS_CSV  = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=1431377363&single=true&output=csv&t=' + Date.now();
-
 let allEntries = [];
-
-function parseCSVLine(line) {
-  const cols = []; let cur = '', inQ = false;
-  for (const ch of line) {
-    if (ch==='"'){inQ=!inQ;}
-    else if(ch===','&&!inQ){cols.push(cur.trim());cur='';}
-    else{cur+=ch;}
-  }
-  cols.push(cur.trim());
-  return cols;
-}
 
 async function loadEntries() {
   document.getElementById('entries-list').innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">Loading…</div>';
   try {
-    const res = await fetch(ENTRIES_CSV_ADMIN);
+    const res = await fetch(ENTRIES_CSV);
     const text = await res.text();
     const lines = text.trim().split('\n').slice(1);
     allEntries = lines.map(l => {
@@ -599,28 +506,19 @@ async function loadEntries() {
     }).filter(e => e.entryId);
 
     const paid = allEntries.filter(e => e.paid).length;
-    const unpaid = allEntries.length - paid;
-    document.getElementById('entry-summary').textContent =
-      `${allEntries.length} entries · ${paid} paid · ${unpaid} unpaid`;
-
+    document.getElementById('entry-summary').textContent = `${allEntries.length} entries · ${paid} paid · ${allEntries.length - paid} unpaid`;
     renderEntries(allEntries);
   } catch(e) {
-    document.getElementById('entries-list').innerHTML =
-      `<div style="color:var(--red);padding:16px">Failed: ${e.message}</div>`;
+    document.getElementById('entries-list').innerHTML = `<div style="color:var(--red);padding:16px">Failed: ${e.message}</div>`;
   }
 }
 
 function renderEntries(entries) {
   const el = document.getElementById('entries-list');
-  if (!entries.length) {
-    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No entries yet</div>';
-    return;
-  }
-  el.innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr 160px 80px 80px;padding:8px 16px;border-bottom:1px solid var(--border2);font-family:Teko,sans-serif;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;background:var(--surface2)">
-      <span>Team</span><span>Owner</span><span>Email</span><span>Date</span><span style="text-align:right">Payment</span>
-    </div>` +
-    entries.map(e => `
+  if (!entries.length) { el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No entries yet</div>'; return; }
+  el.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr 160px 80px 80px;padding:8px 16px;border-bottom:1px solid var(--border2);font-family:Teko,sans-serif;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;background:var(--surface2)">
+    <span>Team</span><span>Owner</span><span>Email</span><span>Date</span><span style="text-align:right">Payment</span>
+  </div>` + entries.map(e => `
     <div style="display:grid;grid-template-columns:1fr 1fr 160px 80px 80px;padding:11px 16px;border-bottom:1px solid var(--border);align-items:center;font-size:13px" id="entry-row-${e.entryId}">
       <span style="font-weight:600">${e.teamName}</span>
       <span style="color:var(--muted)">${e.firstName} ${e.lastName}</span>
@@ -638,31 +536,19 @@ function renderEntries(entries) {
 async function markPaid(entryId) {
   if (!confirm('Mark this entry as paid?')) return;
   try {
-    const res = await fetch(WEBAPP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'markPayment', entryId, paid: true })
-    });
+    const res = await fetch(WEBAPP_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({action:'markPayment', entryId, paid:true}) });
     const data = await res.json();
     if (data.success) {
-      // Update locally
       const entry = allEntries.find(e => e.entryId === entryId);
       if (entry) entry.paid = true;
       const row = document.getElementById(`entry-row-${entryId}`);
       if (row) {
-        row.querySelector('button')?.replaceWith(
-          Object.assign(document.createElement('span'), {
-            style: 'font-family:Teko,sans-serif;font-size:11px;font-weight:700;color:var(--green);padding:3px 8px;background:rgba(29,184,112,0.1);border:1px solid rgba(29,184,112,0.25);border-radius:100px',
-            textContent: 'PAID'
-          })
-        );
+        const btn = row.querySelector('button');
+        if (btn) btn.outerHTML = '<span style="font-family:Teko,sans-serif;font-size:11px;font-weight:700;color:var(--green);padding:3px 8px;background:rgba(29,184,112,0.1);border:1px solid rgba(29,184,112,0.25);border-radius:100px">PAID</span>';
       }
       const paid = allEntries.filter(e => e.paid).length;
-      document.getElementById('entry-summary').textContent =
-        `${allEntries.length} entries · ${paid} paid · ${allEntries.length - paid} unpaid`;
-    } else {
-      alert('Error: ' + data.error);
-    }
+      document.getElementById('entry-summary').textContent = `${allEntries.length} entries · ${paid} paid · ${allEntries.length - paid} unpaid`;
+    } else alert('Error: ' + data.error);
   } catch(e) { alert('Failed: ' + e.message); }
 }
 
@@ -670,34 +556,27 @@ async function markPaid(entryId) {
 let allLogRows = [];
 
 async function loadAgentLog() {
-  document.getElementById('agent-log-wrap').innerHTML =
-    '<div style="text-align:center;padding:24px;color:var(--muted)">Loading…</div>';
+  document.getElementById('agent-log-wrap').innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">Loading…</div>';
   try {
-    // Fetch AgentStatus sheet
     const res = await fetch(WEBAPP_URL + '?action=getAgentLog');
     const data = await res.json();
-    allLogRows = (data.rows || []).reverse(); // newest first
+    allLogRows = (data.rows || []).reverse();
     renderAgentLog(allLogRows);
   } catch(e) {
-    document.getElementById('agent-log-wrap').innerHTML =
-      `<div style="color:var(--red);padding:16px">Failed: ${e.message}<br><small>Make sure getAgentLog is in your Apps Script doGet</small></div>`;
+    document.getElementById('agent-log-wrap').innerHTML = `<div style="color:var(--red);padding:16px">Failed: ${e.message}<br><small>Make sure getAgentLog is in your Apps Script doGet</small></div>`;
   }
 }
 
 function filterAgentLog() {
   const filter = document.getElementById('agent-filter').value;
-  const filtered = filter ? allLogRows.filter(r => r.agent === filter) : allLogRows;
-  renderAgentLog(filtered);
+  renderAgentLog(filter ? allLogRows.filter(r => r.agent === filter) : allLogRows);
 }
 
 function renderAgentLog(rows) {
   const el = document.getElementById('agent-log-wrap');
-  if (!rows.length) {
-    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No log entries</div>';
-    return;
-  }
+  if (!rows.length) { el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--muted)">No log entries</div>'; return; }
   const statusColor = s => s==='✅'?'var(--green)':s==='❌'?'var(--red)':s==='⚠️'?'var(--gold)':'var(--muted)';
-  el.innerHTML = rows.slice(0,200).map(r => `
+  el.innerHTML = rows.slice(0, 200).map(r => `
     <div style="display:grid;grid-template-columns:140px 70px 24px 1fr;gap:10px;padding:9px 16px;border-bottom:1px solid var(--border);font-size:12px;align-items:start">
       <span style="font-family:Teko,sans-serif;font-size:10px;color:var(--muted2)">${r.timestamp||''}</span>
       <span style="font-family:Teko,sans-serif;font-size:11px;font-weight:600;color:var(--muted)">${r.agent||''}</span>
@@ -711,11 +590,7 @@ async function triggerRecalc() {
   const el = document.getElementById('action-result');
   el.textContent = '⏳ Triggering standings recalculation…';
   try {
-    const res = await fetch(WEBAPP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'manualRecalc' })
-    });
+    const res = await fetch(WEBAPP_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({action:'manualRecalc'}) });
     const data = await res.json();
     el.textContent = data.success ? '✅ Standings recalculated' : '❌ ' + data.error;
   } catch(e) { el.textContent = '❌ ' + e.message; }
@@ -725,11 +600,7 @@ async function triggerHealthCheck() {
   const el = document.getElementById('action-result');
   el.textContent = '⏳ Running health check…';
   try {
-    const res = await fetch(WEBAPP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'manualHealthCheck' })
-    });
+    const res = await fetch(WEBAPP_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({action:'manualHealthCheck'}) });
     const data = await res.json();
     el.textContent = data.success ? '✅ Health check complete — check Agent Log' : '❌ ' + data.error;
   } catch(e) { el.textContent = '❌ ' + e.message; }
@@ -739,16 +610,11 @@ async function triggerBackup() {
   const el = document.getElementById('action-result');
   el.textContent = '⏳ Running backup…';
   try {
-    const res = await fetch(WEBAPP_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'manualBackup' })
-    });
+    const res = await fetch(WEBAPP_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({action:'manualBackup'}) });
     const data = await res.json();
     el.textContent = data.success ? '✅ Backup complete' : '❌ ' + data.error;
   } catch(e) { el.textContent = '❌ ' + e.message; }
 }
-
 </script>
 </body>
 </html>
