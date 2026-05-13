@@ -8,142 +8,60 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="icon" type="image/png" href="aahl-logo.png">
 <style>
-.confirm-wrap { max-width: 600px; margin: 0 auto; padding: 40px 0 80px; }
-
-/* Hero */
-.confirm-hero {
-  text-align: center;
-  padding: 40px 24px 32px;
-  background: linear-gradient(135deg, rgba(125,42,66,0.15) 0%, rgba(8,4,6,0.98) 60%, rgba(33,118,174,0.08) 100%);
-  border: 1px solid rgba(125,42,66,0.3);
-  border-radius: var(--r3);
-  margin-bottom: 24px;
-  position: relative;
-  overflow: hidden;
-}
-.confirm-hero::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(125,42,66,0.12), transparent 70%);
-  pointer-events: none;
-}
-.confirm-checkmark {
-  width: 72px; height: 72px;
-  background: linear-gradient(135deg, var(--burgundy), var(--burgundy2));
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 20px;
-  font-size: 32px;
-  box-shadow: 0 0 30px rgba(125,42,66,0.4);
-  animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
-}
-@keyframes popIn {
-  from { transform: scale(0); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
-}
-.confirm-title {
-  font-family: 'Teko', sans-serif;
-  font-size: 36px; font-weight: 700;
-  letter-spacing: 1px; line-height: 1.1;
-  margin-bottom: 8px;
-}
-.confirm-title span { color: var(--burgundy3); }
-.confirm-subtitle { font-size: 15px; color: var(--muted); line-height: 1.5; }
-.confirm-entry-id {
-  display: inline-block;
-  font-family: 'Teko', sans-serif; font-size: 13px;
-  background: var(--surface2); border: 1px solid var(--border2);
-  border-radius: 100px; padding: 4px 14px;
-  color: var(--muted); letter-spacing: 0.5px;
-  margin-top: 12px;
-}
-
-/* Payment card */
-.payment-card {
-  background: linear-gradient(135deg, rgba(196,163,90,0.08), rgba(8,4,6,0.95));
-  border: 1px solid rgba(196,163,90,0.3);
-  border-radius: var(--r2);
-  padding: 20px 24px;
-  margin-bottom: 20px;
-  display: flex; align-items: flex-start; gap: 16px;
-}
-.payment-icon { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
-.payment-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-.payment-detail { font-size: 13px; color: var(--muted); line-height: 1.5; }
-.payment-email { font-family: 'Teko', sans-serif; font-size: 16px; font-weight: 600; color: var(--gold); letter-spacing: 0.5px; }
-
-/* Picks table */
-.picks-section { margin-bottom: 20px; }
-.section-head {
-  font-family: 'Teko', sans-serif; font-size: 11px; font-weight: 600;
-  letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
-  margin-bottom: 10px; padding-bottom: 8px;
-  border-bottom: 1px solid var(--border);
-}
-.picks-table { width: 100%; border-collapse: collapse; }
-.picks-table tr { border-bottom: 1px solid var(--border); }
-.picks-table tr:last-child { border-bottom: none; }
-.picks-table td { padding: 9px 14px; font-size: 13px; }
-.pt-box { font-family: 'Teko', sans-serif; font-size: 11px; color: var(--muted); width: 100px; }
-.pt-pos { width: 32px; }
-.pt-pos-badge {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 22px; height: 22px; border-radius: 4px;
-  font-family: 'Teko', sans-serif; font-size: 10px; font-weight: 700;
-  color: #fff;
-}
-.pt-name { font-weight: 600; }
-.picks-group { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r2); overflow: hidden; margin-bottom: 8px; }
-.picks-group-head {
-  padding: 8px 14px;
-  background: var(--surface2);
-  border-bottom: 1px solid var(--border);
-  font-family: 'Teko', sans-serif; font-size: 10px; font-weight: 600;
-  letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted);
-}
-
-/* Division picks */
-.div-confirm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.div-confirm-item {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--r); padding: 12px 14px;
-  display: flex; justify-content: space-between; align-items: center;
-}
-.div-confirm-name { font-family: 'Teko', sans-serif; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-.div-confirm-pick { font-size: 13px; font-weight: 700; }
-
-/* Actions */
-.confirm-actions { display: flex; gap: 10px; margin-top: 24px; }
-.confirm-actions .btn { flex: 1; justify-content: center; }
-
-/* Print friendly */
+.confirm-wrap { max-width:600px;margin:0 auto;padding:40px 0 80px; }
+.confirm-hero { text-align:center;padding:40px 24px 32px;background:linear-gradient(135deg,rgba(125,42,66,0.15) 0%,rgba(8,4,6,0.98) 60%,rgba(33,118,174,0.08) 100%);border:1px solid rgba(125,42,66,0.3);border-radius:var(--r3);margin-bottom:24px;position:relative;overflow:hidden; }
+.confirm-hero::before { content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(125,42,66,0.12),transparent 70%);pointer-events:none; }
+.confirm-checkmark { width:72px;height:72px;background:linear-gradient(135deg,var(--burgundy),var(--burgundy2));border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:32px;box-shadow:0 0 30px rgba(125,42,66,0.4);animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+.confirm-title { font-family:'Teko',sans-serif;font-size:36px;font-weight:700;letter-spacing:1px;line-height:1.1;margin-bottom:8px; }
+.confirm-title span { color:var(--burgundy3); }
+.confirm-subtitle { font-size:15px;color:var(--muted);line-height:1.5; }
+.confirm-entry-id { display:inline-block;font-family:'Teko',sans-serif;font-size:13px;background:var(--surface2);border:1px solid var(--border2);border-radius:100px;padding:4px 14px;color:var(--muted);letter-spacing:0.5px;margin-top:12px; }
+.payment-card { background:linear-gradient(135deg,rgba(196,163,90,0.08),rgba(8,4,6,0.95));border:1px solid rgba(196,163,90,0.3);border-radius:var(--r2);padding:20px 24px;margin-bottom:20px;display:flex;align-items:flex-start;gap:16px; }
+.payment-icon { font-size:28px;flex-shrink:0;margin-top:2px; }
+.payment-title { font-size:15px;font-weight:700;margin-bottom:4px; }
+.payment-detail { font-size:13px;color:var(--muted);line-height:1.5; }
+.payment-email { font-family:'Teko',sans-serif;font-size:16px;font-weight:600;color:var(--gold);letter-spacing:0.5px; }
+.picks-section { margin-bottom:20px; }
+.section-head { font-family:'Teko',sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border); }
+.picks-table { width:100%;border-collapse:collapse; }
+.picks-table tr { border-bottom:1px solid var(--border); }
+.picks-table tr:last-child { border-bottom:none; }
+.picks-table td { padding:9px 14px;font-size:13px; }
+.pt-box { font-family:'Teko',sans-serif;font-size:11px;color:var(--muted);width:100px; }
+.pt-pos { width:32px; }
+.pt-pos-badge { display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:4px;font-family:'Teko',sans-serif;font-size:10px;font-weight:700;color:#fff; }
+.pt-name { font-weight:600; }
+.picks-group { background:var(--surface);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;margin-bottom:8px; }
+.picks-group-head { padding:8px 14px;background:var(--surface2);border-bottom:1px solid var(--border);font-family:'Teko',sans-serif;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted); }
+.div-confirm-grid { display:grid;grid-template-columns:1fr 1fr;gap:8px; }
+.div-confirm-item { background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;display:flex;justify-content:space-between;align-items:center; }
+.div-confirm-name { font-family:'Teko',sans-serif;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px; }
+.div-confirm-pick { font-size:13px;font-weight:700; }
+.confirm-actions { display:flex;gap:10px;margin-top:24px; }
+.confirm-actions .btn { flex:1;justify-content:center; }
 @media print {
-  * { color: #000 !important; background: #fff !important; border-color: #ddd !important; box-shadow: none !important; -webkit-print-color-adjust: exact; }
-  header, .ticker-wrap, .confirm-actions, .payment-card, #roster-move-note, .confirm-hero { display: none !important; }
-  @page { margin: 10mm; size: letter; }
-
-  /* Simple text header instead of the styled hero */
-  .print-header { display: block !important; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 14px; }
-
-  .picks-section { margin-bottom: 10px !important; }
-  .section-head { font-size: 9px; margin-bottom: 6px; }
-  .print-picks-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-  .picks-group { border: 1px solid #ddd; border-radius: 4px; }
-  .picks-group-head { display: none; }
-  .picks-table td { padding: 3px 8px; font-size: 11px; border-bottom: 1px solid #eee; }
-  .pt-pos-badge { width: 14px; height: 14px; font-size: 8px; }
-  .div-confirm-grid { grid-template-columns: repeat(4,1fr) !important; gap: 6px; }
-  .div-confirm-item { border: 1px solid #ddd; border-radius: 4px; padding: 6px 8px; }
-  .div-confirm-name { font-size: 9px; }
-  .div-confirm-pick { font-size: 12px; font-weight: bold; }
-  .confirm-wrap, .wrap, .page { padding: 0 !important; }
+  *{color:#000!important;background:#fff!important;border-color:#ddd!important;box-shadow:none!important}
+  header,.ticker-wrap,.confirm-actions,.payment-card,#roster-move-note,.confirm-hero{display:none!important}
+  @page{margin:10mm;size:letter}
+  .print-header{display:block!important;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:14px}
+  .picks-section{margin-bottom:10px!important}
+  .section-head{font-size:9px;margin-bottom:6px}
+  .print-picks-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .picks-group{border:1px solid #ddd;border-radius:4px}
+  .picks-group-head{display:none}
+  .picks-table td{padding:3px 8px;font-size:11px;border-bottom:1px solid #eee}
+  .pt-pos-badge{width:14px;height:14px;font-size:8px}
+  .div-confirm-grid{grid-template-columns:repeat(4,1fr)!important;gap:6px}
+  .div-confirm-item{border:1px solid #ddd;border-radius:4px;padding:6px 8px}
+  .div-confirm-name{font-size:9px}
+  .div-confirm-pick{font-size:12px;font-weight:bold}
+  .confirm-wrap,.wrap,.page{padding:0!important}
 }
-
-
 @media(max-width:640px) {
-  .div-confirm-grid { grid-template-columns: 1fr; }
-  .confirm-actions { flex-direction: column; }
-  .confirm-title { font-size: 28px; }
+  .div-confirm-grid{grid-template-columns:1fr}
+  .confirm-actions{flex-direction:column}
+  .confirm-title{font-size:28px}
 }
 </style>
 </head>
@@ -168,7 +86,6 @@
 <div class="wrap">
 <div class="confirm-wrap">
 
-  <!-- Hero -->
   <div class="confirm-hero">
     <div class="confirm-checkmark">✓</div>
     <div class="confirm-title">You're in, <span id="confirm-name">champ</span>!</div>
@@ -190,7 +107,6 @@
     </div>
   </div>
 
-  <!-- Payment -->
   <div class="payment-card">
     <div class="payment-icon">💳</div>
     <div>
@@ -203,21 +119,17 @@
     </div>
   </div>
 
-  <!-- Picks -->
   <div class="picks-section">
     <div class="section-head">Your 24 Player Picks</div>
-
     <div class="print-picks-grid">
       <div class="picks-group">
         <div class="picks-group-head">⛸ Forwards</div>
         <table class="picks-table" id="fwd-table"></table>
       </div>
-
       <div class="picks-group">
         <div class="picks-group-head">🛡 Defense</div>
         <table class="picks-table" id="def-table"></table>
       </div>
-
       <div class="picks-group">
         <div class="picks-group-head">🥅 Goalies</div>
         <table class="picks-table" id="gol-table"></table>
@@ -225,14 +137,12 @@
     </div>
   </div>
 
-  <!-- Division Picks -->
   <div class="picks-section">
     <div class="section-head">Division Winner Picks <span style="font-size:10px;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">(+10 pts if your team wins the division)</span></div>
     <div class="div-confirm-grid" id="div-confirm-grid"></div>
   </div>
 
-  <!-- Roster Move note -->
-  <div id="roster-move-note">
+  <!-- Roster Move note — single id, no duplicate -->
   <div id="roster-move-note" style="background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r2);padding:16px 20px;margin-bottom:20px">
     <div style="font-size:14px;font-weight:700;margin-bottom:4px">🔄 Roster Moves</div>
     <div style="font-size:13px;color:var(--muted);line-height:1.5">
@@ -242,7 +152,6 @@
     </div>
   </div>
 
-  <!-- Actions -->
   <div class="confirm-actions">
     <button class="btn btn-gold" onclick="window.location.href='index.html'">View Standings →</button>
     <button class="btn btn-ghost" onclick="window.print()">🖨 Print My Picks</button>
@@ -256,7 +165,8 @@
 </div>
 </div>
 
-<script src="main.js?v=7"></script>
+<script src="data.js?v=1"></script>
+<script src="main.js?v=8"></script>
 <script>
 const BOX_LABELS = [
   'Forwards 1','Forwards 2','Forwards 3','Forwards 4','Forwards 5','Forwards 6',
@@ -265,20 +175,12 @@ const BOX_LABELS = [
   'Goalie 1','Goalie 2','Goalie 3','Goalie 4','Goalie 5','Goalie 6'
 ];
 
-function getPos(i) {
-  if (i < 12) return 'F';
-  if (i < 18) return 'D';
-  return 'G';
-}
-function posColor(pos) {
-  return pos === 'F' ? '#2176ae' : pos === 'D' ? '#7d2a42' : '#059669';
-}
+function getPos(i) { return i<12?'F':i<18?'D':'G'; }
+function posColor(pos) { return pos==='F'?'#2176ae':pos==='D'?'#7d2a42':'#059669'; }
 
 window.addEventListener('DOMContentLoaded', () => {
-  // Load from sessionStorage
   const raw = sessionStorage.getItem('aahl_confirm');
   if (!raw) {
-    // No data — redirect to home
     document.querySelector('.confirm-hero').innerHTML = `
       <div style="font-size:48px;margin-bottom:16px">🏒</div>
       <div class="confirm-title">No Entry Found</div>
@@ -286,26 +188,23 @@ window.addEventListener('DOMContentLoaded', () => {
       <br><button class="btn btn-gold" onclick="window.location.href='picks.html'" style="margin-top:8px">Make My Picks →</button>`;
     document.querySelector('.payment-card').style.display = 'none';
     document.querySelector('.picks-section').style.display = 'none';
-    document.getElementById('confirm-actions')?.remove();
     return;
   }
 
   const data = JSON.parse(raw);
 
-  // Fill hero
-  document.getElementById('confirm-name').textContent   = data.firstName;
-  // Populate print header
+  document.getElementById('confirm-name').textContent  = data.firstName;
+  document.getElementById('confirm-team').textContent  = data.teamName;
+  document.getElementById('confirm-email').textContent = data.email;
+  document.getElementById('confirm-entry-id').textContent = `Entry ID: ${data.entryId}`;
+
   const ph = document.getElementById('ph-title');
   const ps = document.getElementById('ph-sub');
   const pi = document.getElementById('ph-id');
   if (ph) ph.textContent = `AAHL 2026–27 — ${data.teamName}`;
   if (ps) ps.textContent = `${data.firstName} ${data.lastName} · ${data.email}`;
   if (pi) pi.textContent = `Entry ID: ${data.entryId}`;
-  document.getElementById('confirm-team').textContent   = data.teamName;
-  document.getElementById('confirm-email').textContent  = data.email;
-  document.getElementById('confirm-entry-id').textContent = `Entry ID: ${data.entryId}`;
 
-  // Picks tables
   const fwds = [], defs = [], gols = [];
   (data.picks || []).forEach((name, i) => {
     if (!name) return;
@@ -316,23 +215,21 @@ window.addEventListener('DOMContentLoaded', () => {
       <td class="pt-pos"><span class="pt-pos-badge" style="background:${posColor(pos)}">${pos}</span></td>
       <td class="pt-name">${name}</td>
     </tr>`;
-    if (pos === 'F') fwds.push(row);
-    else if (pos === 'D') defs.push(row);
+    if (pos==='F') fwds.push(row);
+    else if (pos==='D') defs.push(row);
     else gols.push(row);
   });
   document.getElementById('fwd-table').innerHTML = fwds.join('');
   document.getElementById('def-table').innerHTML = defs.join('');
   document.getElementById('gol-table').innerHTML = gols.join('');
 
-  // Division picks
   const divs = data.divisions || {};
-  const divNames = [
+  document.getElementById('div-confirm-grid').innerHTML = [
     ['Atlantic', divs.atlantic],
     ['Metropolitan', divs.metropolitan],
     ['Central', divs.central],
     ['Pacific', divs.pacific],
-  ];
-  document.getElementById('div-confirm-grid').innerHTML = divNames.map(([name, pick]) => `
+  ].map(([name, pick]) => `
     <div class="div-confirm-item">
       <div>
         <div class="div-confirm-name">${name}</div>
@@ -341,8 +238,6 @@ window.addEventListener('DOMContentLoaded', () => {
       ${pick ? '<span style="color:var(--green);font-size:16px">✓</span>' : '<span style="color:var(--muted);font-size:14px">—</span>'}
     </div>`).join('');
 
-  // Clear session after rendering so refresh doesn't re-show stale data
-  // (keep for 5 min in case user wants to print)
   setTimeout(() => sessionStorage.removeItem('aahl_confirm'), 300000);
 });
 </script>
