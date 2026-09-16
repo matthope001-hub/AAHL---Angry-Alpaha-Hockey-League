@@ -3,459 +3,167 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Angry Alpaca Hockey League</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&family=Teko:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-<link rel="icon" type="image/png" href="aahl-logo.png">
+<title>AAHL 2627 — Angry Alpaca Hockey League</title>
+<link rel="icon" type="image/png" href="alpaca-pixel.png">
+<link rel="apple-touch-icon" href="alpaca-pixel.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
+<header class="site-header">
   <div class="header-inner">
-    <div class="wordmark" onclick="window.location.href='index.html'">
-      <img src="aahl-logo.png" alt="AAHL Logo" style="height:48px;width:auto;margin-right:12px;">
-      <div class="wordmark-text">A.A.H.L.</div>
-    </div>
-    <img src="alpaca-pixel.png" alt="" class="alpaca-runner">
-    <nav>
-      <button class="nav-btn active" onclick="window.location.href='index.html'">Home</button>
-      <button class="nav-btn" onclick="window.location.href='picks.html'">My Picks</button>
-      <button class="nav-btn" onclick="window.location.href='standings.html'">Stats</button>
-      <button class="nav-btn" onclick="window.location.href='rules.html'">Rules</button>
-      <button class="nav-btn" onclick="window.location.href='roster-move.html'">Moves</button>
-      <button class="nav-btn" onclick="window.location.href='admin.html'">Admin</button>
+    <span class="brand">
+      <img src="aahl-logo.png" alt="" class="brand-logo" onerror="this.style.display='none'">
+      AAHL <span class="brand-year">26<span class="accent">/</span>27</span>
+      <img src="alpaca-pixel.png" alt="" class="brand-mascot" onerror="this.style.display='none'">
+    </span>
+    <nav class="main-nav">
+      <a href="#" data-view="home" class="nav-link active">Home</a>
+      <a href="#" data-view="standings" class="nav-link">Standings</a>
+      <a href="#" data-view="players" class="nav-link">Players</a>
+      <a href="#" data-view="lastnight" class="nav-link">Last Night</a>
+      <a href="#" data-view="activity" class="nav-link">Activity</a>
+      <a href="#" data-view="rules" class="nav-link">Rules</a>
+      <a href="#" data-view="boxes" class="nav-link">Boxes</a>
+      <a href="#" data-view="ir" class="nav-link">IR List</a>
+      <a href="#" data-view="signup" class="nav-link">Sign Up</a>
+      <a href="#" data-view="managemoves" class="nav-link">My Team</a>
     </nav>
+    <a href="#" data-view="admin" class="nav-link admin-gear-btn" title="Commissioner">⚙️</a>
   </div>
 </header>
 
-<div class="ticker-wrap">
-  <div class="ticker-tag">Last Night</div>
-  <div class="ticker-viewport">
-    <div class="ticker-reel" id="ticker-reel"></div>
+<div id="stat-ticker" class="stat-ticker" style="display:none;">
+  <div class="stat-ticker-track" id="stat-ticker-track"></div>
+</div>
+
+<main id="app">
+
+  <section id="view-home" class="view active">
+    <div class="hero-header-row">
+      <div>
+        <div class="hero-eyebrow mono">NHL 2026-27 · Wedding Fundraiser for Mackenzie &amp; Dan 🏒</div>
+        <h1 class="hero-title-new">AAHL Box Pick<span class="hero-em">'Em</span></h1>
+        <a href="#" data-view="signup" class="nav-link hero-cta-btn" id="hero-signup-cta">🏒 Sign Up Now</a>
+      </div>
+      <div class="hero-badges-row">
+        <div class="hero-badge hero-badge-blue">
+          <span class="hero-badge-value mono" id="hero-entries">—</span>
+          <span class="hero-badge-label">Entries</span>
+        </div>
+        <div class="hero-badge hero-badge-amber">
+          <span class="hero-badge-value mono" id="hero-prizepool">—</span>
+          <span class="hero-badge-label">Prize Pool</span>
+        </div>
+        <div class="hero-badge hero-badge-gold">
+          <span class="hero-badge-value mono" id="deadline-display">—</span>
+          <span class="hero-badge-label">Deadline</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:20px;">
+      <h3 class="mini-title">⭐ Stars of the Night</h3>
+      <div id="stars-of-night" class="panel"></div>
+    </div>
+
+    <div class="home-grid">
+      <div>
+        <h3 class="mini-title">Current Standings</h3>
+        <div id="home-standings-preview" class="panel"></div>
+      </div>
+      <div>
+        <h3 class="mini-title">Division Leaders <span class="mono" style="color:var(--amber); font-weight:400; font-size:12px;">+10 pts bonus</span></h3>
+        <div id="division-leaders-panel" class="panel"></div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;">
+      <h3 class="mini-title">Recent Activity <a href="#" data-view="activity" class="nav-link" style="font-size:12px; text-transform:none; letter-spacing:0; margin-left:8px;">View All →</a></h3>
+      <div id="home-activity-teaser" class="panel"></div>
+    </div>
+  </section>
+
+  <section id="view-activity" class="view">
+    <h2 class="section-title">Recent Activity</h2>
+    <div id="recent-activity" class="panel"></div>
+  </section>
+
+  <section id="view-standings" class="view">
+    <h2 class="section-title">Standings</h2>
+    <p style="color:var(--text-dim); font-size:13px; margin-bottom:12px;">Payout reflects the current prize pool and will grow as more entries join.</p>
+    <div id="standings-table" class="panel"></div>
+  </section>
+
+  <section id="view-players" class="view">
+    <h2 class="section-title">Players</h2>
+    <div class="filter-tabs" id="player-filter-tabs">
+      <button class="filter-tab active" data-filter="all">All</button>
+      <button class="filter-tab" data-filter="F">Forwards</button>
+      <button class="filter-tab" data-filter="D">Defense</button>
+      <button class="filter-tab" data-filter="G">Goalies</button>
+    </div>
+    <input id="player-search" class="search-input mono" type="text" placeholder="Search players...">
+    <div id="players-table" class="panel"></div>
+  </section>
+
+  <section id="view-lastnight" class="view">
+    <h2 class="section-title">Last Night's Stats</h2>
+    <div id="lastnight-content"></div>
+  </section>
+
+  <section id="view-rules" class="view">
+    <h2 class="section-title">Pool Rules</h2>
+    <div id="rules-content" class="panel"></div>
+  </section>
+
+  <section id="view-boxes" class="view">
+    <h2 class="section-title">Boxes</h2>
+    <p style="color:var(--text-dim); margin-bottom:16px; font-size:14px;">Every player in each of the 27 pick'em boxes, plus the 4 division winner boxes — ranked by current-season points/finish, for reference.</p>
+    <div id="boxes-reference"></div>
+  </section>
+
+  <section id="view-ir" class="view">
+    <h2 class="section-title">IR List</h2>
+    <div id="ir-panel" class="panel"></div>
+  </section>
+
+  <section id="view-signup" class="view">
+    <h2 class="section-title">Build Your Roster</h2>
+    <p style="margin-bottom:16px; font-size:14px;">
+      <a href="AAHL_Paper_Entry_Form.pdf" target="_blank" class="rules-inline-link">📄 Prefer paper? Download a printable entry form</a>
+      <span style="color:var(--text-dim);"> — fill it out and send it to the commissioner, and he'll submit it for you.</span>
+    </p>
+    <div id="signup-form" class="panel"></div>
+  </section>
+
+  <section id="view-managemoves" class="view">
+    <h2 class="section-title">My Team</h2>
+    <div id="managemoves-content"></div>
+  </section>
+
+  <section id="view-admin" class="view">
+    <h2 class="section-title">Commissioner</h2>
+    <div id="admin-panel" class="panel"></div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <a href="mailto:info@theaahl.ca" class="footer-email-btn">✉️ Contact Us</a>
+  <span class="mono">AAHL 2526</span>
+</footer>
+
+<div id="team-picks-modal" class="modal-overlay" style="display:none">
+  <div class="modal-content">
+    <button id="team-picks-close" class="modal-close">&times;</button>
+    <div id="team-picks-body"></div>
   </div>
 </div>
 
-<div class="page on">
-<div class="wrap">
-
-  <!-- ══ ACTIVITY FEED ══ -->
-  <div id="activity-feed" style="display:none" class="mb-16">
-    <div class="mini-head" style="border-radius:var(--r) var(--r) 0 0;border-bottom:none;margin-bottom:0">Recent Activity</div>
-    <div id="activity-list" class="mini-card" style="border-radius:0 0 var(--r) var(--r);border-top:none;display:flex;flex-direction:column;gap:0"></div>
-  </div>
-
-  <div class="home-topbar">
-    <div class="home-topbar-left">
-      <div class="eyebrow">NHL 2026–27 Regular Season</div>
-      <h1>AAHL Box Pick<em>'Em</em></h1>
-    </div>
-    <div class="kpi-row">
-      <div class="kpi"><div class="kpi-val" style="color:var(--accent)" id="h-entries">—</div><div class="kpi-lbl">Entries</div></div>
-      <div class="kpi"><div class="kpi-val" style="color:var(--burgundy3)" id="h-pot">—</div><div class="kpi-lbl">Prize Pool</div></div>
-      <div class="kpi"><div class="kpi-val">Sep 29</div><div class="kpi-lbl">Deadline</div></div>
-    </div>
-  </div>
-
-  <!-- ══ STARS OF THE NIGHT ══ -->
-  <div class="stars-bar" id="stars-bar" style="display:none">
-    <div class="stars-bar-label">⭐ Stars of the Night</div>
-    <div class="stars-list" id="stars-list"></div>
-    <div class="stars-date" id="stars-date"></div>
-  </div>
-
-  <div class="home-grid">
-    <div class="standings-card">
-      <div class="sc-head">
-        <span class="sc-title">Current Standings</span>
-        <span class="live-dot">Live</span>
-      </div>
-      <div class="sc-cols">
-        <span></span><span></span>
-        <span>Entry</span>
-        <span class="ra">🎩</span>
-        <span class="ra">Move</span>
-        <span class="ra">Pts</span>
-      </div>
-      <div id="home-standings">
-        <div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">Loading standings…</div>
-      </div>
-    </div>
-
-    <div class="home-right">
-      <div class="mini-card" id="div-tracker" style="display:none">
-        <div class="mini-head" style="display:flex;align-items:center;justify-content:space-between">
-          <span>Division Leaders</span>
-          <span style="font-family:Teko,sans-serif;font-size:9px;color:var(--gold);letter-spacing:1px">+10 PTS BONUS</span>
-        </div>
-        <div id="div-tracker-body"></div>
-      </div>
-      <div class="mini-card">
-        <div class="mini-head">Scoring Reference</div>
-        <table class="score-tbl">
-          <thead><tr><th>Stat</th><th style="text-align:right">Pts</th></tr></thead>
-          <tbody>
-            <tr><td colspan="2" class="sec-lbl">Forwards &amp; Defense</td></tr>
-            <tr><td>Goal</td><td class="pts-val" style="text-align:right">1</td></tr>
-            <tr><td>Assist</td><td class="pts-val" style="text-align:right">1</td></tr>
-            <tr><td>Shot on Goal</td><td class="pts-val" style="text-align:right">0.11</td></tr>
-            <tr><td>🎩 Hat Trick bonus</td><td class="pts-val" style="text-align:right">+3</td></tr>
-            <tr><td>PIM / min (D only)</td><td class="pts-val" style="text-align:right">0.25</td></tr>
-            <tr><td colspan="2" class="sec-lbl">Goalies</td></tr>
-            <tr><td>Win</td><td class="pts-val" style="text-align:right">3</td></tr>
-            <tr><td>Loss</td><td class="pts-val" style="text-align:right">1</td></tr>
-            <tr><td>OT Loss</td><td class="pts-val" style="text-align:right">1.5</td></tr>
-            <tr><td>Shutout</td><td class="pts-val" style="text-align:right">2</td></tr>
-            <tr><td>Save</td><td class="pts-val" style="text-align:right">0.02</td></tr>
-            <tr><td colspan="2" class="sec-lbl">Division Bonus</td></tr>
-            <tr><td>Division winner (season end)</td><td class="pts-val" style="text-align:right">+10</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-</div>
-</div>
-
-<div class="modal-overlay" id="modal-overlay" onclick="overlayClick(event)">
-  <div class="modal-card" id="modal-card">
-    <div class="tp-header">
-      <div class="tp-header-left">
-        <div class="tp-av" id="tp-av"></div>
-        <div><div class="tp-team-name" id="tp-tname"></div><div class="tp-owner" id="tp-owner"></div></div>
-      </div>
-      <div class="tp-meta" id="tp-meta"></div>
-      <button class="tp-close-btn" onclick="closeTeamPanel()">✕</button>
-    </div>
-    <div class="tp-tabs">
-      <div class="tp-tab active" onclick="filterLiveRoster('ALL',this)">All Players</div>
-      <div class="tp-tab" onclick="filterLiveRoster('F',this)">Forwards</div>
-      <div class="tp-tab" onclick="filterLiveRoster('D',this)">Defense</div>
-      <div class="tp-tab" onclick="filterLiveRoster('G',this)">Goalies</div>
-      <div class="tp-tab" onclick="filterLiveRoster('DIV',this)">Divisions</div>
-    </div>
-    <div class="tp-scroll">
-      <table class="tp-table" id="tp-table">
-        <thead><tr>
-          <th style="width:26px"></th><th>Player</th><th>NHL</th><th>Box</th>
-          <th class="ra">G</th><th class="ra">A</th><th class="ra">SOG</th><th class="ra">PIM</th>
-          <th class="ra">W</th><th class="ra">L</th><th class="ra">OTL</th><th class="ra">SO</th><th class="ra">SV</th>
-          <th class="ra">🎩</th><th class="ra">Pts</th>
-        </tr></thead>
-        <tbody id="tp-tbody"></tbody>
-        <tfoot id="tp-tfoot"></tfoot>
-      </table>
-      <div id="tp-div-panel" style="display:none;padding:16px"></div>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast">
-  <div class="toast-title" id="toast-t"></div>
-  <div class="toast-body" id="toast-b"></div>
-</div>
-
-<script src="data.js?v=1"></script>
-<script src="main.js?v=8"></script>
-<script>
-// ── INDEX.HTML page-specific logic ──
-
-const ENTRIES_CSV_IDX = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQlbZGgMZjZhJIVIJoXKNASqTsn-sYJN5u9QmUGKGaJDdqXHbNSxbCeWR4qkS1PqCnP5AvVezXwOMzj/pub?gid=0&single=true&output=csv&v=2';
-
-let DIVISION_LEADERS = {};
-let currentLiveRoster = [];
-let currentLiveDivPicks = {};
-let PLAYERS_MAP = {};
-
-async function fetchPlayersForPanel() {
-  try {
-    const res = await fetch(PLAYERS_CSV);
-    const text = await res.text();
-    text.trim().split('\n').slice(1).forEach(line => {
-      const cols = parseCSVLine(line);
-      const name = (cols[0]||'').trim();
-      if (!name) return;
-      PLAYERS_MAP[name] = {
-        team:      (cols[1]||'').trim(),
-        pos:       (cols[2]||'').trim(),
-        goals:     parseInt(cols[5])||0,
-        assists:   parseInt(cols[6])||0,
-        sog:       parseInt(cols[7])||0,
-        pim:       parseInt(cols[8])||0,
-        wins:      parseInt(cols[9])||0,
-        losses:    parseInt(cols[10])||0,
-        otl:       parseInt(cols[11])||0,
-        shutouts:  parseInt(cols[12])||0,
-        saves:     parseInt(cols[13])||0,
-        hatTricks: parseInt(cols[14])||0,
-        onIR:      (cols[15]||'').trim().toUpperCase() === 'TRUE',
-      };
-    });
-  } catch(e) { console.warn('Players fetch failed:', e); }
-}
-
-function calcPlayerPoolPts(p) {
-  if (!p) return 0;
-  if (p.pos === 'G') return Math.round((p.wins*3 + p.losses + p.otl*1.5 + p.shutouts*2 + p.saves*0.02)*100)/100;
-  const ht = p.hatTricks > 0 ? p.hatTricks * 3 : 0;
-  const pim = p.pos === 'D' ? p.pim * 0.25 : 0;
-  return Math.round((p.goals + p.assists + p.sog*0.11 + ht + pim)*100)/100;
-}
-
-async function buildDivisionTracker() {
-  try {
-    const [leadersRes, entriesRes] = await Promise.all([
-      fetch(WEBAPP_URL + '?action=getDivisionLeaders'),
-      fetch(ENTRIES_CSV_IDX)
-    ]);
-    const leadData = await leadersRes.json();
-    if (!leadData.success || !leadData.leaders) return;
-    DIVISION_LEADERS = leadData.leaders;
-
-    const entryText = await entriesRes.text();
-    const divPicks = { Atlantic:[], Metropolitan:[], Central:[], Pacific:[] };
-    entryText.trim().split('\n').slice(1).forEach(line => {
-      const cols = parseCSVLine(line);
-      if(cols[32]) divPicks.Atlantic.push(cols[32].trim().toLowerCase());
-      if(cols[33]) divPicks.Metropolitan.push(cols[33].trim().toLowerCase());
-      if(cols[34]) divPicks.Central.push(cols[34].trim().toLowerCase());
-      if(cols[35]) divPicks.Pacific.push(cols[35].trim().toLowerCase());
-    });
-
-    const card = document.getElementById('div-tracker');
-    const body = document.getElementById('div-tracker-body');
-    if (!card || !body) return;
-
-    body.innerHTML = ['Atlantic','Metropolitan','Central','Pacific'].map(div => {
-      const leader = DIVISION_LEADERS[div];
-      if (!leader) return '';
-      const leaderTeam = (leader.team||'').toLowerCase();
-      const pickCount = (divPicks[div]||[]).filter(p => p === leaderTeam).length;
-      const total = (divPicks[div]||[]).length;
-      return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border)">
-        <div style="flex:1;min-width:0">
-          <div style="font-family:Teko,sans-serif;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px">${div}</div>
-          <div style="font-size:14px;font-weight:700">${leader.team}</div>
-          <div style="font-family:Teko,sans-serif;font-size:10px;color:var(--muted)">${leader.pts} pts · ${leader.gp} GP</div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-family:Teko,sans-serif;font-size:22px;font-weight:700;color:${pickCount>0?'var(--gold)':'var(--muted)'};line-height:1">${pickCount}</div>
-          <div style="font-family:Teko,sans-serif;font-size:9px;color:var(--muted)">of ${total} earning</div>
-        </div>
-      </div>`;
-    }).join('') + `<div style="padding:7px 14px;font-family:Teko,sans-serif;font-size:9px;color:var(--muted2)">+10 pts if your picked team wins the division</div>`;
-    card.style.display = 'block';
-  } catch(e) { console.warn('Division tracker failed:', e); }
-}
-
-async function loadActivityFeed() {
-  try {
-    const res = await fetch(WEBAPP_URL + '?action=getApprovedMoves');
-    const data = await res.json();
-    const moves = (data.moves || [])
-      .filter(m => m.effectiveDate)
-      .sort((a,b) => b.effectiveDate.localeCompare(a.effectiveDate))
-      .slice(0, 5);
-    if (!moves.length) return;
-    const feed = document.getElementById('activity-feed');
-    const list = document.getElementById('activity-list');
-    if (!feed || !list) return;
-    list.innerHTML = moves.map((m,i) => `
-      <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;font-size:13px;border-bottom:${i<moves.length-1?'1px solid var(--border)':'none'}">
-        <span style="font-size:15px">🔄</span>
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-            <span style="color:#f87171">${m.oldPlayer}</span>
-            <span style="color:var(--muted);margin:0 6px;font-size:12px">→</span>
-            <span style="color:#4ade80">${m.newPlayer}</span>
-          </div>
-          <div style="font-family:Teko,sans-serif;font-size:11px;color:var(--muted);margin-top:2px">
-            <span style="color:var(--text);font-weight:600">${m.teamName||''}</span>${m.boxLabel?` · ${m.boxLabel}`:''}
-          </div>
-        </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div style="font-family:Teko,sans-serif;font-size:10px;color:var(--muted2);letter-spacing:1px;text-transform:uppercase">Approved</div>
-          <div style="font-family:Teko,sans-serif;font-size:12px;color:var(--muted)">${m.effectiveDate}</div>
-        </div>
-      </div>`).join('');
-    feed.style.display = 'block';
-  } catch(e) { /* silent */ }
-}
-
-function buildLiveStandings() {
-  const el = document.getElementById('home-standings');
-  if (!el) return;
-  if (!LIVE_BOARD.length) {
-    el.innerHTML = '<div style="padding:32px;text-align:center;color:var(--muted);font-family:\'Teko\',sans-serif;font-size:13px;letter-spacing:1px">No entries yet — be the first!</div>';
-    return;
-  }
-  const last = LIVE_BOARD.length - 1;
-  el.innerHTML = LIVE_BOARD.map((e, i) => {
-    const isFirst = i===0, isLast = i===last;
-    const rowCls = isFirst?'r1':i===1?'r2':i===2?'r3':isLast?'rl':'';
-    const posDisplay = isLast
-      ? '<span style="font-family:\'Teko\',sans-serif;font-size:8px;letter-spacing:1px;color:var(--muted)">LAST</span>'
-      : (i+1);
-    const tv = parseInt(e.trend) || 0;
-    const mvCls = tv>0?'trend-up':tv<0?'trend-dn':'trend-eq';
-    const mvLbl = tv>0?'▲'+tv:tv<0?'▼'+Math.abs(tv):'—';
-    return '<div class="sc-row '+rowCls+'" onclick="openLiveTeamPanel(\''+e.name.replace(/'/g,"\\'")+'\')">'+
-      '<div class="sc-pos '+rowCls+'">'+posDisplay+'</div>'+
-      '<div class="sc-av">'+initials(e.name)+'</div>'+
-      '<div class="sc-info"><div class="sc-name">'+e.name+'</div><div class="sc-team">'+(e.owner||'')+'</div></div>'+
-      '<div class="sc-ht"></div>'+
-      '<div><span class="lb-trend '+mvCls+'">'+mvLbl+'</span></div>'+
-      '<div class="sc-pts '+rowCls+'">'+e.pts.toLocaleString()+'</div></div>';
-  }).join('');
-}
-
-async function openLiveTeamPanel(teamName) {
-  const entry = LIVE_BOARD.find(e => e.name === teamName);
-  if (!entry) return;
-
-  document.getElementById('tp-av').textContent = initials(entry.name);
-  document.getElementById('tp-tname').textContent = entry.name;
-  document.getElementById('tp-owner').textContent = entry.owner || '';
-  document.getElementById('tp-meta').innerHTML =
-    '<div class="tp-stat-pill"><div class="spv burg">'+entry.pts.toLocaleString()+'</div><div class="spl">Total Pts</div></div>'+
-    '<div class="tp-stat-pill"><div class="spv blue">'+(entry.rank||'—')+'</div><div class="spl">Rank</div></div>';
-  document.getElementById('modal-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-
-  document.querySelectorAll('.tp-tab').forEach(t => t.classList.remove('active'));
-  document.querySelector('.tp-tab').classList.add('active');
-  document.getElementById('tp-table').style.display = '';
-  document.getElementById('tp-div-panel').style.display = 'none';
-
-  const boxLabels = ['Forwards 1','Forwards 2','Forwards 3','Forwards 4','Forwards 5','Forwards 6',
-    'Forwards 7','Forwards 8','Forwards 9','Forwards 10','Forwards 11','Forwards 12',
-    'Defense 1','Defense 2','Defense 3','Defense 4','Defense 5','Defense 6',
-    'Goalie 1','Goalie 2','Goalie 3','Goalie 4','Goalie 5','Goalie 6'];
-
-  try {
-    const res = await fetch(ENTRIES_CSV_IDX);
-    const text = await res.text();
-    const rows = text.trim().split('\n').slice(1);
-    const entryRow = rows.find(r => r.includes(entry.entry));
-    if (!entryRow) throw new Error('Entry not found');
-    const cols = parseCSVLine(entryRow);
-    const picks = cols.slice(8, 32);
-    currentLiveRoster = picks.map((name, i) => ({
-      name: name.trim(), pos: i<12?'F':i<18?'D':'G', box: boxLabels[i]
-    })).filter(p => p.name);
-    currentLiveDivPicks = {
-      Atlantic:     (cols[32]||'').trim(),
-      Metropolitan: (cols[33]||'').trim(),
-      Central:      (cols[34]||'').trim(),
-      Pacific:      (cols[35]||'').trim(),
-    };
-    renderLiveRoster('ALL');
-  } catch(err) {
-    console.error('Roster load failed:', err);
-    document.getElementById('tp-tbody').innerHTML = '<tr><td colspan="15" style="text-align:center;padding:30px;color:var(--muted)">Roster data unavailable.</td></tr>';
-    currentLiveRoster = [];
-    currentLiveDivPicks = {};
-  }
-}
-
-function renderLiveRoster(filter) {
-  const table = document.getElementById('tp-table');
-  const divPanel = document.getElementById('tp-div-panel');
-  if (filter === 'DIV') {
-    table.style.display = 'none'; divPanel.style.display = 'block';
-    renderDivisionTab(); return;
-  }
-  table.style.display = ''; divPanel.style.display = 'none';
-  const tbody = document.getElementById('tp-tbody');
-  let rows = filter==='ALL' ? currentLiveRoster : currentLiveRoster.filter(p => p.pos===filter);
-  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="15" style="text-align:center;padding:30px">No players</td></tr>'; return; }
-  let totalPts = 0;
-  tbody.innerHTML = rows.map(p => {
-    const ps = PLAYERS_MAP[p.name] || null;
-    const pts = calcPlayerPoolPts(ps);
-    totalPts += pts;
-    const isIR = ps?.onIR || false;
-    const team = ps?.team || '—';
-    let sc = '';
-    if (p.pos==='G') {
-      sc = '<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'+
-        '<td class="tp-stat-num">'+(ps?.wins||0)+'</td><td class="tp-stat-num">'+(ps?.losses||0)+'</td>'+
-        '<td class="tp-stat-num">'+(ps?.otl||0)+'</td><td class="tp-stat-num">'+(ps?.shutouts||0)+'</td>'+
-        '<td class="tp-stat-num">'+(ps?.saves||0)+'</td>';
-    } else {
-      sc = '<td class="tp-stat-num">'+(ps?.goals||0)+'</td><td class="tp-stat-num">'+(ps?.assists||0)+'</td>'+
-        '<td class="tp-stat-num">'+(ps?.sog||0)+'</td><td class="tp-stat-num">'+(p.pos==='D'?(ps?.pim||0):'—')+'</td>'+
-        '<td class="tp-stat-num">—</td><td class="tp-stat-num">—</td><td class="tp-stat-num">—</td>'+
-        '<td class="tp-stat-num">—</td><td class="tp-stat-num">'+(ps?.hatTricks>0?'🎩':'—')+'</td>';
-    }
-    return '<tr'+(isIR?' style="opacity:0.55"':'')+'>'+'<td><span class="tp-pos-badge pos-'+p.pos+'">'+p.pos+'</span></td>'+
-      '<td><div class="tp-pname">'+p.name+(isIR?' <span class="ir-badge">IR</span>':'')+'</div><div class="tp-box">'+p.box+'</div></td>'+
-      '<td><div class="tp-nhl">'+team+'</div></td>'+sc+
-      '<td class="tp-pts-num" style="color:var(--burgundy2)">'+pts+'</td></tr>';
-  }).join('');
-  const tfoot = document.getElementById('tp-tfoot');
-  if (tfoot) tfoot.innerHTML = '<tr class="tp-footer"><td colspan="14" style="padding:12px 16px;font-family:Teko,sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Season Total</td><td class="tp-pts-num" style="font-size:17px;color:var(--burgundy2);padding:12px 16px">'+Math.round(totalPts*100)/100+'</td></tr>';
-}
-
-function renderDivisionTab() {
-  const panel = document.getElementById('tp-div-panel');
-  let bonusTotal = 0;
-  const rows = ['Atlantic','Metropolitan','Central','Pacific'].map(div => {
-    const pick = currentLiveDivPicks[div] || '—';
-    const leader = DIVISION_LEADERS[div] || null;
-    const leaderTeam = leader ? leader.team : null;
-    const isLeading = leaderTeam && pick!=='—' && leaderTeam.toLowerCase()===pick.toLowerCase();
-    if (isLeading) bonusTotal += 10;
-    const statusIcon = pick==='—' ? '' : isLeading
-      ? '<span style="color:var(--green);font-size:16px">✓</span>'
-      : '<span style="color:var(--muted);font-size:16px">✗</span>';
-    const leaderStr = leaderTeam
-      ? `<div style="font-family:Teko,sans-serif;font-size:10px;color:var(--muted);margin-top:3px">Current leader: <span style="color:var(--text)">${leaderTeam}</span> · ${leader.pts} pts</div>`
-      : '';
-    return `<div style="display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--border)">
-      <div style="flex:1;min-width:0">
-        <div style="font-family:Teko,sans-serif;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px">${div} Division</div>
-        <div style="font-size:15px;font-weight:700;color:${isLeading?'var(--green)':pick==='—'?'var(--muted)':'var(--text)'}">${pick}</div>
-        ${leaderStr}
-      </div>
-      <div style="flex-shrink:0">${statusIcon}</div>
-    </div>`;
-  }).join('');
-  panel.innerHTML = rows + `<div style="margin-top:14px;padding:10px 14px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);display:flex;align-items:center;justify-content:space-between">
-    <div style="font-family:Teko,sans-serif;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Season end bonus (if picks hold)</div>
-    <div style="font-family:Teko,sans-serif;font-size:22px;font-weight:700;color:var(--gold)">+${bonusTotal} pts</div>
-  </div>
-  <div style="margin-top:8px;font-family:Teko,sans-serif;font-size:10px;color:var(--muted2)">✓ = currently leading · +10 pts per correct pick awarded at season end</div>`;
-}
-
-function filterLiveRoster(pos, btn) {
-  document.querySelectorAll('.tp-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-  renderLiveRoster(pos);
-}
-
-function updateLivePayouts() {
-  const prize = LIVE_BOARD.length * 10 * 0.5;
-  const he = document.getElementById('h-entries'), hp = document.getElementById('h-pot');
-  if (he) he.textContent = LIVE_BOARD.length || '—';
-  if (hp) hp.textContent = LIVE_BOARD.length ? '$' + Math.round(prize) : '—';
-}
-
-// ── INIT ──
-Promise.all([
-  fetchNightlyStats(),
-  fetchStandings(),
-  fetchIRStatuses(),
-  fetchPrevStats(),
-  fetchPlayersForPanel()
-]).then(() => {
-  buildStarsOfNight();
-  buildTicker();
-  loadActivityFeed();
-  buildDivisionTracker();
-  buildLiveStandings();
-  updateLivePayouts();
-});
-</script>
+<script src="data.js"></script>
+<script src="main.js"></script>
 </body>
 </html>
